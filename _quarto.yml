@@ -23,5 +23,5 @@ website:
 
 format:
   html:
-    theme: flatly
+    theme: cosmo
     toc: true
