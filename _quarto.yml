@@ -1,0 +1,27 @@
+project:
+  type: website
+
+website:
+  title: "Robust Design Mark-Recapture"
+  site-url: index.qmd
+  navbar:
+    left:
+      - text: "A refresher on GLMs"
+        href: GLM_Refresher.qmd
+      - text: "The detection problem"
+        href: Detection_Problem.qmd
+      - text: "Lincoln-Petersen estimator"
+        href: Lincoln_Petersen.qmd
+      - text: "Cormack-Jolly-Seber model"
+        href: CJS_Model.qmd
+      - text: "The robust design"
+        href: Robust_Design_Likelihood.qmd
+      - text: "Temporary emigration"
+        href: Temporary_Emigration.qmd
+      - text: "Implementing in RMark"
+        href: RMark_Implementation.qmd
+
+format:
+  html:
+    theme: flatly
+    toc: true

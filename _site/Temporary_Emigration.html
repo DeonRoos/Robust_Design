@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Deon Roos">
+<meta name="dcterms.date" content="2026-03-04">
+
+<title>Robust Design Mark-Recapture - Temporary Emigration</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Robust Design Mark-Recapture</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./GLM_Refresher.html" rel="" target="">
+ <span class="menu-text">A refresher on GLMs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Detection_Problem.html" rel="" target="">
+ <span class="menu-text">The detection problem</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Lincoln_Petersen.html" rel="" target="">
+ <span class="menu-text">Lincoln-Petersen estimator</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./CJS_Model.html" rel="" target="">
+ <span class="menu-text">Cormack-Jolly-Seber model</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Robust_Design_Likelihood.html" rel="" target="">
+ <span class="menu-text">The robust design</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./Temporary_Emigration.html" rel="" target="" aria-current="page">
+ <span class="menu-text">Temporary emigration</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./RMark_Implementation.html" rel="" target="">
+ <span class="menu-text">Implementing in RMark</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#another-ambiguous-zero" id="toc-another-ambiguous-zero" class="nav-link active" data-scroll-target="#another-ambiguous-zero">Another ambiguous zero</a></li>
+  <li><a href="#the-availability-problem" id="toc-the-availability-problem" class="nav-link" data-scroll-target="#the-availability-problem">The availability problem</a></li>
+  <li><a href="#introducing-gamma-and-gamma" id="toc-introducing-gamma-and-gamma" class="nav-link" data-scroll-target="#introducing-gamma-and-gamma">Introducing <span class="math inline">\(\gamma'\)</span> and <span class="math inline">\(\gamma''\)</span></a></li>
+  <li><a href="#random-vs-markovian-temporary-emigration" id="toc-random-vs-markovian-temporary-emigration" class="nav-link" data-scroll-target="#random-vs-markovian-temporary-emigration">Random vs Markovian temporary emigration</a>
+  <ul class="collapse">
+  <li><a href="#markovian-temporary-emigration" id="toc-markovian-temporary-emigration" class="nav-link" data-scroll-target="#markovian-temporary-emigration">Markovian temporary emigration</a></li>
+  <li><a href="#random-temporary-emigration" id="toc-random-temporary-emigration" class="nav-link" data-scroll-target="#random-temporary-emigration">Random temporary emigration</a></li>
+  </ul></li>
+  <li><a href="#what-temporary-emigration-does-to-your-estimates" id="toc-what-temporary-emigration-does-to-your-estimates" class="nav-link" data-scroll-target="#what-temporary-emigration-does-to-your-estimates">What temporary emigration does to your estimates</a></li>
+  <li><a href="#the-full-model-with-temporary-emigration" id="toc-the-full-model-with-temporary-emigration" class="nav-link" data-scroll-target="#the-full-model-with-temporary-emigration">The full model with temporary emigration</a></li>
+  <li><a href="#fitting-the-model-with-temporary-emigration" id="toc-fitting-the-model-with-temporary-emigration" class="nav-link" data-scroll-target="#fitting-the-model-with-temporary-emigration">Fitting the model with temporary emigration</a></li>
+  <li><a href="#what-the-gamma-parameters-tell-you-biologically" id="toc-what-the-gamma-parameters-tell-you-biologically" class="nav-link" data-scroll-target="#what-the-gamma-parameters-tell-you-biologically">What the gamma parameters tell you biologically</a></li>
+  <li><a href="#a-note-on-identifiability-at-the-first-and-last-primary-periods" id="toc-a-note-on-identifiability-at-the-first-and-last-primary-periods" class="nav-link" data-scroll-target="#a-note-on-identifiability-at-the-first-and-last-primary-periods">A note on identifiability at the first and last primary periods</a></li>
+  <li><a href="#what-next" id="toc-what-next" class="nav-link" data-scroll-target="#what-next">What next?</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Temporary Emigration</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Deon Roos </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 4, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="another-ambiguous-zero" class="level1">
+<h1>Another ambiguous zero</h1>
+<p>We have spent considerable time on the problem of ambiguous zeros in capture histories. A non-detection could mean the animal is dead, or it could mean the animal is alive but you missed it. The CJS model and the robust design both deal with this by explicitly modelling survival and detection as separate processes.</p>
+<p>But there is one more flavour of ambiguous zero that we have been quietly setting aside, and it is time to deal with it properly.</p>
+<p>What if an animal is alive, has not permanently emigrated, but is simply not in your study area during a particular primary period? It left temporarily. Maybe a migratory bird has gone south for the winter and will be back in spring. Maybe a marine mammal has moved offshore to feed and will return to your study site next season. Maybe a male deer has temporarily shifted its range during the rut.</p>
+<p>These animals are not dead. They have not permanently left. But during the primary period when they are absent, they cannot be detected no matter how good your sampling is. Their <span class="math inline">\(\tilde{p}_t\)</span> is effectively zero not because detection is poor, but because the animal simply is not there to be detected.</p>
+<p>If you ignore this and assume all animals are always available for capture during every primary period, then your estimate of detection probability will be biased downward. You will attribute the absence to poor detection when the real reason is temporary absence. And if detection probability is biased, then your estimates of <span class="math inline">\(N_t\)</span> and <span class="math inline">\(\phi\)</span> are also affected.</p>
+<p>This is <strong>temporary emigration</strong>, and the parameters <span class="math inline">\(\gamma'\)</span> and <span class="math inline">\(\gamma''\)</span> (gamma prime and gamma double prime) are how the robust design handles it.</p>
+</section>
+<section id="the-availability-problem" class="level1">
+<h1>The availability problem</h1>
+<p>Before getting into the parameters themselves, it helps to think about what “availability” means in this context.</p>
+<p>In the basic robust design we have been building, we implicitly assumed that every animal in the population is <strong>available</strong> for capture during every primary period. Available here means physically present in the study area and therefore detectable. Under this assumption, the only reason an animal goes undetected in a primary period is imperfect detection, <span class="math inline">\(1 - \tilde{p}_t\)</span>.</p>
+<p>Temporary emigration breaks this assumption. Now there are two reasons an animal might go undetected across an entire primary period:</p>
+<ul>
+<li><p>It was available but not detected: probability <span class="math inline">\((1 - \tilde{p}_t)\)</span></p></li>
+<li><p>It was not available at all: it had temporarily left the study area</p></li>
+</ul>
+<p>These two explanations predict the same observation. A zero summary across all secondary occasions within a primary period. Sound familiar?</p>
+<p>Yeah, it is yet another ambiguous zero, operating at the between-period level rather than the within-period level. And just as before, we need a model that separates the two explanations rather than conflating them.</p>
+</section>
+<section id="introducing-gamma-and-gamma" class="level1">
+<h1>Introducing <span class="math inline">\(\gamma'\)</span> and <span class="math inline">\(\gamma''\)</span></h1>
+<p>The robust design handles temporary emigration by adding a state variable for availability. At any primary period, an animal is either <strong>available</strong> (present in the study area) or <strong>unavailable</strong> (temporarily absent). The two gamma parameters describe the transitions between these states.</p>
+<p>Following RMark’s convention:</p>
+<p><span class="math inline">\(\gamma''_t\)</span> is the probability that an animal is <strong>unavailable</strong> at primary period <span class="math inline">\(t\)</span>, given that it was <strong>available</strong> at primary period <span class="math inline">\(t-1\)</span>. In other words, the probability of <em>leaving</em> the study area.</p>
+<p><span class="math inline">\(\gamma'_t\)</span> is the probability that an animal is <strong>unavailable</strong> at primary period <span class="math inline">\(t\)</span>, given that it was also <strong>unavailable</strong> at primary period <span class="math inline">\(t-1\)</span>. In other words, the probability of <em>staying away</em> once already absent.</p>
+<p>So <span class="math inline">\(\gamma''\)</span> governs transitions from available to unavailable, and <span class="math inline">\(\gamma'\)</span> governs staying unavailable once you are already there.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"Available"</span>, <span class="st">"Unavailable"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> states, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">30</span>, <span class="at">colour =</span> <span class="fu">c</span>(<span class="st">"#00A68A"</span>, <span class="st">"#FF5733"</span>), <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> states, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">label =</span> label),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">fontface =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="fl">4.5</span>) <span class="sc">+</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_curve</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fl">1.35</span>, <span class="at">xend =</span> <span class="fl">2.65</span>, <span class="at">y =</span> <span class="fl">1.08</span>, <span class="at">yend =</span> <span class="fl">1.08</span>),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.3</span>, <span class="st">"cm"</span>)),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">curvature =</span> <span class="sc">-</span><span class="fl">0.3</span>, <span class="at">colour =</span> <span class="st">"grey30"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_curve</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fl">2.65</span>, <span class="at">xend =</span> <span class="fl">1.35</span>, <span class="at">y =</span> <span class="fl">0.92</span>, <span class="at">yend =</span> <span class="fl">0.92</span>),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>             <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.3</span>, <span class="st">"cm"</span>)),</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>             <span class="at">curvature =</span> <span class="sc">-</span><span class="fl">0.3</span>, <span class="at">colour =</span> <span class="st">"grey30"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_curve</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fl">2.6</span>, <span class="at">xend =</span> <span class="fl">3.4</span>, <span class="at">y =</span> <span class="fl">1.15</span>, <span class="at">yend =</span> <span class="fl">1.15</span>),</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>             <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.3</span>, <span class="st">"cm"</span>)),</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>             <span class="at">curvature =</span> <span class="sc">-</span><span class="fl">0.8</span>, <span class="at">colour =</span> <span class="st">"#FF5733"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_curve</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fl">0.6</span>, <span class="at">xend =</span> <span class="fl">1.4</span>, <span class="at">y =</span> <span class="fl">1.15</span>, <span class="at">yend =</span> <span class="fl">1.15</span>),</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>             <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.3</span>, <span class="st">"cm"</span>)),</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>             <span class="at">curvature =</span> <span class="sc">-</span><span class="fl">0.8</span>, <span class="at">colour =</span> <span class="st">"#00A68A"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">2</span>, <span class="at">y =</span> <span class="fl">1.28</span>, <span class="at">label =</span> <span class="st">"γ''"</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">colour =</span> <span class="st">"grey30"</span>) <span class="sc">+</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">2</span>, <span class="at">y =</span> <span class="fl">0.72</span>, <span class="at">label =</span> <span class="st">"1 - γ'"</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">colour =</span> <span class="st">"grey30"</span>) <span class="sc">+</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fl">3.5</span>, <span class="at">y =</span> <span class="fl">1.25</span>, <span class="at">label =</span> <span class="st">"γ'"</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">colour =</span> <span class="st">"#FF5733"</span>) <span class="sc">+</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fl">0.5</span>, <span class="at">y =</span> <span class="fl">1.25</span>, <span class="at">label =</span> <span class="st">"1 - γ''"</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">colour =</span> <span class="st">"#00A68A"</span>) <span class="sc">+</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">4</span>)) <span class="sc">+</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">1.5</span>)) <span class="sc">+</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Temporary emigration state transitions"</span>,</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Between consecutive primary periods"</span>) <span class="sc">+</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">colour =</span> <span class="st">"grey40"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Temporary_Emigration_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The key thing to notice is that the two gamma parameters allow the model to represent <strong>memory</strong> in the availability process. Whether an animal is available at time <span class="math inline">\(t\)</span> can depend on whether it was available at time <span class="math inline">\(t-1\)</span>. This is a Markov process, which is just a fancy way of saying the next state depends only on the current state.</p>
+</section>
+<section id="random-vs-markovian-temporary-emigration" class="level1">
+<h1>Random vs Markovian temporary emigration</h1>
+<p>There are two versions of temporary emigration in the robust design, and they differ in how much memory the availability process has.</p>
+<section id="markovian-temporary-emigration" class="level2">
+<h2 class="anchored" data-anchor-id="markovian-temporary-emigration">Markovian temporary emigration</h2>
+<p>This is the general case, where <span class="math inline">\(\gamma' \neq \gamma''\)</span>. Whether an animal is absent this period depends on whether it was absent last period. An animal that was unavailable last time is more likely to still be unavailable now (high <span class="math inline">\(\gamma'\)</span>), while an animal that was available last time has a lower probability of having left (low <span class="math inline">\(\gamma''\)</span>).</p>
+<p>This makes biological sense for many species. A migratory bird that is currently on its wintering grounds is more likely to still be there next month than a bird that is currently on its breeding grounds. The animal’s availability state has genuine persistence.</p>
+</section>
+<section id="random-temporary-emigration" class="level2">
+<h2 class="anchored" data-anchor-id="random-temporary-emigration">Random temporary emigration</h2>
+<p>This is the special case where <span class="math inline">\(\gamma' = \gamma''\)</span>. The probability of being unavailable at time <span class="math inline">\(t\)</span> is the same regardless of whether the animal was available or unavailable at time <span class="math inline">\(t-1\)</span>. Availability has no memory. Each primary period, each animal independently draws its availability state with the same probability.</p>
+<p>Under random temporary emigration, the proportion of animals available at any given time is simply <span class="math inline">\(1 - \gamma'\)</span>, and this proportion is constant across primary periods.</p>
+<p>Random temporary emigration is a simpler model with one fewer parameter, and it is often a reasonable starting assumption. If you have no strong biological reason to expect that availability is persistent, it is a sensible default.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">666</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>n_periods <span class="ot">&lt;-</span> <span class="dv">8</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>n_animals <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Markovian: gamma_prime != gamma_double_prime</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Here gamma_prime = prob of staying away, gamma_double_prime = prob of leaving</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>gamma_prime_m      <span class="ot">&lt;-</span> <span class="fl">0.8</span>  <span class="co"># High: once away, tends to stay away</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>gamma_dbl_prime_m  <span class="ot">&lt;-</span> <span class="fl">0.3</span>  <span class="co"># Lower: available animals less likely to leave</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Random: gamma_prime == gamma_double_prime</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>gamma_random <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>sim_availability <span class="ot">&lt;-</span> <span class="cf">function</span>(n_animals, n_periods, gp, gdp, <span class="at">seed =</span> <span class="dv">1988</span>) {</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(seed)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  avail <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> n_animals, <span class="at">ncol =</span> n_periods)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  avail[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span>  <span class="co"># All available at start</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n_periods) {</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_animals) {</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (avail[i, t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Was available: leaves with prob gdp (GammaDoublePrime)</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        avail[i, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> gdp)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Was unavailable: stays away with prob gp (GammaPrime)</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        avail[i, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> gp)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  avail</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>avail_markov <span class="ot">&lt;-</span> <span class="fu">sim_availability</span>(n_animals, n_periods,</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>                                  gamma_prime_m, gamma_dbl_prime_m)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>avail_random <span class="ot">&lt;-</span> <span class="fu">sim_availability</span>(n_animals, n_periods,</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>                                  gamma_random, gamma_random)</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>format_avail <span class="ot">&lt;-</span> <span class="cf">function</span>(mat, type) {</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>(mat) <span class="sc">|&gt;</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">setNames</span>(<span class="fu">paste0</span>(<span class="st">"P"</span>, <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(mat))) <span class="sc">|&gt;</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">"animal"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="sc">-</span>animal, <span class="at">names_to =</span> <span class="st">"period"</span>, <span class="at">values_to =</span> <span class="st">"available"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">type =</span> type,</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">period =</span> <span class="fu">as.integer</span>(<span class="fu">gsub</span>(<span class="st">"P"</span>, <span class="st">""</span>, period)),</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>      <span class="at">state =</span> <span class="fu">if_else</span>(available <span class="sc">==</span> <span class="dv">1</span>, <span class="st">"Available"</span>, <span class="st">"Unavailable"</span>)</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>avail_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">format_avail</span>(avail_markov, <span class="st">"Markovian"</span>),</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">format_avail</span>(avail_random, <span class="st">"Random"</span>)</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(avail_df, <span class="fu">aes</span>(<span class="at">x =</span> period, <span class="at">y =</span> animal, <span class="at">fill =</span> state)) <span class="sc">+</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">colour =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> type) <span class="sc">+</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Available"</span> <span class="ot">=</span> <span class="st">"#00A68A"</span>,</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Unavailable"</span> <span class="ot">=</span> <span class="st">"#FF5733"</span>)) <span class="sc">+</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_periods, <span class="at">labels =</span> <span class="fu">paste0</span>(<span class="st">"P"</span>, <span class="dv">1</span><span class="sc">:</span>n_periods)) <span class="sc">+</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Primary period"</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="cn">NULL</span>,</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Availability patterns under Markovian vs random temporary emigration"</span>) <span class="sc">+</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Temporary_Emigration_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>In the Markovian panel, notice how unavailability tends to persist? Once an animal goes red it tends to stay red for several consecutive periods before returning. In the random panel, unavailability is independent each period, so the pattern looks more scattered with no obvious runs of consecutive absence.</p>
+</section>
+</section>
+<section id="what-temporary-emigration-does-to-your-estimates" class="level1">
+<h1>What temporary emigration does to your estimates</h1>
+<p>To make the consequences concrete, let us think about what happens if you have genuine temporary emigration but ignore it and fit a model that assumes all animals are always available.</p>
+<p>If some animals are temporarily absent, your observed detection rate across all secondary occasions in a primary period will be lower than the true detection probability for animals that are actually present. The model, not knowing about temporary absence, will attribute this entirely to poor detection. So <span class="math inline">\(\hat{p}\)</span> will be biased downward.</p>
+<p>A biased <span class="math inline">\(\hat{p}\)</span> feeds directly into <span class="math inline">\(\hat{\tilde{p}}_t\)</span>, which in turn affects <span class="math inline">\(\hat{N}_t\)</span>. If <span class="math inline">\(\hat{\tilde{p}}_t\)</span> is too low, then <span class="math inline">\(\hat{N}_t = n_t / \hat{\tilde{p}}_t\)</span> will be too high. You will overestimate population size.</p>
+<p>The effect on <span class="math inline">\(\hat{\phi}\)</span> is more subtle. Survival is estimated from the between-period detection history, which now reflects both true mortality and temporary absence. An animal that is temporarily absent looks identical to a dead animal in the between-period summary. So <span class="math inline">\(\hat{\phi}\)</span> will be biased downward: you will underestimate survival because some of the apparent disappearances are not deaths.</p>
+<p>This is the same apparent survival problem we introduced back in the detection problem page, just with a new mechanism. Temporary emigration is one of the things that wedges apart true survival from apparent survival.</p>
+</section>
+<section id="the-full-model-with-temporary-emigration" class="level1">
+<h1>The full model with temporary emigration</h1>
+<p>Adding temporary emigration to the robust design equations gives us one more latent state to track. Each animal at each primary period now has both a survival state <span class="math inline">\(z_{i,t}\)</span> (alive or dead, where <span class="math inline">\(z_{i,t} = 1\)</span> means alive) and an availability state <span class="math inline">\(a_{i,t}\)</span> (available or unavailable), conditional on being alive.</p>
+<p>The availability process, following RMark’s convention, is:</p>
+<p><span class="math display">\[a_{i,t} \mid z_{i,t} = 1 \sim \begin{cases} Bernoulli(1 - \gamma''_t) &amp; \text{if } a_{i,t-1} = 1 \text{ (was available: leaves with prob } \gamma'') \\ Bernoulli(1 - \gamma'_t) &amp; \text{if } a_{i,t-1} = 0 \text{ (was unavailable: stays away with prob } \gamma') \end{cases}\]</span></p>
+<p>And detection now requires survival, availability, <em>and</em> detection:</p>
+<p><span class="math display">\[\omega_{i,t} \sim Bernoulli(\tilde{p}_t \times a_{i,t} \times z_{i,t})\]</span></p>
+<p>where <span class="math inline">\(\omega_{i,t} = 1\)</span> if animal <span class="math inline">\(i\)</span> was detected at least once across the secondary occasions of primary period <span class="math inline">\(t\)</span>, and 0 otherwise.</p>
+<p>A dead animal cannot be detected (<span class="math inline">\(z_{i,t} = 0 \Rightarrow \omega_{i,t} = 0\)</span>). An alive but unavailable animal cannot be detected (<span class="math inline">\(a_{i,t} = 0 \Rightarrow \omega_{i,t} = 0\)</span>). Only an alive and available animal can be detected, and even then only with probability <span class="math inline">\(\tilde{p}_t\)</span>.</p>
+<p>Three things must go right for a detection. Three things can go wrong for a non-detection.</p>
+</section>
+<section id="fitting-the-model-with-temporary-emigration" class="level1">
+<h1>Fitting the model with temporary emigration</h1>
+<p>Now let us fit the full model, allowing the gamma parameters to be estimated from the data rather than fixed at zero.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RMark)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>N_true               <span class="ot">&lt;-</span> <span class="dv">300</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>phi_true             <span class="ot">&lt;-</span> <span class="fl">0.80</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>p_true               <span class="ot">&lt;-</span> <span class="fl">0.40</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>gamma_prime_true     <span class="ot">&lt;-</span> <span class="fl">0.1</span>  <span class="co"># Prob of staying away if currently unavailable </span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>gamma_dbl_prime_true <span class="ot">&lt;-</span> <span class="fl">0.5</span>  <span class="co"># Prob of leaving if currently available</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>n_primary            <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>n_secondary          <span class="ot">&lt;-</span> <span class="dv">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sim_robust_te <span class="ot">&lt;-</span> <span class="cf">function</span>(N, phi, p, gp, gdp, n_prim, n_sec, <span class="at">seed =</span> <span class="dv">1988</span>) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(seed)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Survival states</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  alive <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> n_prim)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  alive[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n_prim) {</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    alive[, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(N, <span class="dv">1</span>, alive[, t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">*</span> phi)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Availability states</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  avail <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> n_prim)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  avail[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n_prim) {</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (alive[i, t] <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        avail[i, t] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (avail[i, t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Was available: becomes unavailable with prob gdp</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        avail[i, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> gdp)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Was unavailable: stays unavailable with prob gp</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        avail[i, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> gp)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Detection history</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  det <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> n_prim <span class="sc">*</span> n_sec)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_prim) {</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sec) {</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>      col <span class="ot">&lt;-</span> (t <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> n_sec <span class="sc">+</span> s</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>      det[, col] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(N, <span class="dv">1</span>, avail[, t] <span class="sc">*</span> p)</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  det[<span class="fu">rowSums</span>(det) <span class="sc">&gt;</span> <span class="dv">0</span>, ]</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>ch_data <span class="ot">&lt;-</span> <span class="fu">sim_robust_te</span>(N_true, phi_true, p_true,</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>                          gamma_prime_true, gamma_dbl_prime_true,</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>                          n_primary, n_secondary)</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>ch_strings <span class="ot">&lt;-</span> <span class="fu">apply</span>(ch_data, <span class="dv">1</span>, paste, <span class="at">collapse =</span> <span class="st">""</span>)</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>rd_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ch =</span> ch_strings, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Individuals detected at least once:"</span>, <span class="fu">nrow</span>(rd_df))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Individuals detected at least once: 280</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>time_intervals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>rd_processed <span class="ot">&lt;-</span> <span class="fu">process.data</span>(rd_df,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                              <span class="at">model =</span> <span class="st">"Robust"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                              <span class="at">time.intervals =</span> time_intervals)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>rd_ddl <span class="ot">&lt;-</span> <span class="fu">make.design.data</span>(rd_processed)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>rd_fit <span class="ot">&lt;-</span> <span class="fu">mark</span>(rd_processed, rd_ddl,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">model.parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">S                =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">p                =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                 <span class="at">GammaPrime       =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>),</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">GammaDoublePrime =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>               ),</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>               <span class="at">output =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">silent =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> rd_fit<span class="sc">$</span>results<span class="sc">$</span>beta</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>extract_est <span class="ot">&lt;-</span> <span class="cf">function</span>(beta, param, true_val) {</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  est <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[param, <span class="st">"estimate"</span>])</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  lcl <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[param, <span class="st">"estimate"</span>] <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> beta[param, <span class="st">"se"</span>])</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  ucl <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[param, <span class="st">"estimate"</span>] <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> beta[param, <span class="st">"se"</span>])</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(param, <span class="st">"(true ="</span>, true_val, <span class="st">"):"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">round</span>(est, <span class="dv">3</span>), <span class="st">"  95% CI:"</span>, <span class="fu">round</span>(lcl, <span class="dv">3</span>), <span class="st">"to"</span>, <span class="fu">round</span>(ucl, <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_est</span>(beta, <span class="st">"S:(Intercept)"</span>,                phi_true)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>S:(Intercept) (true = 0.8 ): 0.802   95% CI: 0.768 to 0.831 </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_est</span>(beta, <span class="st">"p:(Intercept)"</span>,                p_true)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>p:(Intercept) (true = 0.4 ): 0.378   95% CI: 0.321 to 0.439 </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_est</span>(beta, <span class="st">"GammaPrime:(Intercept)"</span>,       gamma_prime_true)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>GammaPrime:(Intercept) (true = 0.1 ): 0.017   95% CI: 0 to 0.995 </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_est</span>(beta, <span class="st">"GammaDoublePrime:(Intercept)"</span>, gamma_dbl_prime_true)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>GammaDoublePrime:(Intercept) (true = 0.5 ): 0.476   95% CI: 0.399 to 0.553 </code></pre>
+</div>
+</div>
+<p>The true values should sit within or close to the confidence intervals for each parameter. The gamma parameters tend to have wider intervals than <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span> because they are harder to estimate, requiring the model to distinguish between different patterns of consecutive absence across primary periods. More primary periods and a larger population will tighten those intervals.</p>
+</section>
+<section id="what-the-gamma-parameters-tell-you-biologically" class="level1">
+<h1>What the gamma parameters tell you biologically</h1>
+<p>It is worth pausing on what <span class="math inline">\(\gamma'\)</span> and <span class="math inline">\(\gamma''\)</span> actually mean for your species, rather than just treating them as nuisance parameters to be estimated and forgotten.</p>
+<p><span class="math inline">\(\gamma''\)</span> tells you the probability that an animal leaves your study area between consecutive primary periods, given it was present in the last one. A high <span class="math inline">\(\gamma''\)</span> means animals are frequently moving out of the study area. A low <span class="math inline">\(\gamma''\)</span> means animals tend to stay put once they are there.</p>
+<p><span class="math inline">\(\gamma'\)</span> tells you how sticky the absence state is. A high <span class="math inline">\(\gamma'\)</span> means that once an animal has left, it tends to stay away for multiple primary periods. A low <span class="math inline">\(\gamma'\)</span> means animals return quickly after leaving.</p>
+<p>If <span class="math inline">\(\gamma' \approx \gamma''\)</span>, movement is essentially random: availability does not depend on previous availability state. If <span class="math inline">\(\gamma' &gt;&gt; \gamma''\)</span>, absences are long and persistent relative to the probability of leaving in the first place.</p>
+<p>For a migratory species sampled across seasons, you might expect <span class="math inline">\(\gamma'\)</span> to be high during the migration period: once a bird has left for its wintering grounds it will stay away for the whole winter. For a species with more fluid movement, both gammas might be moderate and similar to each other.</p>
+</section>
+<section id="a-note-on-identifiability-at-the-first-and-last-primary-periods" class="level1">
+<h1>A note on identifiability at the first and last primary periods</h1>
+<p>There is one practical issue worth flagging. The gamma parameters are not identifiable at every primary period. Specifically, <span class="math inline">\(\gamma''\)</span> is not identifiable at the first primary period (there is no prior availability state to condition on), and <span class="math inline">\(\gamma'\)</span> is not identifiable at the last primary period. RMark handles this internally, but you may notice that the design data for these parameters has fewer rows than you might expect.</p>
+<p>This is not a problem you need to solve. It is just worth knowing that the gamma estimates in your output reflect the interior primary periods only.</p>
+</section>
+<section id="what-next" class="level1">
+<h1>What next?</h1>
+<p>With temporary emigration accounted for, you now have the complete robust design model. Three latent processes operating simultaneously:</p>
+<p>Survival between primary periods, governed by <span class="math inline">\(\phi\)</span>.</p>
+<p>Availability within the alive population, governed by <span class="math inline">\(\gamma'\)</span> and <span class="math inline">\(\gamma''\)</span>.</p>
+<p>Detection of available animals across secondary occasions, governed by <span class="math inline">\(p\)</span>.</p>
+<p>Each of these can be modelled as a function of covariates, just as in a standard GLM. Time-varying survival. Habitat-dependent detection. Seasonal availability. The robust design is not a single model but a framework that you can customise to the biology of your species and the structure of your data.</p>
+<p>The next page covers how to implement this in <code>RMark</code> properly, including how to format your real data, and how to set up model structures with covariates.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

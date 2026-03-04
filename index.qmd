@@ -1,0 +1,37 @@
+---
+title: "Welcome to Robust Design Mark-Recapture"
+format: html
+---
+
+# Hey XXX!
+
+This site is for you and introduces the fundamentals of robust design mark-recapture modelling that you will need for your honours project. I have written the material to be accessible in terms of your project, but also to give you a solid statistical foundation that will be useful well beyond your undergraduate.
+
+As always, if anything here is wrong or confusing, just let me know. I would be genuinely surprised if everything made sense on the first read, so do not be alarmed if parts need to be talked through in person.
+
+## Suggested order
+
+To get the most out of this material, I recommend reading in the following order:
+
+1.  **A refresher on GLMs**\
+    We will be building on generalised linear models throughout, so this page makes sure the core ideas are fresh before we introduce anything new.
+
+2.  **The detection problem**\
+    The central problem that motivates everything that follows: non-detections are ambiguous, and ignoring that ambiguity biases every estimate you care about.
+
+3.  **The Lincoln-Petersen estimator**\
+    The simplest mark-recapture method. Two occasions, one estimate of population size, and the intuition for how recaptures carry information about what you missed.
+
+4.  **The Cormack-Jolly-Seber model**\
+    The model that separates survival from detection. Developed, as it happens, by two people working in your department at the same time without knowing the other was doing the same thing.
+
+5.  **The robust design**\
+    How nesting closed sampling occasions inside an open population framework lets you estimate population size and survival simultaneously, from the same data.
+
+6.  **Temporary emigration**\
+    The final layer of the model: animals that are alive but temporarily absent from your study area, and the two parameters that handle them.
+
+7.  **Implementing the robust design in RMark**\
+    The practical page. How to organise your data, write out the full model, fit it, and produce figures that communicate what you found.
+
+Enjoy! (Probably.)

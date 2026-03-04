@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Deon Roos">
+<meta name="dcterms.date" content="2026-03-04">
+
+<title>Robust Design Mark-Recapture - From Lincoln-Petersen to the Cormack-Jolly-Seber Model</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Robust Design Mark-Recapture</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./GLM_Refresher.html" rel="" target="">
+ <span class="menu-text">A refresher on GLMs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Detection_Problem.html" rel="" target="">
+ <span class="menu-text">The detection problem</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Lincoln_Petersen.html" rel="" target="">
+ <span class="menu-text">Lincoln-Petersen estimator</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./CJS_Model.html" rel="" target="" aria-current="page">
+ <span class="menu-text">Cormack-Jolly-Seber model</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Robust_Design_Likelihood.html" rel="" target="">
+ <span class="menu-text">The robust design</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Temporary_Emigration.html" rel="" target="">
+ <span class="menu-text">Temporary emigration</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./RMark_Implementation.html" rel="" target="">
+ <span class="menu-text">Implementing in RMark</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#a-local-hero-two-of-them-actually" id="toc-a-local-hero-two-of-them-actually" class="nav-link active" data-scroll-target="#a-local-hero-two-of-them-actually">A local hero (two of them, actually)</a></li>
+  <li><a href="#what-lp-could-not-do" id="toc-what-lp-could-not-do" class="nav-link" data-scroll-target="#what-lp-could-not-do">What LP could not do</a></li>
+  <li><a href="#the-capture-history" id="toc-the-capture-history" class="nav-link" data-scroll-target="#the-capture-history">The capture history</a></li>
+  <li><a href="#the-two-processes" id="toc-the-two-processes" class="nav-link" data-scroll-target="#the-two-processes">The two processes</a></li>
+  <li><a href="#building-the-likelihood-from-a-capture-history" id="toc-building-the-likelihood-from-a-capture-history" class="nav-link" data-scroll-target="#building-the-likelihood-from-a-capture-history">Building the likelihood from a capture history</a></li>
+  <li><a href="#but-what-about-the-final-non-detection" id="toc-but-what-about-the-final-non-detection" class="nav-link" data-scroll-target="#but-what-about-the-final-non-detection">But what about the final non-detection?</a></li>
+  <li><a href="#the-model-equations" id="toc-the-model-equations" class="nav-link" data-scroll-target="#the-model-equations">The model equations</a></li>
+  <li><a href="#fitting-a-cjs-model-in-r" id="toc-fitting-a-cjs-model-in-r" class="nav-link" data-scroll-target="#fitting-a-cjs-model-in-r">Fitting a CJS model in R</a></li>
+  <li><a href="#what-cjs-gives-us-and-what-it-still-cannot" id="toc-what-cjs-gives-us-and-what-it-still-cannot" class="nav-link" data-scroll-target="#what-cjs-gives-us-and-what-it-still-cannot">What CJS gives us, and what it still cannot</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">From Lincoln-Petersen to the Cormack-Jolly-Seber Model</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Deon Roos </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 4, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="a-local-hero-two-of-them-actually" class="level1">
+<h1>A local hero (two of them, actually)</h1>
+<p>Before we get into the model, I want to take a moment to point something out that I think is genuinely worth appreciating.</p>
+<p>The Cormack-Jolly-Seber model, or CJS model, is one of the most widely used statistical models in ecology. It underpins decades of research into animal survival, population dynamics, and conservation. If you have ever read a paper reporting survival estimates for a wild animal population, there is a very good chance CJS was involved somewhere.</p>
+<p>Richard Cormack and George Jolly both developed this model in 1964. Both were working at the University of Aberdeen, in the ARC Unit of Statistics. They worked in the same corridor. They had coffee together most mornings. They even played chess together regularly (specifically a version of chess called <em>kriegspiel</em> which is kind of like battleships + chess).</p>
+<p>And neither had any idea the other was working on the same problem.</p>
+<p>Cormack later recalled that it was “completely unknown to the two of us that we were working in the same area.” They were sitting across a chess board from each other and somehow the topic of mark-recapture never came up. It was only when Cormack submitted his paper to Biometrika in 1964 that the overlap became apparent, through the referee’s comments rather than through any conversation between the two of them.</p>
+<blockquote class="blockquote">
+<p>It’s also worth noting that Cormack went to Cambridge at 17, did his undergraduate in two years, and became a lecturer in Aberdeen at 21…</p>
+</blockquote>
+<p>George Seber developed his version independently in New Zealand at around the same time, which makes three separate derivations of essentially the same model, across two continents, by people who were unaware of each other’s work. Hence all three names on the tin.</p>
+<p>So the next time someone asks you what Aberdeen is known for, you have a genuinely good answer. Two of them, actually, sitting in the same corridor, drinking coffee, playing chess, and accidentally doing the same groundbreaking statistics.</p>
+</section>
+<section id="what-lp-could-not-do" class="level1">
+<h1>What LP could not do</h1>
+<p>On the previous page we saw that the Lincoln-Petersen estimator gives you a snapshot estimate of population size <span class="math inline">\(N\)</span> using two sampling occasions and the assumption that the population is closed. No births, no deaths, no movement in or out.</p>
+<p>That closure assumption is doing a lot of heavy lifting. It is defensible over short time windows but falls apart the moment your study extends over weeks or months. And if your actual biological question is about survival, closure is not just inconvenient, it is actively the wrong assumption. You <em>want</em> animals to be able to die between occasions, because that is the thing you are trying to estimate.</p>
+<p>The CJS (Cormack-Jolly-Seber) model drops the closure assumption entirely. Animals can die between sampling occasions. The population is open. And in exchange for giving up closure, we gain something valuable: an estimate of <strong>apparent survival probability</strong> <span class="math inline">\(\phi\)</span>.</p>
+<p>The trade-off is that we can no longer estimate <span class="math inline">\(N\)</span> directly. CJS conditions on first capture, meaning it only uses the history of animals after they have been caught at least once. Animals that were never caught do not feature in the model at all. This sidesteps the problem of estimating how many animals were never seen, but it also means <span class="math inline">\(N\)</span> is off the table.</p>
+<p>We will get <span class="math inline">\(N\)</span> back eventually. That is actually one of the main payoffs of the robust design. But for now, let us build up to CJS carefully.</p>
+</section>
+<section id="the-capture-history" class="level1">
+<h1>The capture history</h1>
+<p>The fundamental data structure in CJS is the <strong>capture history</strong>. This is something new compared to what you have worked with before, so it is worth spending a moment on it.</p>
+<p>Each tagged animal gets its own row. Each column represents a sampling occasion. A <code>1</code> means the animal was detected on that occasion. A <code>0</code> means it was not. That is it.</p>
+<p>Here is a small example with five animals surveyed over four occasions:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>ch <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">animal =</span> <span class="fu">paste0</span>(<span class="st">"Animal "</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">occ1 =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">occ2 =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">occ3 =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">occ4 =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>ch</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>    animal occ1 occ2 occ3 occ4
+1 Animal 1    1    1    0    1
+2 Animal 2    1    0    1    1
+3 Animal 3    1    1    1    0
+4 Animal 4    0    1    1    1
+5 Animal 5    1    0    1    1
+6 Animal 6    1    1    0    1
+7 Animal 7    0    1    1    1
+8 Animal 8    1    0    1    0</code></pre>
+</div>
+</div>
+<p>Read each row as a story. Animal 1 was detected on occasions 1, 2, and 4, but not 3. Animal 2 was detected on 1, 3, and 4, but not 2. And so on.</p>
+<p>Now, for each <code>0</code> in this table, ask yourself the question from the previous page: is this animal alive and missed, or is it dead? The capture history does not tell you directly. But the <em>pattern</em> across multiple occasions does contain that information, and that is what the CJS model extracts.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ch_long <span class="ot">&lt;-</span> ch <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"occ"</span>),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"occasion"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"detected"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">occasion =</span> <span class="fu">as.integer</span>(<span class="fu">gsub</span>(<span class="st">"occ"</span>, <span class="st">""</span>, occasion)),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">detected_label =</span> <span class="fu">if_else</span>(detected <span class="sc">==</span> <span class="dv">1</span>, <span class="st">"Detected"</span>, <span class="st">"Not detected"</span>))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ch_long, <span class="fu">aes</span>(<span class="at">x =</span> occasion, <span class="at">y =</span> animal, <span class="at">fill =</span> detected_label)) <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">colour =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Detected"</span> <span class="ot">=</span> <span class="st">"#00A68A"</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Not detected"</span> <span class="ot">=</span> <span class="st">"#FF5733"</span>)) <span class="sc">+</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">labels =</span> <span class="fu">paste</span>(<span class="st">"Occasion"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)) <span class="sc">+</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="CJS_Model_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The green tiles are detections. The red tiles are non-detections. For every red tile, there are two possible stories. The CJS model is a machine for working out which story is more likely, given the full pattern of the data.</p>
+<blockquote class="blockquote">
+<p>Have a look at the figure above. Look at Animal 1 at the bottom. We never caught animal 1 on occasion 3 but we did capture it on occasion 4. We’ve said that non-detection can mean two things; 1) alive but not seen or 2) dead. Was animal 1 dead at occasion 3? Hopefully you conclude it was not, but how do you know? That’s the logic that CJS uses.</p>
+</blockquote>
+</section>
+<section id="the-two-processes" class="level1">
+<h1>The two processes</h1>
+<p>Just like in the previous page, CJS explicitly models two separate processes:</p>
+<p><strong>Process 1: Survival.</strong> Between each pair of consecutive occasions, an animal either survives with probability <span class="math inline">\(\phi\)</span> (e.g.&nbsp;<span class="math inline">\(0.9\)</span> or 90%) or dies with probability <span class="math inline">\(1 - \phi\)</span> (e.g.&nbsp;<span class="math inline">\(1-0.9=0.1\)</span> or 100-90=10%). Once dead, it stays dead. It cannot come back. Zombies don’t exist in this house.</p>
+<p><strong>Process 2: Detection.</strong> On each occasion, an animal that is alive is detected with probability <span class="math inline">\(p\)</span>, or missed with probability <span class="math inline">\(1 - p\)</span>.</p>
+<p>A detection in your data requires <em>both</em> processes to go the right way: the animal must have survived to that occasion, and you must have detected it. A non-detection could be either process failing.</p>
+<p>This is the same logic as the previous page, just now written as a model with two explicit parameters.</p>
+</section>
+<section id="building-the-likelihood-from-a-capture-history" class="level1">
+<h1>Building the likelihood from a capture history</h1>
+<p>Here is where the GLM framing from the first page comes back in. CJS estimates <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span> by writing down the probability of observing each animal’s capture history, and then finding the values of <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span> that make the observed histories as probable as possible. That is maximum likelihood estimation, which you already met in BI3010 (and probably forgot - fair enough).</p>
+<p>Let us work through a single animal’s capture history to make this concrete.</p>
+<p>Take an animal with history <code>1 0 1 1</code>. It was caught on occasion 1 (that is how it got tagged), missed on occasion 2, then caught on occasions 3 and 4.</p>
+<p>What is the probability of observing this history? Working occasion by occasion after first capture:</p>
+<ul>
+<li><p><strong>Occasion 1 to 2</strong>: The animal survived (<span class="math inline">\(\phi\)</span>) but was not detected (<span class="math inline">\(1 - p\)</span>). Probability: <span class="math inline">\(\phi \times (1 - p)\)</span></p></li>
+<li><p><strong>Occasion 2 to 3</strong>: The animal survived (<span class="math inline">\(\phi\)</span>) and was detected (<span class="math inline">\(p\)</span>). Probability: <span class="math inline">\(\phi \times p\)</span></p></li>
+<li><p><strong>Occasion 3 to 4</strong>: The animal survived (<span class="math inline">\(\phi\)</span>) and was detected (<span class="math inline">\(p\)</span>). Probability: <span class="math inline">\(\phi \times p\)</span></p></li>
+</ul>
+<p>Putting it together, the probability of the full history <code>1 0 1 1</code> (after first capture) is:</p>
+<p><span class="math display">\[P(\text{1 0 1 1}) = [\phi(1-p)] \times [\phi \cdot p] \times [\phi \cdot p]\]</span></p>
+<p><span class="math display">\[= \phi^3 \times p^2 \times (1-p)\]</span></p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Probability of history 1011 as a function of phi and p</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>phi <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.01</span>, <span class="fl">0.99</span>, <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>p   <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.01</span>, <span class="fl">0.99</span>, <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">phi =</span> phi, <span class="at">p =</span> p)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">$</span>prob <span class="ot">&lt;-</span> grid<span class="sc">$</span>phi<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span> grid<span class="sc">$</span>p<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> grid<span class="sc">$</span>p)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(grid, <span class="fu">aes</span>(<span class="at">x =</span> phi, <span class="at">y =</span> p, <span class="at">fill =</span> prob)) <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_raster</span>() <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">"plasma"</span>, <span class="at">name =</span> <span class="st">"Probability</span><span class="sc">\n</span><span class="st">of history"</span>) <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">expression</span>(phi <span class="sc">~</span> <span class="st">"(survival)"</span>),</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"p (detection)"</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Probability of capture history 1 0 1 1"</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">expression</span>(phi<span class="sc">^</span><span class="dv">3</span> <span class="sc">~</span> <span class="st">"\u00d7"</span> <span class="sc">~</span> p<span class="sc">^</span><span class="dv">2</span> <span class="sc">~</span> <span class="st">"\u00d7"</span> <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">-</span> p))</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="CJS_Model_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The brighter areas of the plot show combinations of <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span> that make this particular history more probable. Maximum likelihood estimation finds the peak of this surface across all animals simultaneously.</p>
+<p>Based on this maximum likelihood estimate, we’d estimate survival as roughly (eye balling the figure above) at something close to 100% and detection as roughly 60%.</p>
+</section>
+<section id="but-what-about-the-final-non-detection" class="level1">
+<h1>But what about the final non-detection?</h1>
+<p>There is a subtlety I have been glossing over. What if an animal’s last recorded detection is not its last occasion? For example, what about an animal with history <code>1 1 0 0</code>?</p>
+<p>After its last detection on occasion 2, two things could have happened. It could have died at some point before or after occasion 3. Or it could have survived all the way to the end of the study and just never been detected again.</p>
+<p>The probability of never being seen again from occasion <span class="math inline">\(t\)</span> onwards, which is usually written <span class="math inline">\(\chi_t\)</span> (chi, pronounced “ky”), captures this. For our four-occasion example, <span class="math inline">\(\chi_4 = 1\)</span> because after the last occasion there are no more chances to be seen. Working backwards:</p>
+<p><span class="math display">\[\chi_3 = (1 - \phi) + \phi(1-p)\chi_4\]</span></p>
+<p>In words: the probability of not being seen again from occasion 3 is either the animal died between 3 and 4 (<span class="math inline">\((1 - \phi)\)</span>) or it survived but was not detected on occasion 4 and then was never seen again (<span class="math inline">\(\phi(1-p)\chi_4\)</span>).</p>
+<p>This recursion continues back through all occasions. CJS handles this automatically, but it is worth knowing it is there, because it is what allows the model to deal honestly with animals that are never recaptured after their first detection.</p>
+</section>
+<section id="the-model-equations" class="level1">
+<h1>The model equations</h1>
+<p>Putting it all together, the CJS model can be written as two linked processes:</p>
+<p><span class="math display">\[z_{i,t} \sim Bernoulli(\phi_{t-1} \times z_{i,t-1})\]</span></p>
+<p><span class="math display">\[y_{i,t} \sim Bernoulli(p_t \times z_{i,t})\]</span></p>
+<p>where:</p>
+<ul>
+<li><p><span class="math inline">\(z_{i,t}\)</span> is the true alive/dead state of individual <span class="math inline">\(i\)</span> at occasion <span class="math inline">\(t\)</span>. This is a <strong>latent variable</strong>: we never observe it directly, we only observe detections.</p></li>
+<li><p><span class="math inline">\(\phi_{t-1}\)</span> is the probability of surviving from occasion <span class="math inline">\(t-1\)</span> to <span class="math inline">\(t\)</span></p></li>
+<li><p><span class="math inline">\(y_{i,t}\)</span> is the observed detection of individual <span class="math inline">\(i\)</span> at occasion <span class="math inline">\(t\)</span> (the <code>0</code> or <code>1</code> in the capture history)</p></li>
+<li><p><span class="math inline">\(p_t\)</span> is the probability of detecting individual <span class="math inline">\(i\)</span> at occasion <span class="math inline">\(t\)</span>, given it is alive</p></li>
+</ul>
+<p>The first equation says: the true state at time <span class="math inline">\(t\)</span> is a Bernoulli trial that depends on whether the animal was alive at <span class="math inline">\(t-1\)</span> and on the survival probability. If the animal is dead (<span class="math inline">\(z_{i,t-1} = 0\)</span>), it stays dead (<span class="math inline">\(\phi \times 0 = 0\)</span>). If it is alive, it survives to <span class="math inline">\(t\)</span> with probability <span class="math inline">\(\phi\)</span>.</p>
+<p>The second equation says: what we actually observe is a Bernoulli trial that depends on whether the animal is alive at <span class="math inline">\(t\)</span> and on the detection probability. You cannot detect a dead animal (<span class="math inline">\(p \times 0 = 0\)</span>). You detect a live one with probability <span class="math inline">\(p\)</span>.</p>
+<p>If these two equations look familiar from the previous page, that is not a coincidence. This is exactly the structure we described in words when we said a detection requires both survival and detectability. We have just written it down formally.</p>
+</section>
+<section id="fitting-a-cjs-model-in-r" class="level1">
+<h1>Fitting a CJS model in R</h1>
+<p>Let us simulate some capture history data and fit a CJS model to it to see this in practice.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>n_animals <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>n_occasions <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>phi_true <span class="ot">&lt;-</span> <span class="fl">0.80</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>p_true   <span class="ot">&lt;-</span> <span class="fl">0.45</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate true survival states</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>alive <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_animals, <span class="at">ncol =</span> n_occasions)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>alive[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span>  <span class="co"># All animals alive at first capture</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n_occasions) {</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  alive[, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n_animals, <span class="dv">1</span>, alive[, t<span class="dv">-1</span>] <span class="sc">*</span> phi_true)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate detections</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>detected <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_animals, <span class="at">ncol =</span> n_occasions)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_occasions) {</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  detected[, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n_animals, <span class="dv">1</span>, alive[, t] <span class="sc">*</span> p_true)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Force first occasion to 1 (all animals were caught at least once to be tagged)</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>detected[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Show first 10 capture histories</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(detected, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      [,1] [,2] [,3] [,4] [,5]
+ [1,]    1    0    0    0    0
+ [2,]    1    0    0    0    0
+ [3,]    1    1    0    1    0
+ [4,]    1    0    0    0    0
+ [5,]    1    0    0    0    1
+ [6,]    1    1    1    1    1
+ [7,]    1    0    0    0    0
+ [8,]    1    1    0    0    0
+ [9,]    1    0    0    0    0
+[10,]    1    1    0    0    0</code></pre>
+</div>
+</div>
+<p>Now we can fit the CJS model. We will use the <code>marked</code> package, which provides a clean interface for CJS models in R.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(marked)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Format as data frame with capture history string</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>ch_strings <span class="ot">&lt;-</span> <span class="fu">apply</span>(detected, <span class="dv">1</span>, paste, <span class="at">collapse =</span> <span class="st">""</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>cjs_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ch =</span> ch_strings)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a simple CJS model with constant phi and p</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>cjs_fit <span class="ot">&lt;-</span> <span class="fu">crm</span>(cjs_data,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">model =</span> <span class="st">"CJS"</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">model.parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">Phi =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>),</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">p   =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>               ),</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>               <span class="at">hessian =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ Number of evaluations:  100  -2lnl: 404.1465438</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>cjs_fit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+crm Model Summary
+
+Npar :  2
+-2lnL:  404.1465
+AIC  :  408.1465
+
+Beta
+                  Estimate        se        lcl          ucl
+Phi.(Intercept)  1.2898696 0.2526289  0.7947169  1.785022249
+p.(Intercept)   -0.4241131 0.2133404 -0.8422602 -0.005965891</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Back-transform estimates from logit scale to probability scale</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="fu">c</span>(<span class="st">"Survival (phi)"</span>, <span class="st">"Detection (p)"</span>),</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">true_value =</span> <span class="fu">c</span>(phi_true, p_true),</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimate =</span> <span class="fu">plogis</span>(<span class="fu">c</span>(cjs_fit<span class="sc">$</span>results<span class="sc">$</span>beta<span class="sc">$</span>Phi,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                      cjs_fit<span class="sc">$</span>results<span class="sc">$</span>beta<span class="sc">$</span>p))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>       parameter true_value  estimate
+1 Survival (phi)       0.80 0.7841251
+2  Detection (p)       0.45 0.3955330</code></pre>
+</div>
+</div>
+<p>The estimates should be reassuringly close to the true values we used to simulate the data. They will not be identical because we are working with a finite sample, but they should be in the right ballpark. All this to show that CJS models work.</p>
+</section>
+<section id="what-cjs-gives-us-and-what-it-still-cannot" class="level1">
+<h1>What CJS gives us, and what it still cannot</h1>
+<p>CJS is a genuine step forward from Lincoln-Petersen. We now have:</p>
+<ul>
+<li>An estimate of apparent survival <span class="math inline">\(\phi\)</span> that is not contaminated by detection probability</li>
+<li>An explicit model for both the biological process (survival) and the observation process (detection)</li>
+<li>The ability to use more than two sampling occasions, which gives us more information and more precise estimates</li>
+<li>The ability to model <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span> as functions of covariates, just like in a standard GLM</li>
+</ul>
+<p>But CJS still has a gap. Because it conditions on first capture and deals only with marked individuals, it cannot estimate <span class="math inline">\(N\)</span>. We lost that when we abandoned the closure assumption.</p>
+<p>There is also a subtlety in what <span class="math inline">\(\phi\)</span> actually represents. CJS is estimated from animals that were captured within your study area and then either recaptured or not. An animal that permanently emigrates looks identical to a dead animal in the capture history. So <span class="math inline">\(\phi\)</span> is <strong>apparent survival</strong>: the probability of surviving <em>and</em> remaining within the study area. True survival is higher, by some unknown amount that depends on how much emigration there is.</p>
+<p>So we have survival but no population size. We have population size under closure (LP) but no survival. What we really want is both, simultaneously, from the same dataset.</p>
+<p>That is exactly what the robust design delivers. And the way it does it is by being clever about the time structure of sampling, nesting closed sampling occasions inside an open population framework.</p>
+<p>That is the next page.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

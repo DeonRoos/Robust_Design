@@ -1,0 +1,26 @@
+{
+  "index.qmd": {
+    "index.html": "cb7784fc"
+  },
+  "CJS_Model.qmd": {
+    "CJS_Model.html": "bec0cd36"
+  },
+  "Detection_Problem.qmd": {
+    "Detection_Problem.html": "c210ffdd"
+  },
+  "GLM_Refresher.qmd": {
+    "GLM_Refresher.html": "09f6b3e1"
+  },
+  "Lincoln_Petersen.qmd": {
+    "Lincoln_Petersen.html": "36c30126"
+  },
+  "RMark_Implementation.qmd": {
+    "RMark_Implementation.html": "d0467ec6"
+  },
+  "Robust_Design_Likelihood.qmd": {
+    "Robust_Design_Likelihood.html": "abc20a0d"
+  },
+  "Temporary_Emigration.qmd": {
+    "Temporary_Emigration.html": "8d167354"
+  }
+}

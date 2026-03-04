@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Deon Roos">
+<meta name="dcterms.date" content="2026-03-04">
+
+<title>Robust Design Mark-Recapture - The Detection Problem</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Robust Design Mark-Recapture</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./GLM_Refresher.html" rel="" target="">
+ <span class="menu-text">A refresher on GLMs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./Detection_Problem.html" rel="" target="" aria-current="page">
+ <span class="menu-text">The detection problem</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Lincoln_Petersen.html" rel="" target="">
+ <span class="menu-text">Lincoln-Petersen estimator</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./CJS_Model.html" rel="" target="">
+ <span class="menu-text">Cormack-Jolly-Seber model</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Robust_Design_Likelihood.html" rel="" target="">
+ <span class="menu-text">The robust design</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Temporary_Emigration.html" rel="" target="">
+ <span class="menu-text">Temporary emigration</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./RMark_Implementation.html" rel="" target="">
+ <span class="menu-text">Implementing in RMark</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#how-many-animals-are-there-and-are-they-surviving" id="toc-how-many-animals-are-there-and-are-they-surviving" class="nav-link active" data-scroll-target="#how-many-animals-are-there-and-are-they-surviving">How many animals are there, and are they surviving?</a></li>
+  <li><a href="#the-naive-approach" id="toc-the-naive-approach" class="nav-link" data-scroll-target="#the-naive-approach">The naive approach</a></li>
+  <li><a href="#a-glimmer-of-hope-marking-individuals" id="toc-a-glimmer-of-hope-marking-individuals" class="nav-link" data-scroll-target="#a-glimmer-of-hope-marking-individuals">A glimmer of hope: marking individuals</a></li>
+  <li><a href="#the-second-problem-individuals-can-die" id="toc-the-second-problem-individuals-can-die" class="nav-link" data-scroll-target="#the-second-problem-individuals-can-die">The second problem: individuals can die</a></li>
+  <li><a href="#the-problem-stated-plainly" id="toc-the-problem-stated-plainly" class="nav-link" data-scroll-target="#the-problem-stated-plainly">The problem stated plainly</a></li>
+  <li><a href="#there-is-actually-a-third-problem" id="toc-there-is-actually-a-third-problem" class="nav-link" data-scroll-target="#there-is-actually-a-third-problem">There is actually a third problem</a></li>
+  <li><a href="#what-we-need-to-make-progress" id="toc-what-we-need-to-make-progress" class="nav-link" data-scroll-target="#what-we-need-to-make-progress">What we need to make progress</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">The Detection Problem</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Deon Roos </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 4, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="how-many-animals-are-there-and-are-they-surviving" class="level1">
+<h1>How many animals are there, and are they surviving?</h1>
+<p>Two of the most fundamental questions in ecology and conservation are: how many individuals of a species are there, and how well are they surviving? How many Atlantic salmon are in the River Dee? What proportion of juveniles survive to adulthood? Is that survival rate declining? Is a conservation intervention actually working?</p>
+<p>These questions sound simple. They are not. And the reason they are not comes down to a problem that is easy to state but surprisingly easy to forget about when you are standing in a river with a net.</p>
+</section>
+<section id="the-naive-approach" class="level1">
+<h1>The naive approach</h1>
+<p>Imagine I want to estimate how many otters live along a stretch of river. I go out and count them. I spot 23 otters.</p>
+<p>So there are 23 otters?</p>
+<p>Well. Maybe. But I almost certainly did not see every otter that was there. Some were in burrows. Some were around the bend. Some saw me coming and hid (otters are, frankly, suspicious animals). The 23 I counted is not the true population size. It is the true population size multiplied by my probability of detecting any given otter.</p>
+<p><span class="math display">\[\text{Count} = N \times p\]</span></p>
+<p>where <span class="math inline">\(N\)</span> is the true number of otters and <span class="math inline">\(p\)</span> is my detection probability. If <span class="math inline">\(p = 1\)</span>, my count equals the true population. If <span class="math inline">\(p &lt; 1\)</span>, and it is always less than 1, my count is an underestimate. How badly it underestimates depends entirely on how low <span class="math inline">\(p\)</span> is.</p>
+<p>This is <strong>imperfect detection</strong>, and it is not a quirk or an edge case. It is the default condition of every wildlife survey ever conducted. If you have ever counted animals in the field and assumed that count represented the true number present, you were almost certainly wrong.</p>
+</section>
+<section id="a-glimmer-of-hope-marking-individuals" class="level1">
+<h1>A glimmer of hope: marking individuals</h1>
+<p>Here is where mark-recapture comes in. The insight, which is beautifully simple once you see it, is this:</p>
+<blockquote class="blockquote">
+<p>If you catch some animals, mark them, release them, and then go back and catch animals again, the proportion of marked animals in your second sample tells you something about how many unmarked ones you missed.</p>
+</blockquote>
+<p>Say I catch 20 otters, tag each one with a unique ID, and release them back into the river. A week later I return and catch another 20 otters. Of those 20, I find that 5 of them already have tags. So I recaptured 5 out of the 20 I originally marked. That recapture rate of <span class="math inline">\(\frac{5}{20} = 25\%\)</span> is an estimate of my detection probability. And if I only detected 25% of marked animals in my second sample, I probably only detected about 25% of unmarked animals too. Which means my second sample of 20 likely represents about 25% of the true population, implying there are roughly <span class="math inline">\(\frac{20}{0.25} = 80\)</span> otters in total.</p>
+<p>This is the Lincoln-Petersen estimator, and we will work through it properly on the next page. For now, the key idea is that <strong>recaptures give us leverage on detection probability</strong>, which is what allows us to estimate true population size rather than just report a count and hope for the best.</p>
+<p>But there is a second problem layered on top of imperfect detection, one that makes mark-recapture considerably more interesting, and considerably more complicated.</p>
+</section>
+<section id="the-second-problem-individuals-can-die" class="level1">
+<h1>The second problem: individuals can die</h1>
+<p>Individual animals are not permanent fixtures. They move. They disperse. And, crucially, they die.</p>
+<p>This matters enormously because it creates a new version of the detection problem.</p>
+<p>Imagine I tag 50 fish in June. In August I go back and sample again. I catch 30 fish, of which 12 have tags. Fine. But what about the 38 tagged fish I did not recapture? There are two possible explanations:</p>
+<ol type="1">
+<li><p>They are still alive, I just did not catch them. My detection probability is less than 1, so this is entirely plausible.</p></li>
+<li><p>They are dead.</p></li>
+</ol>
+<p>A non-recapture has <strong>two possible meanings</strong>: missed, or gone. And here’s the crap part of that: both explanations predict exactly the same observation in your data. A zero. Nothing. Silence. In both cases you do not see the fish.</p>
+<p>If you cannot separate these two explanations, you cannot estimate either detection probability or survival probability reliably. They are completely tangled up in each other.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">99</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>n_tagged <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>occasions <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>phi_true <span class="ot">&lt;-</span> <span class="fl">0.75</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>p_true <span class="ot">&lt;-</span> <span class="fl">0.40</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>survival_mat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> n_tagged, <span class="at">ncol =</span> occasions)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>survival_mat[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>occasions) {</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  survival_mat[, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n_tagged, <span class="dv">1</span>, survival_mat[, t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">*</span> phi_true)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>detection_mat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> n_tagged, <span class="at">ncol =</span> occasions)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>occasions) {</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  detection_mat[, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n_tagged, <span class="dv">1</span>, survival_mat[, t] <span class="sc">*</span> p_true)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>observed_counts <span class="ot">&lt;-</span> <span class="fu">colSums</span>(detection_mat)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>true_alive <span class="ot">&lt;-</span> <span class="fu">colSums</span>(survival_mat)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>summary_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">occasion =</span> <span class="dv">1</span><span class="sc">:</span>occasions,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">true_alive =</span> true_alive,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">observed =</span> observed_counts</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(summary_df) <span class="sc">+</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">x =</span> occasion, <span class="at">y =</span> true_alive),</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> <span class="st">"#00A68A"</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>, <span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">x =</span> occasion, <span class="at">y =</span> observed),</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> <span class="st">"#FF5733"</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">width =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Sampling occasion"</span>,</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of tagged individuals"</span>,</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Green = truly alive  |  Orange = actually detected"</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>occasions) <span class="sc">+</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Detection_Problem_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The green bars show how many tagged animals are truly alive at each occasion. The orange bars show how many we actually detect. The gap between them is entirely due to imperfect detection, not death. But if I only showed you the orange bars and asked you to calculate a survival rate, you would badly underestimate it. Animals are disappearing from your data faster than they are actually dying.</p>
+</section>
+<section id="the-problem-stated-plainly" class="level1">
+<h1>The problem stated plainly</h1>
+<p>When you do not recapture a tagged animal, you are facing two competing hypotheses:</p>
+<ul>
+<li><p><strong>Hypothesis A</strong>: The animal is alive but you missed it. This happens with probability <span class="math inline">\(\phi \times (1 - p)\)</span>: the animal survived the time between surveys but you failed to detect it.</p></li>
+<li><p><strong>Hypothesis B</strong>: The animal is dead. This happens with probability <span class="math inline">\(1 - \phi\)</span>: the animal did not survive the time between surveys.</p></li>
+</ul>
+<p>Both predict the same observation. With a single resighting occasion you cannot tell them apart.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>phi_true <span class="ot">&lt;-</span> <span class="fl">0.75</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>p_true <span class="ot">&lt;-</span> <span class="fl">0.40</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>scenarios <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">scenario =</span> <span class="fu">c</span>(<span class="st">"Alive, not detected"</span>, <span class="st">"Dead"</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">probability =</span> <span class="fu">c</span>(phi_true <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> p_true), <span class="dv">1</span> <span class="sc">-</span> phi_true)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(scenarios, <span class="fu">aes</span>(<span class="at">x =</span> scenario, <span class="at">y =</span> probability)) <span class="sc">+</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="fu">c</span>(<span class="st">"#00A68A"</span>, <span class="st">"#FF5733"</span>), <span class="at">width =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Probability"</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Two explanations for a non-recapture"</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste0</span>(<span class="st">"True \u03d5 = "</span>, phi_true, <span class="st">"  |  True p = "</span>, p_true)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Detection_Problem_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>With the values used in our simulation (<span class="math inline">\(\phi = 0.75\)</span>, <span class="math inline">\(p = 0.40\)</span>), the probability that a non-detection means the animal is alive and missed is actually <em>higher</em> than the probability it means the animal is dead. In other words, the naive interpretation of a non-detection as death would be wrong the majority of the time in this scenario.</p>
+<p>This is why a single survey with recaptures is not enough. You need a framework that estimates <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span> simultaneously, using the full pattern of detections and non-detections across multiple occasions to untangle them.</p>
+</section>
+<section id="there-is-actually-a-third-problem" class="level1">
+<h1>There is actually a third problem</h1>
+<p>I have been quietly ignoring something. Animals can also <strong>leave your study area permanently</strong> without dying.</p>
+<p>If an otter decides to move 10 kilometres upstream and you never sample up there, it vanishes from your data in exactly the same way a dead otter would. Permanent emigration looks identical to death in a capture history. This means that what survival models actually estimate is not true survival but <strong>apparent survival</strong>, <span class="math inline">\(\phi\)</span>, which bundles together the probability of surviving and the probability of not permanently emigrating.</p>
+<p>This is not a fatal flaw. It is a limitation that exists in virtually every mark-recapture study, and the honest thing to do is acknowledge it when you report your results. We will return to it in more detail when we get to the robust design, because the robust design introduces yet another flavour of this problem: animals that leave your study area <em>temporarily</em> and then come back. A non-detection that is neither death nor permanent emigration, but a brief absence.</p>
+<p>For now, the point is simply that what looks like a straightforward counting problem is actually an estimation problem with at least three sources of ambiguity packed into every zero in your data.</p>
+</section>
+<section id="what-we-need-to-make-progress" class="level1">
+<h1>What we need to make progress</h1>
+<p>To estimate survival and detection simultaneously, rather than having them hopelessly tangled together, we need three things:</p>
+<p><strong>Individually marked animals.</strong> Not just a count of how many we saw, but a record of <em>which specific individuals</em> we saw on each occasion. This is what allows us to track fates through time rather than just tallying up numbers.</p>
+<p><strong>Multiple sampling occasions.</strong> A single occasion gives us a count. Multiple occasions give us a <em>pattern</em> of detections and non-detections across time, and that pattern contains the information we need to estimate both <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span> separately.</p>
+<p><strong>A model that represents both processes explicitly.</strong> One that says, formally, that a detection requires both survival and detection, and uses that structure to estimate each parameter on its own terms.</p>
+<p>The next page introduces the simplest version of this thinking: the Lincoln-Petersen estimator. It does not quite tick all three boxes but it builds the intuition clearly and cleanly before we move on to models that do.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
