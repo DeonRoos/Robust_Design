@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>index.qmd/index.html</loc>
-    <lastmod>2026-03-04T22:11:21.435Z</lastmod>
-  </url>
-  <url>
     <loc>index.qmd/CJS_Model.html</loc>
-    <lastmod>2026-03-04T22:10:56.026Z</lastmod>
+    <lastmod>2026-03-04T22:21:29.513Z</lastmod>
   </url>
   <url>
     <loc>index.qmd/Detection_Problem.html</loc>
-    <lastmod>2026-03-04T22:10:59.036Z</lastmod>
+    <lastmod>2026-03-04T22:21:32.636Z</lastmod>
   </url>
   <url>
     <loc>index.qmd/GLM_Refresher.html</loc>
-    <lastmod>2026-03-04T22:11:01.941Z</lastmod>
+    <lastmod>2026-03-04T22:21:35.669Z</lastmod>
+  </url>
+  <url>
+    <loc>index.qmd/index.html</loc>
+    <lastmod>2026-03-04T22:21:36.955Z</lastmod>
   </url>
   <url>
     <loc>index.qmd/Lincoln_Petersen.html</loc>
-    <lastmod>2026-03-04T22:11:04.751Z</lastmod>
+    <lastmod>2026-03-04T22:21:40.426Z</lastmod>
   </url>
   <url>
     <loc>index.qmd/RMark_Implementation.html</loc>
-    <lastmod>2026-03-04T22:11:09.777Z</lastmod>
+    <lastmod>2026-03-04T22:21:45.161Z</lastmod>
   </url>
   <url>
     <loc>index.qmd/Robust_Design_Likelihood.html</loc>
-    <lastmod>2026-03-04T22:11:14.389Z</lastmod>
+    <lastmod>2026-03-04T22:21:49.679Z</lastmod>
   </url>
   <url>
     <loc>index.qmd/Temporary_Emigration.html</loc>
-    <lastmod>2026-03-04T22:11:18.868Z</lastmod>
+    <lastmod>2026-03-04T22:21:54.112Z</lastmod>
   </url>
 </urlset>
