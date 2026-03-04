@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Deon Roos">
+<meta name="dcterms.date" content="2026-03-04">
+
+<title>Robust Design Mark-Recapture - Implementing the Robust Design in RMark</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Robust Design Mark-Recapture</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./GLM_Refresher.html" rel="" target="">
+ <span class="menu-text">A refresher on GLMs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Detection_Problem.html" rel="" target="">
+ <span class="menu-text">The detection problem</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Lincoln_Petersen.html" rel="" target="">
+ <span class="menu-text">Lincoln-Petersen estimator</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./CJS_Model.html" rel="" target="">
+ <span class="menu-text">Cormack-Jolly-Seber model</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Robust_Design_Likelihood.html" rel="" target="">
+ <span class="menu-text">The robust design</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Temporary_Emigration.html" rel="" target="">
+ <span class="menu-text">Temporary emigration</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./RMark_Implementation.html" rel="" target="" aria-current="page">
+ <span class="menu-text">Implementing in RMark</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#putting-it-all-together" id="toc-putting-it-all-together" class="nav-link active" data-scroll-target="#putting-it-all-together">Putting it all together</a></li>
+  <li><a href="#what-should-influence-your-parameters" id="toc-what-should-influence-your-parameters" class="nav-link" data-scroll-target="#what-should-influence-your-parameters">What should influence your parameters?</a>
+  <ul class="collapse">
+  <li><a href="#what-influences-survival-phi" id="toc-what-influences-survival-phi" class="nav-link" data-scroll-target="#what-influences-survival-phi">What influences survival (<span class="math inline">\(\phi\)</span>)?</a></li>
+  <li><a href="#what-influences-detection-p" id="toc-what-influences-detection-p" class="nav-link" data-scroll-target="#what-influences-detection-p">What influences detection (<span class="math inline">\(p\)</span>)?</a></li>
+  <li><a href="#what-influences-availability-gamma-and-gamma" id="toc-what-influences-availability-gamma-and-gamma" class="nav-link" data-scroll-target="#what-influences-availability-gamma-and-gamma">What influences availability (<span class="math inline">\(\gamma'\)</span> and <span class="math inline">\(\gamma''\)</span>)?</a></li>
+  <li><a href="#the-structure-of-covariates-in-rmark" id="toc-the-structure-of-covariates-in-rmark" class="nav-link" data-scroll-target="#the-structure-of-covariates-in-rmark">The structure of covariates in RMark</a></li>
+  </ul></li>
+  <li><a href="#how-should-your-data-be-organised" id="toc-how-should-your-data-be-organised" class="nav-link" data-scroll-target="#how-should-your-data-be-organised">How should your data be organised?</a>
+  <ul class="collapse">
+  <li><a href="#the-capture-history-string" id="toc-the-capture-history-string" class="nav-link" data-scroll-target="#the-capture-history-string">The capture history string</a></li>
+  </ul></li>
+  <li><a href="#setting-up-time.intervals" id="toc-setting-up-time.intervals" class="nav-link" data-scroll-target="#setting-up-time.intervals">Setting up <code>time.intervals</code></a></li>
+  <li><a href="#writing-out-the-model" id="toc-writing-out-the-model" class="nav-link" data-scroll-target="#writing-out-the-model">Writing out the model</a></li>
+  <li><a href="#fitting-the-model" id="toc-fitting-the-model" class="nav-link" data-scroll-target="#fitting-the-model">Fitting the model</a></li>
+  <li><a href="#visualising-the-results" id="toc-visualising-the-results" class="nav-link" data-scroll-target="#visualising-the-results">Visualising the results</a>
+  <ul class="collapse">
+  <li><a href="#survival-as-a-function-of-body-condition" id="toc-survival-as-a-function-of-body-condition" class="nav-link" data-scroll-target="#survival-as-a-function-of-body-condition">Survival as a function of body condition</a></li>
+  <li><a href="#detection-as-a-function-of-temperature" id="toc-detection-as-a-function-of-temperature" class="nav-link" data-scroll-target="#detection-as-a-function-of-temperature">Detection as a function of temperature</a></li>
+  <li><a href="#population-size-estimates-across-primary-periods" id="toc-population-size-estimates-across-primary-periods" class="nav-link" data-scroll-target="#population-size-estimates-across-primary-periods">Population size estimates across primary periods</a></li>
+  </ul></li>
+  <li><a href="#a-note-on-your-real-data" id="toc-a-note-on-your-real-data" class="nav-link" data-scroll-target="#a-note-on-your-real-data">A note on your real data</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Implementing the Robust Design in RMark</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Deon Roos </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 4, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="putting-it-all-together" class="level1">
+<h1>Putting it all together</h1>
+<p>Up to this point we have built up the robust design from first principles. You know what the model is doing, why it needs two time scales, what the parameters mean, and where the ambiguous zeros live. Now we need to actually use it on data.</p>
+<p>This page is deliberately practical. Less theory, more code. By the end you should be able to take a real robust design dataset, organise it correctly, specify and fit a model with covariates, and produce figures that communicate what you found.</p>
+<p>We will keep using RMark throughout. As a reminder, RMark is an R interface to program MARK, which needs to be installed separately. If you have not done that yet, you can find it <a href="http://www.phidot.org/software/mark/downloads/">here</a>.</p>
+</section>
+<section id="what-should-influence-your-parameters" class="level1">
+<h1>What should influence your parameters?</h1>
+<p>Before you fit any model, you need to think carefully about what covariates to include and in which part of the model. This is not a statistical question, it is a biological one, and getting it wrong at this stage means your model will not reflect reality no matter how well it runs.</p>
+<p>There are four parameters in the full robust design model, and each has a different biological interpretation that should guide your covariate choices.</p>
+<section id="what-influences-survival-phi" class="level2">
+<h2 class="anchored" data-anchor-id="what-influences-survival-phi">What influences survival (<span class="math inline">\(\phi\)</span>)?</h2>
+<p>Survival is estimated between primary periods, so the covariates that make sense here are things that vary between primary periods and plausibly affect whether an animal lives or dies.</p>
+<p>Body condition is the classic example. An animal in poor condition going into winter is less likely to survive to spring. Age matters for most species, with survival often lower in juveniles and very old individuals. Sex can matter if males and females face different predation or energetic pressures. Environmental conditions between primary periods, such as winter severity, drought intensity, or food availability, are commonly included. If you have interventions, such as supplementary feeding, a predator removal programme, or a disease treatment, those belong here too.</p>
+<p>The key question to ask yourself is: <em>between my sampling occasions, what determined whether an animal was alive or dead at the next one?</em></p>
+</section>
+<section id="what-influences-detection-p" class="level2">
+<h2 class="anchored" data-anchor-id="what-influences-detection-p">What influences detection (<span class="math inline">\(p\)</span>)?</h2>
+<p>Detection is estimated within primary periods, from the pattern of secondary occasions. Covariates here should vary at the secondary occasion level, meaning across the repeated sampling events within a primary period, and plausibly affect how likely you are to catch or observe an individual that is actually present.</p>
+<p>Weather conditions on the day of sampling are common: rain, temperature, and wind can all affect trap success or observer detectability. Time of day matters for many species. Sampling effort, such as the number of traps set or hours searched, belongs here if it varied across secondary occasions. Observer experience or identity can be included if multiple people did the sampling.</p>
+<p>The key question is: <em>across my repeated sampling occasions within a season, what made me more or less likely to detect an animal that was actually there?</em></p>
+</section>
+<section id="what-influences-availability-gamma-and-gamma" class="level2">
+<h2 class="anchored" data-anchor-id="what-influences-availability-gamma-and-gamma">What influences availability (<span class="math inline">\(\gamma'\)</span> and <span class="math inline">\(\gamma''\)</span>)?</h2>
+<p>Availability governs whether an animal is present in your study area at all during a primary period. Covariates here should reflect things that drive animals in or out of the study area between primary periods.</p>
+<p>Season is the most obvious one, particularly for migratory species. A covariate that distinguishes breeding season from non-breeding season will capture predictable availability patterns. Habitat quality outside the study area might draw animals away. For some species, reproductive stage matters: pregnant or lactating females may show different site fidelity patterns than non-reproductive animals.</p>
+</section>
+<section id="the-structure-of-covariates-in-rmark" class="level2">
+<h2 class="anchored" data-anchor-id="the-structure-of-covariates-in-rmark">The structure of covariates in RMark</h2>
+<p>In RMark, covariates can be of two types.</p>
+<p><strong>Individual covariates</strong> are fixed properties of each animal: sex, age at first capture, body condition measured once. These go directly into the data frame as a column alongside <code>ch</code>, one value per row.</p>
+<p><strong>Time-varying covariates</strong> change across occasions: temperature on each sampling day, season at each primary period. For the survival and availability parameters, these vary at the primary period level and are added as numbered columns (<code>varname1</code>, <code>varname2</code>, …, one per primary period). For detection, they vary at the secondary occasion level and are added similarly, one column per secondary occasion across all primary periods. RMark matches these to the correct design matrix rows automatically.</p>
+</section>
+</section>
+<section id="how-should-your-data-be-organised" class="level1">
+<h1>How should your data be organised?</h1>
+<section id="the-capture-history-string" class="level2">
+<h2 class="anchored" data-anchor-id="the-capture-history-string">The capture history string</h2>
+<p>The fundamental unit of data in RMark is the <strong>capture history string</strong>: a single character string of <code>1</code>s and <code>0</code>s, one digit per sampling occasion, for each individual animal.</p>
+<p>For a robust design with 3 primary periods and 3 secondary occasions each, the string has 9 characters. For 6 primary periods and 3 secondary occasions, 18 characters. The order is: all secondary occasions for primary period 1, then all secondary occasions for primary period 2, and so on.</p>
+<pre><code>Animal tagged in period 1, missed in period 2, detected in period 3:
+Primary 1       Primary 2       Primary 3
+s1 s2 s3        s1 s2 s3        s1 s2 s3
+1  1  0         0  0  0         0  1  1
+
+String: "110000011"</code></pre>
+<p>The data frame passed to RMark must have at minimum a column called <code>ch</code> containing these strings. Individual covariates go alongside as additional columns. Time-varying covariates go as numbered column sets.</p>
+<p>Let us simulate a dataset to work with. We will use body condition as an individual covariate affecting survival, and temperature as a time-varying covariate affecting detection.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RMark)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>N_true      <span class="ot">&lt;-</span> <span class="dv">400</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>phi_int     <span class="ot">&lt;-</span> <span class="fl">0.75</span>   <span class="co"># Baseline survival (logit scale intercept)</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>phi_cond    <span class="ot">&lt;-</span> <span class="fl">0.50</span>   <span class="co"># Effect of body condition on survival (logit scale)</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>p_int       <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.40</span>  <span class="co"># Baseline detection (logit scale intercept)</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>p_temp      <span class="ot">&lt;-</span> <span class="fl">0.60</span>   <span class="co"># Effect of temperature on detection (logit scale)</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>gp_true     <span class="ot">&lt;-</span> <span class="fl">0.40</span>   <span class="co"># GammaPrime: prob of staying unavailable</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>gdp_true    <span class="ot">&lt;-</span> <span class="fl">0.20</span>   <span class="co"># GammaDoublePrime: prob of becoming unavailable</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>n_primary   <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>n_secondary <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>n_occasions <span class="ot">&lt;-</span> n_primary <span class="sc">*</span> n_secondary</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Individual covariate: one value per animal</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>body_condition <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N_true, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Occasion-level covariate: one value per animal per secondary occasion</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>temp_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rnorm</span>(N_true <span class="sc">*</span> n_occasions, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>),</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> N_true,</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> n_occasions</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate survival</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>alive <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N_true, <span class="at">ncol =</span> n_primary)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>alive[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n_primary) {</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  phi_i <span class="ot">&lt;-</span> <span class="fu">plogis</span>(phi_int <span class="sc">+</span> phi_cond <span class="sc">*</span> body_condition)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  alive[, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(N_true, <span class="dv">1</span>, alive[, t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">*</span> phi_i)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate availability</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>avail <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N_true, <span class="at">ncol =</span> n_primary)</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>avail[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n_primary) {</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N_true) {</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (alive[i, t] <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>      avail[i, t] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (avail[i, t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>      avail[i, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> gdp_true)</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>      avail[i, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> gp_true)</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate detection incorporating temperature effect</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>det <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N_true, <span class="at">ncol =</span> n_occasions)</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_primary) {</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_secondary) {</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    col <span class="ot">&lt;-</span> (t <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> n_secondary <span class="sc">+</span> s</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    p_col <span class="ot">&lt;-</span> <span class="fu">plogis</span>(p_int <span class="sc">+</span> p_temp <span class="sc">*</span> temp_matrix[, col])</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    det[, col] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(N_true, <span class="dv">1</span>, avail[, t] <span class="sc">*</span> p_col)</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep only animals detected at least once</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>ever_seen  <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(det) <span class="sc">&gt;</span> <span class="dv">0</span></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>det_seen   <span class="ot">&lt;-</span> det[ever_seen, ]</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>cond_seen  <span class="ot">&lt;-</span> body_condition[ever_seen]</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>temp_seen  <span class="ot">&lt;-</span> temp_matrix[ever_seen, ]</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>n_seen     <span class="ot">&lt;-</span> <span class="fu">nrow</span>(det_seen)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build capture history strings</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ch_strings <span class="ot">&lt;-</span> <span class="fu">apply</span>(det_seen, <span class="dv">1</span>, paste, <span class="at">collapse =</span> <span class="st">""</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Start data frame with ch and individual covariate</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>rd_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ch             =</span> ch_strings,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">body_cond   =</span> cond_seen,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Add temperature as time-varying columns: temp1 through temp18</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># RMark matches these to detection occasions by column number</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>temp_cols <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(temp_seen)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(temp_cols) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"temp"</span>, <span class="dv">1</span><span class="sc">:</span>n_occasions)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>rd_df <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(rd_df, temp_cols)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>The data frame now has: <code>ch</code>, the individual covariate <code>body_cond</code> (body condition), and 18 temperature columns <code>temp1</code> through <code>temp18</code>. RMark will use the numbered suffix to align each temperature value with the correct sampling occasion when you include <code>temp</code> in the detection formula.</p>
+</section>
+</section>
+<section id="setting-up-time.intervals" class="level1">
+<h1>Setting up <code>time.intervals</code></h1>
+<p>The <code>time.intervals</code> argument tells RMark which gaps between consecutive occasions are within a primary period (closed, value = <code>0</code>) and which are between primary periods (open, value = <code>1</code>). The vector has one entry per gap, so for 18 occasions there are 17 gaps.</p>
+<pre><code>Occasion:   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18
+Gap:          1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17
+Interval:     0  0  1  0  0  1  0  0  1  0  0  1  0  0  1  0  0</code></pre>
+<p>Within primary period 1 (occasions 1, 2, 3): gaps 1 and 2 are <code>0</code>. Between primary periods 1 and 2: gap 3 is <code>1</code>. And so on.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>build_time_intervals <span class="ot">&lt;-</span> <span class="cf">function</span>(n_primary, n_secondary) {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  block     <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, n_secondary <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  intervals <span class="ot">&lt;-</span> <span class="fu">rep</span>(block, n_primary)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  intervals[<span class="sc">-</span><span class="fu">length</span>(intervals)]</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>time_intervals <span class="ot">&lt;-</span> <span class="fu">build_time_intervals</span>(n_primary, n_secondary)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>time_intervals</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0</code></pre>
+</div>
+</div>
+<p>Always verify the length: it must equal <code>(n_primary * n_secondary) - 1</code>.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Length of time_intervals:"</span>, <span class="fu">length</span>(time_intervals),</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"</span><span class="sc">\n</span><span class="st">Expected:"</span>, n_primary <span class="sc">*</span> n_secondary <span class="sc">-</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Length of time_intervals: 17 
+Expected: 17</code></pre>
+</div>
+</div>
+</section>
+<section id="writing-out-the-model" class="level1">
+<h1>Writing out the model</h1>
+<p>Before fitting anything in R, it is good practice to write out the full model you intend to fit. This forces you to be explicit about every assumption, makes your methods section straightforward to write, and helps catch mismatches between your biological thinking and what you actually code.</p>
+<p>For our simulated data, the model is:</p>
+<p><span class="math display">\[z_{i,t} \sim \text{Bernoulli}(\phi_{i,t-1} \times z_{i,t-1})\]</span></p>
+<p><span class="math display">\[\text{logit}(\phi_{i,t}) = \beta_0 + \beta_1 \times \text{Condition}_i\]</span></p>
+<p><span class="math display">\[a_{i,t} \mid z_{i,t} = 1 \sim \begin{cases} \text{Bernoulli}(1 - \gamma'') &amp; \text{if } a_{i,t-1} = 1 \\ \text{Bernoulli}(1 - \gamma') &amp; \text{if } a_{i,t-1} = 0 \end{cases}\]</span></p>
+<p><span class="math display">\[\omega_{i,t} \sim \text{Bernoulli}(\tilde{p}_t \times a_{i,t} \times z_{i,t})\]</span></p>
+<p><span class="math display">\[\tilde{p}_t = 1 - (1 - p_t)^s\]</span></p>
+<p><span class="math display">\[\text{logit}(p_{i,t,s}) = \alpha_0 + \alpha_1 \times \text{Temperature}_{i,t,s}\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(z_{i,t}\)</span> is the true alive/dead state of individual <span class="math inline">\(i\)</span> at primary period <span class="math inline">\(t\)</span></li>
+<li><span class="math inline">\(\phi_{i,t}\)</span> is apparent survival from primary period <span class="math inline">\(t\)</span> to <span class="math inline">\(t+1\)</span>, varying by individual through body condition</li>
+<li><span class="math inline">\(\beta_0\)</span> is the survival intercept and <span class="math inline">\(\beta_1\)</span> is the effect of body condition</li>
+<li><span class="math inline">\(a_{i,t}\)</span> is the availability state of individual <span class="math inline">\(i\)</span> at primary period <span class="math inline">\(t\)</span>, conditional on being alive</li>
+<li><span class="math inline">\(\gamma''\)</span> is the probability of becoming unavailable given currently available</li>
+<li><span class="math inline">\(\gamma'\)</span> is the probability of staying unavailable given currently unavailable</li>
+<li><span class="math inline">\(\omega_{i,t}\)</span> is 1 if individual <span class="math inline">\(i\)</span> was detected at least once during primary period <span class="math inline">\(t\)</span>, 0 otherwise</li>
+<li><span class="math inline">\(\tilde{p}_t\)</span> is the effective detection probability across all <span class="math inline">\(s\)</span> secondary occasions</li>
+<li><span class="math inline">\(p_{i,t,s}\)</span> is detection probability on secondary occasion <span class="math inline">\(s\)</span> of primary period <span class="math inline">\(t\)</span>, varying by temperature</li>
+<li><span class="math inline">\(\alpha_0\)</span> is the detection intercept and <span class="math inline">\(\alpha_1\)</span> is the effect of temperature</li>
+</ul>
+<p>Once written like this, translating to <code>RMark</code> formula syntax is direct. <span class="math inline">\(\beta_0 + \beta_1 \times \text{Condition}\)</span> becomes <code>~ body_cond</code>. <span class="math inline">\(\alpha_0 + \alpha_1 \times \text{Temperature}\)</span> becomes <code>~ temp</code>. The gamma parameters are constant here, so both get <code>~ 1</code>.</p>
+</section>
+<section id="fitting-the-model" class="level1">
+<h1>Fitting the model</h1>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>rd_processed <span class="ot">&lt;-</span> <span class="fu">process.data</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  rd_df,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">model          =</span> <span class="st">"Robust"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">time.intervals =</span> time_intervals</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>rd_ddl <span class="ot">&lt;-</span> <span class="fu">make.design.data</span>(rd_processed)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>rd_fit <span class="ot">&lt;-</span> <span class="fu">mark</span>(</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  rd_processed,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  rd_ddl,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">model.parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">S                =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> body_cond),</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">p                =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> temp),</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">GammaPrime       =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>),</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">GammaDoublePrime =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">silent =</span> <span class="cn">TRUE</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>rd_fit<span class="sc">$</span>results<span class="sc">$</span>beta</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                               estimate        se        lcl        ucl
+S:(Intercept)                 0.6836572 0.0868179  0.5134941  0.8538204
+S:body_cond                   0.5662978 0.0880560  0.3937080  0.7388876
+GammaDoublePrime:(Intercept) -1.8358266 0.4107363 -2.6408698 -1.0307834
+GammaPrime:(Intercept)       -1.7066375 1.6283436 -4.8981911  1.4849161
+p:(Intercept)                -0.4947268 0.1207431 -0.7313832 -0.2580704
+p:temp                        0.1953920 0.0539919  0.0895678  0.3012162
+c:(Intercept)                -0.3779775 0.0634956 -0.5024289 -0.2535262
+f0:(Intercept)                4.7518438 0.2117942  4.3367270  5.1669605
+f0:session2                  -0.9039858 0.2115448 -1.3186137 -0.4893580
+f0:session3                  -1.3291764 0.2481375 -1.8155260 -0.8428268
+f0:session4                  -1.8007971 0.3008318 -2.3904275 -1.2111667
+f0:session5                  -1.7028223 0.2828947 -2.2572959 -1.1483487
+f0:session6                  -2.0558175 0.3328917 -2.7082852 -1.4033499</code></pre>
+</div>
+</div>
+<p>The beta table gives you all parameter estimates on the logit scale with standard errors and confidence intervals. The row names map directly to the model equations: <code>S:(Intercept)</code> is <span class="math inline">\(\beta_0\)</span>, <code>S:body_condition</code> is <span class="math inline">\(\beta_1\)</span>, <code>p:(Intercept)</code> is <span class="math inline">\(\alpha_0\)</span>, <code>p:temp</code> is <span class="math inline">\(\alpha_1\)</span>.</p>
+</section>
+<section id="visualising-the-results" class="level1">
+<h1>Visualising the results</h1>
+<p>The logic for every predicted relationship figure in this tutorial follows the same four steps, and once you understand them you can apply them to any parameter in any model.</p>
+<p><strong>Step 1: Extract the relevant coefficients from the beta table.</strong> - The beta table gives you the estimated intercept and slope for each parameter on the logit scale. For a survival model with one covariate, you need the intercept (<span class="math inline">\(\beta_0\)</span>) and the slope (<span class="math inline">\(\beta_1\)</span>). For detection, you need the same two things for <span class="math inline">\(\alpha_0\)</span> and <span class="math inline">\(\alpha_1\)</span>. You also need the standard errors for both, which you will use in step 3.</p>
+<p><strong>Step 2: Build a sequence of covariate values and generate predictions on the logit scale.</strong> - Create a vector of evenly spaced values spanning the range of your covariate. For each value <span class="math inline">\(x\)</span>, calculate <span class="math inline">\(\beta_0 + \beta_1 \times x\)</span>. This gives you the predicted value on the logit scale across the range of the covariate.</p>
+<p><strong>Step 3: Calculate uncertainty using the delta method.</strong> - The confidence interval cannot be calculated by simply adding and subtracting 1.96 standard errors from the prediction, because the prediction combines two uncertain quantities: the intercept and the slope. The delta method accounts for both. The variance of <span class="math inline">\(\beta_0 + \beta_1 \times x\)</span> on the logit scale is:</p>
+<p><span class="math inline">\(\text{Var} = \text{SE}_{\beta_0}^2 + x^2 \times \text{SE}_{\beta_1}^2 + 2x \times \text{Cov}(\beta_0, \beta_1)\)</span></p>
+<p>The covariance term <span class="math inline">\(\text{Cov}(\beta_0, \beta_1)\)</span> comes from the variance-covariance matrix of the model ( <code>rd_fit$results$beta.vcv</code>), indexed by the row and column positions of the two parameters in the beta table.</p>
+<p><strong>Step 4: Back-transform everything with <code>plogis()</code>.</strong> - The predictions and confidence interval bounds are all on the logit scale. Apply <code>plogis()</code> to convert them to probabilities before plotting. The lower bound is <code>plogis(prediction - 1.96 * sqrt(variance))</code> and the upper bound is <code>plogis(prediction + 1.96 * sqrt(variance))</code>.</p>
+<p>When you apply this to your own data, the only things that change are the covariate name, the row positions of the relevant parameters in the beta table, and the range of covariate values you predict over. The structure of the code is identical every time.</p>
+<section id="survival-as-a-function-of-body-condition" class="level2">
+<h2 class="anchored" data-anchor-id="survival-as-a-function-of-body-condition">Survival as a function of body condition</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> rd_fit<span class="sc">$</span>results<span class="sc">$</span>beta</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>vcv  <span class="ot">&lt;-</span> rd_fit<span class="sc">$</span>results<span class="sc">$</span>beta.vcv</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>phi_int_est  <span class="ot">&lt;-</span> beta[<span class="st">"S:(Intercept)"</span>,    <span class="st">"estimate"</span>]</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>phi_cond_est <span class="ot">&lt;-</span> beta[<span class="st">"S:body_cond"</span>, <span class="st">"estimate"</span>]</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>phi_int_se   <span class="ot">&lt;-</span> beta[<span class="st">"S:(Intercept)"</span>,    <span class="st">"se"</span>]</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>phi_cond_se  <span class="ot">&lt;-</span> beta[<span class="st">"S:body_cond"</span>, <span class="st">"se"</span>]</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>int_idx  <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>cond_idx <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>cond_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(cond_seen), <span class="fu">max</span>(cond_seen), <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Predicted survival on logit scale</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>logit_phi <span class="ot">&lt;-</span> phi_int_est <span class="sc">+</span> phi_cond_est <span class="sc">*</span> cond_seq</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta method variance on logit scale</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>var_logit_phi <span class="ot">&lt;-</span> phi_int_se<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>                 cond_seq<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> phi_cond_se<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>                 <span class="dv">2</span> <span class="sc">*</span> cond_seq <span class="sc">*</span> vcv[int_idx, cond_idx]</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>phi_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">condition =</span> cond_seq,</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">phi       =</span> <span class="fu">plogis</span>(logit_phi),</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwr       =</span> <span class="fu">plogis</span>(logit_phi <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">abs</span>(var_logit_phi))),</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">upr       =</span> <span class="fu">plogis</span>(logit_phi <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">abs</span>(var_logit_phi)))</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(phi_df, <span class="fu">aes</span>(<span class="at">x =</span> condition)) <span class="sc">+</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lwr, <span class="at">ymax =</span> upr), <span class="at">fill =</span> <span class="st">"#00A68A"</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> phi), <span class="at">colour =</span> <span class="st">"#00A68A"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">x        =</span> <span class="st">"Body condition (standardised)"</span>,</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">y        =</span> <span class="fu">expression</span>(<span class="fu">hat</span>(phi))</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="RMark_Implementation_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The confidence interval is calculated using the delta method, which propagates uncertainty from both the intercept and slope through the inverse logit transformation. The key thing to look at here is whether the interval overlaps a flat line at any particular probability: if the lower bound is clearly above or the upper bound clearly below a reference value, that is evidence of a real effect.</p>
+</section>
+<section id="detection-as-a-function-of-temperature" class="level2">
+<h2 class="anchored" data-anchor-id="detection-as-a-function-of-temperature">Detection as a function of temperature</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>p_int_est  <span class="ot">&lt;-</span> beta[<span class="st">"p:(Intercept)"</span>, <span class="st">"estimate"</span>]</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>p_temp_est <span class="ot">&lt;-</span> beta[<span class="st">"p:temp"</span>,        <span class="st">"estimate"</span>]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>p_int_se   <span class="ot">&lt;-</span> beta[<span class="st">"p:(Intercept)"</span>, <span class="st">"se"</span>]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>p_temp_se  <span class="ot">&lt;-</span> beta[<span class="st">"p:temp"</span>,        <span class="st">"se"</span>]</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>p_int_idx  <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>p_temp_idx <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>temp_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>logit_p <span class="ot">&lt;-</span> p_int_est <span class="sc">+</span> p_temp_est <span class="sc">*</span> temp_seq</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>var_logit_p <span class="ot">&lt;-</span> p_int_se<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>               temp_seq<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> p_temp_se<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>               <span class="dv">2</span> <span class="sc">*</span> temp_seq <span class="sc">*</span> vcv[p_int_idx, p_temp_idx]</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>p_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">temp =</span> temp_seq,</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">p    =</span> <span class="fu">plogis</span>(logit_p),</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwr  =</span> <span class="fu">plogis</span>(logit_p <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">abs</span>(var_logit_p))),</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">upr  =</span> <span class="fu">plogis</span>(logit_p <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">abs</span>(var_logit_p)))</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(p_df, <span class="fu">aes</span>(<span class="at">x =</span> temp)) <span class="sc">+</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lwr, <span class="at">ymax =</span> upr), <span class="at">fill =</span> <span class="st">"#FF5733"</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> p), <span class="at">colour =</span> <span class="st">"#FF5733"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">x        =</span> <span class="st">"Temperature (standardised)"</span>,</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">y        =</span> <span class="fu">expression</span>(<span class="fu">hat</span>(p))</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="RMark_Implementation_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="population-size-estimates-across-primary-periods" class="level2">
+<h2 class="anchored" data-anchor-id="population-size-estimates-across-primary-periods">Population size estimates across primary periods</h2>
+<p>The per-period population size <span class="math inline">\(\hat{N}_t\)</span> is one of the headline outputs of a robust design study. In RMark it is derived from the <code>f0</code> parameter, which represents the estimated number of individuals that were present but never detected in each primary period. Add the observed count to <code>f0</code> and you have <span class="math inline">\(\hat{N}_t\)</span>.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>f0_rows <span class="ot">&lt;-</span> beta[<span class="fu">grepl</span>(<span class="st">"^f0"</span>, <span class="fu">rownames</span>(beta)), ]</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of distinct individuals detected in each primary period</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>n_detected <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_primary, <span class="cf">function</span>(t) {</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  cols <span class="ot">&lt;-</span> ((t <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> n_secondary <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(t <span class="sc">*</span> n_secondary)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(<span class="fu">rowSums</span>(det_seen[, cols]) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co"># f0 is on log scale in RMark</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>f0_est <span class="ot">&lt;-</span> <span class="fu">exp</span>(f0_rows[, <span class="st">"estimate"</span>])</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>f0_lcl <span class="ot">&lt;-</span> <span class="fu">exp</span>(f0_rows[, <span class="st">"lcl"</span>])</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>f0_ucl <span class="ot">&lt;-</span> <span class="fu">exp</span>(f0_rows[, <span class="st">"ucl"</span>])</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>N_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">period =</span> <span class="dv">1</span><span class="sc">:</span>n_primary,</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">N_hat  =</span> n_detected <span class="sc">+</span> f0_est,</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">N_lcl  =</span> n_detected <span class="sc">+</span> f0_lcl,</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">N_ucl  =</span> n_detected <span class="sc">+</span> f0_ucl</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(N_df, <span class="fu">aes</span>(<span class="at">x =</span> period, <span class="at">y =</span> N_hat)) <span class="sc">+</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> N_lcl, <span class="at">ymax =</span> N_ucl),</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">colour =</span> <span class="st">"#00A68A"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">colour =</span> <span class="st">"#00A68A"</span>) <span class="sc">+</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">colour =</span> <span class="st">"#00A68A"</span>, <span class="at">linewidth =</span> <span class="fl">0.6</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_primary) <span class="sc">+</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">x        =</span> <span class="st">"Primary period"</span>,</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">y        =</span> <span class="fu">expression</span>(<span class="fu">hat</span>(N))</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="RMark_Implementation_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This plot shows population trend across the study corrected for imperfect detection. A declining trend here is not an artefact of getting worse at detecting animals over time: because <span class="math inline">\(p\)</span> is estimated separately, the <span class="math inline">\(\hat{N}_t\)</span> estimates reflect true changes in abundance. For most conservation applications this is the number you actually care about.</p>
+</section>
+</section>
+<section id="a-note-on-your-real-data" class="level1">
+<h1>A note on your real data</h1>
+<p>Everything above used simulated data where we knew the true values. With your own data there are a few practical things to be careful about.</p>
+<p><strong>Standardise your continuous covariates.</strong> Subtract the mean and divide by the standard deviation before fitting. MARK can be numerically unstable with covariates on very different scales, and standardised coefficients are directly comparable in magnitude. This is especially important when you write up: a coefficient of 0.3 on a standardised covariate is interpretable. A coefficient of 0.003 on rainfall measured in millimetres is not.</p>
+<p><strong>Check for missing covariate values.</strong> RMark does not handle <code>NA</code> in covariates gracefully. Either impute or drop individuals with missing covariate data before calling <code>process.data()</code>.</p>
+<p><strong>Make sure your <code>time.intervals</code> matches your data structure exactly.</strong> The most common source of cryptic errors in RMark is a mismatch between the length of the capture history strings and the length of <code>time.intervals</code>. Use the <code>build_time_intervals()</code> function above rather than constructing the vector by hand.</p>
+<p><strong>Keep your raw data and your RMark data frame separate.</strong> You will almost certainly need the original data again for plotting, checking, or sharing. Do not modify it in place.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

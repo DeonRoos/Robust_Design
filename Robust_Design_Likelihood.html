@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Deon Roos">
+<meta name="dcterms.date" content="2026-03-04">
+
+<title>Robust Design Mark-Recapture - The Robust Design</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Robust Design Mark-Recapture</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./GLM_Refresher.html" rel="" target="">
+ <span class="menu-text">A refresher on GLMs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Detection_Problem.html" rel="" target="">
+ <span class="menu-text">The detection problem</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Lincoln_Petersen.html" rel="" target="">
+ <span class="menu-text">Lincoln-Petersen estimator</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./CJS_Model.html" rel="" target="">
+ <span class="menu-text">Cormack-Jolly-Seber model</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./Robust_Design_Likelihood.html" rel="" target="" aria-current="page">
+ <span class="menu-text">The robust design</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Temporary_Emigration.html" rel="" target="">
+ <span class="menu-text">Temporary emigration</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./RMark_Implementation.html" rel="" target="">
+ <span class="menu-text">Implementing in RMark</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#the-problem-we-are-stuck-with" id="toc-the-problem-we-are-stuck-with" class="nav-link active" data-scroll-target="#the-problem-we-are-stuck-with">The problem we are stuck with</a></li>
+  <li><a href="#the-key-insight-two-time-scales" id="toc-the-key-insight-two-time-scales" class="nav-link" data-scroll-target="#the-key-insight-two-time-scales">The key insight: two time scales</a></li>
+  <li><a href="#the-data-structure" id="toc-the-data-structure" class="nav-link" data-scroll-target="#the-data-structure">The data structure</a></li>
+  <li><a href="#building-the-likelihood" id="toc-building-the-likelihood" class="nav-link" data-scroll-target="#building-the-likelihood">Building the likelihood</a>
+  <ul class="collapse">
+  <li><a href="#part-1-within-primary-periods-closed-population" id="toc-part-1-within-primary-periods-closed-population" class="nav-link" data-scroll-target="#part-1-within-primary-periods-closed-population">Part 1: Within primary periods (closed population)</a></li>
+  <li><a href="#part-2-between-primary-periods-open-population" id="toc-part-2-between-primary-periods-open-population" class="nav-link" data-scroll-target="#part-2-between-primary-periods-open-population">Part 2: Between primary periods (open population)</a></li>
+  <li><a href="#the-full-likelihood" id="toc-the-full-likelihood" class="nav-link" data-scroll-target="#the-full-likelihood">The full likelihood</a></li>
+  </ul></li>
+  <li><a href="#what-we-can-now-estimate" id="toc-what-we-can-now-estimate" class="nav-link" data-scroll-target="#what-we-can-now-estimate">What we can now estimate</a></li>
+  <li><a href="#a-small-simulation" id="toc-a-small-simulation" class="nav-link" data-scroll-target="#a-small-simulation">A small simulation</a></li>
+  <li><a href="#what-is-still-missing" id="toc-what-is-still-missing" class="nav-link" data-scroll-target="#what-is-still-missing">What is still missing</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">The Robust Design</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Deon Roos </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 4, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="the-problem-we-are-stuck-with" class="level1">
+<h1>The problem we are stuck with</h1>
+<p>Let us take stock of where we are.</p>
+<p>The Lincoln-Petersen estimator gives us population size <span class="math inline">\(N\)</span>, but only under closure. The population cannot change between your two sampling occasions. That assumption is fine over a day or two. Over weeks or months it becomes fiction.</p>
+<p>The Cormack-Jolly-Seber model gives us apparent survival <span class="math inline">\(\phi\)</span>, but it requires the population to be open. Animals can die between occasions, which is precisely what we are trying to estimate. In exchange for that realism, CJS conditions on marked individuals only and cannot estimate <span class="math inline">\(N\)</span> at all.</p>
+<p>So we have two models. One estimates <span class="math inline">\(N\)</span> but cannot handle survival. The other estimates survival but cannot estimate <span class="math inline">\(N\)</span>. What we actually want is both, from the same study, at the same time.</p>
+<p>This is not a minor inconvenience. For most real conservation questions you need both. How many individuals are there <em>and</em> are they surviving well enough to maintain that number? Neither question makes much sense without the other.</p>
+<p>The robust design, introduced by Kenneth Pollock in 1982, resolves this tension with an idea that is almost frustratingly simple once you see it.</p>
+</section>
+<section id="the-key-insight-two-time-scales" class="level1">
+<h1>The key insight: two time scales</h1>
+<p>The reason LP and CJS are in conflict is that they need opposite things from the population. LP needs closure. CJS needs openness. The robust design gives each of them what they need by operating at <strong>two different time scales simultaneously</strong>.</p>
+<p>Here is the structure:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Primary periods</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>primary <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_start =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">10</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_end   =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">9</span>, <span class="dv">12</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fl">0.5</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="fu">paste</span>(<span class="st">"Primary period"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Secondary occasions within each primary period</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>secondary <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(<span class="fl">1.25</span>, <span class="dv">2</span>, <span class="fl">2.75</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>         <span class="fl">4.25</span>, <span class="dv">5</span>, <span class="fl">5.75</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>         <span class="fl">7.25</span>, <span class="dv">8</span>, <span class="fl">8.75</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>         <span class="fl">10.25</span>, <span class="dv">11</span>, <span class="fl">11.75</span>),</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fl">0.5</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">primary =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">each =</span> <span class="dv">3</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Open arrows between primary periods</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>arrows_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">x    =</span> <span class="fu">c</span>(<span class="fl">3.05</span>, <span class="fl">6.05</span>, <span class="fl">9.05</span>),</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">xend =</span> <span class="fu">c</span>(<span class="fl">3.95</span>, <span class="fl">6.95</span>, <span class="fl">9.95</span>),</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fl">0.5</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Primary period boxes</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rect</span>(<span class="at">data =</span> primary,</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">xmin =</span> x_start, <span class="at">xmax =</span> x_end,</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>                <span class="at">ymin =</span> <span class="fl">0.15</span>, <span class="at">ymax =</span> <span class="fl">0.85</span>),</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#00A68A"</span>, <span class="at">alpha =</span> <span class="fl">0.15</span>, <span class="at">colour =</span> <span class="st">"#00A68A"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Primary period labels</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> primary,</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> (x_start <span class="sc">+</span> x_end) <span class="sc">/</span> <span class="dv">2</span>, <span class="at">y =</span> <span class="fl">0.92</span>, <span class="at">label =</span> label),</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="fl">3.2</span>, <span class="at">colour =</span> <span class="st">"#00A68A"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>) <span class="sc">+</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Secondary occasion points</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> secondary,</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y),</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">5</span>, <span class="at">colour =</span> <span class="st">"#FF5733"</span>) <span class="sc">+</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> secondary,</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y),</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>            <span class="at">label =</span> <span class="st">"s"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">colour =</span> <span class="st">"white"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>) <span class="sc">+</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Open arrows between primary periods</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">data =</span> arrows_df,</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>               <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">xend =</span> xend, <span class="at">y =</span> y, <span class="at">yend =</span> y),</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>               <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.25</span>, <span class="st">"cm"</span>), <span class="at">ends =</span> <span class="st">"both"</span>),</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>               <span class="at">linewidth =</span> <span class="fl">0.8</span>, <span class="at">colour =</span> <span class="st">"grey40"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Labels for arrows</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fu">c</span>(<span class="fl">3.5</span>, <span class="fl">6.5</span>, <span class="fl">9.5</span>), <span class="at">y =</span> <span class="fl">0.62</span>,</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="st">"Open</span><span class="sc">\n</span><span class="st">(\u03d5)"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">colour =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Closed label inside boxes</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">11</span>), <span class="at">y =</span> <span class="fl">0.22</span>,</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="st">"Closed</span><span class="sc">\n</span><span class="st">(N, p)"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">colour =</span> <span class="st">"#00A68A"</span>) <span class="sc">+</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">13</span>)) <span class="sc">+</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">1.1</span>)) <span class="sc">+</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"The robust design sampling structure"</span>,</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Orange dots = secondary occasions (s). Green boxes = primary periods."</span>) <span class="sc">+</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Robust_Design_Likelihood_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The <strong>primary periods</strong> are separated by long enough gaps that the population can change between them. Animals can die. Animals can be recruited. This is the open part, handled by CJS-style logic, and it gives us <span class="math inline">\(\phi\)</span>.</p>
+<p>The <strong>secondary occasions</strong> are the repeated sampling events <em>within</em> each primary period, conducted close enough together in time that we can reasonably assume the population is closed during that window. No births, no deaths, no permanent movement in or out. This is the closed part, handled by LP-style logic, and it gives us <span class="math inline">\(N\)</span>.</p>
+<p>The robust design nests one inside the other. Closure within primary periods. Openness between them. LP and CJS stop being in conflict because they are now operating at different time scales.</p>
+<p>That is the entire conceptual insight. Everything else is working out the details.</p>
+</section>
+<section id="the-data-structure" class="level1">
+<h1>The data structure</h1>
+<p>The data structure follows directly from the sampling structure. Each individual now has a capture history that operates at two levels.</p>
+<p>At the <strong>between-period level</strong>, there is a summary detection for each primary period: was the animal detected at least once during that primary period, yes or no? This is the coarse-grained history that feeds the open-population (survival) component of the model.</p>
+<p>At the <strong>within-period level</strong>, there is a detailed detection history across the secondary occasions within each primary period. This fine-grained history feeds the closed-population (abundance and detection) component.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">7</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 6 animals, 3 primary periods, 3 secondary occasions each</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>animals <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"Animal "</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>periods <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"P"</span>, <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">each =</span> <span class="dv">3</span>), <span class="st">"_s"</span>, <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">times =</span> <span class="dv">3</span>))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>ch_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>, <span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>, <span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>, <span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>, <span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>, <span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>, <span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>, <span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>, <span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>, <span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>, <span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>, <span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>, <span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">6</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(ch_matrix) <span class="ot">&lt;-</span> periods</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(ch_matrix) <span class="ot">&lt;-</span> animals</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>ch_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(ch_matrix) <span class="sc">|&gt;</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">"animal"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="sc">-</span>animal, <span class="at">names_to =</span> <span class="st">"occasion"</span>, <span class="at">values_to =</span> <span class="st">"detected"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">primary =</span> <span class="fu">as.integer</span>(<span class="fu">substr</span>(occasion, <span class="dv">2</span>, <span class="dv">2</span>)),</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">secondary =</span> <span class="fu">as.integer</span>(<span class="fu">substr</span>(occasion, <span class="dv">5</span>, <span class="dv">5</span>)),</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">detected_label =</span> <span class="fu">if_else</span>(detected <span class="sc">==</span> <span class="dv">1</span>, <span class="st">"Detected"</span>, <span class="st">"Not detected"</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ch_df, <span class="fu">aes</span>(<span class="at">x =</span> secondary, <span class="at">y =</span> animal, <span class="at">fill =</span> detected_label)) <span class="sc">+</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">colour =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(<span class="sc">~</span> <span class="fu">paste</span>(<span class="st">"Primary period"</span>, primary),</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>             <span class="at">switch =</span> <span class="st">"x"</span>) <span class="sc">+</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Detected"</span> <span class="ot">=</span> <span class="st">"#00A68A"</span>,</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Not detected"</span> <span class="ot">=</span> <span class="st">"#FF5733"</span>)) <span class="sc">+</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">labels =</span> <span class="fu">paste</span>(<span class="st">"s"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Secondary occasion"</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="cn">NULL</span>,</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Robust design capture histories"</span>,</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Each primary period contains three secondary occasions"</span>) <span class="sc">+</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.placement =</span> <span class="st">"outside"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Robust_Design_Likelihood_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Every red tile carries the same ambiguity as before. But now there are two levels at which that ambiguity operates, and the model deals with each one separately.</p>
+<p>Within a primary period, a red tile means the animal was alive and present but not detected. The population is assumed closed so death and emigration are ruled out. The only explanation is imperfect detection.</p>
+<p>Between primary periods, a zero summary (never detected across any secondary occasion in a primary period) could mean the animal died before that period, or that it was alive but never detected across any of the secondary occasions. The open-population component of the model handles that ambiguity, just as CJS did.</p>
+</section>
+<section id="building-the-likelihood" class="level1">
+<h1>Building the likelihood</h1>
+<p>The robust design likelihood separates cleanly into two parts that are estimated together but can be understood separately. We will build each one up in turn.</p>
+<section id="part-1-within-primary-periods-closed-population" class="level2">
+<h2 class="anchored" data-anchor-id="part-1-within-primary-periods-closed-population">Part 1: Within primary periods (closed population)</h2>
+<p>Within each primary period, the population is closed. We have repeated secondary occasions and we want to estimate two things: detection probability <span class="math inline">\(p\)</span> and population size <span class="math inline">\(N_t\)</span> for that period.</p>
+<p>This is essentially a closed-population mark-recapture model. The simplest version, sometimes called <span class="math inline">\(M_0\)</span>, assumes every individual has the same detection probability <span class="math inline">\(p\)</span> on every secondary occasion. The probability of an individual’s within-period detection history <span class="math inline">\(\mathbf{x}_{it} = (x_{it1}, x_{it2}, \ldots, x_{its})\)</span> across <span class="math inline">\(s\)</span> secondary occasions, given the animal is present, is:</p>
+<p><span class="math display">\[\Pr(\mathbf{x}_{it} \mid \text{present}) = \prod_{j=1}^{s} p^{x_{itj}} (1-p)^{1-x_{itj}}\]</span></p>
+<p>This is just a Bernoulli product. For each secondary occasion, the animal was either detected (<span class="math inline">\(x = 1\)</span>, probability <span class="math inline">\(p\)</span>) or not (<span class="math inline">\(x = 0\)</span>, probability <span class="math inline">\(1-p\)</span>).</p>
+<p>The probability of <em>not being detected at all</em> during a primary period, across all <span class="math inline">\(s\)</span> secondary occasions, is:</p>
+<p><span class="math display">\[1 - \tilde{p}_t = (1-p)^s\]</span></p>
+<p>So the probability of being detected <em>at least once</em> during primary period <span class="math inline">\(t\)</span> is:</p>
+<p><span class="math display">\[\tilde{p}_t = 1 - (1-p)^s\]</span></p>
+<p>This <span class="math inline">\(\tilde{p}_t\)</span> is the effective detection probability for the whole primary period. It is the probability that links the within-period model to the between-period model. Notice that even if <span class="math inline">\(p\)</span> is modest on any single occasion, <span class="math inline">\(\tilde{p}_t\)</span> can be quite high if you have enough secondary occasions. This is one of the practical benefits of repeated sampling within a period.</p>
+<p>To estimate <span class="math inline">\(N_t\)</span>, we use a Huggins-style conditional likelihood (which you don’t need to remember). The important thing is that rather than estimating <span class="math inline">\(N_t\)</span> directly in the likelihood, we condition on the animals that were detected at least once, estimate <span class="math inline">\(p\)</span> from their detection histories, and then derive (meaning “figure out”) <span class="math inline">\(\hat{N}_t\)</span> afterwards as:</p>
+<p><span class="math display">\[\hat{N}_t = \frac{n_t}{\hat{\tilde{p}}_t}\]</span></p>
+<p>where <span class="math inline">\(n_t\)</span> is the number of distinct individuals caught in primary period <span class="math inline">\(t\)</span>. This is Lincoln-Petersen logic in a more general form: we observed <span class="math inline">\(n_t\)</span> animals, and we estimated that each had a <span class="math inline">\(\hat{\tilde{p}}_t\)</span> chance of being detected, so the implied population size is <span class="math inline">\(n_t\)</span> divided by that probability.</p>
+</section>
+<section id="part-2-between-primary-periods-open-population" class="level2">
+<h2 class="anchored" data-anchor-id="part-2-between-primary-periods-open-population">Part 2: Between primary periods (open population)</h2>
+<p>Between primary periods, the CJS machinery takes over. For each individual, we have a between-period capture history summarised as whether they were detected at all in each primary period (<span class="math inline">\(\omega_{it} = 1\)</span> if detected in any secondary occasion in period <span class="math inline">\(t\)</span>, 0 otherwise).</p>
+<p>The between-period likelihood is exactly the CJS likelihood from the previous page, but with one modification: the detection probability entering the CJS component is not the raw <span class="math inline">\(p\)</span> from a single occasion but the effective detection probability <span class="math inline">\(\tilde{p}_t\)</span> from the closed-population component.</p>
+<p><span class="math display">\[\Pr(\omega_{it} = 1 \mid \text{alive at } t) = \tilde{p}_t\]</span></p>
+<p><span class="math display">\[\Pr(\omega_{it} = 0 \mid \text{alive at } t) = 1 - \tilde{p}_t\]</span></p>
+<p>The survival probability <span class="math inline">\(\phi_t\)</span> operates between primary periods, exactly as in CJS:</p>
+<p><span class="math display">\[z_{i,t} \sim Bernoulli(\phi_{t-1} \times z_{i,t-1})\]</span></p>
+<p>And the probability of the between-period summary detection, given the true state, is:</p>
+<p><span class="math display">\[\omega_{i,t} \sim Bernoulli(\tilde{p}_t \times z_{i,t})\]</span></p>
+<p>The probability of never being seen again from primary period <span class="math inline">\(t\)</span> onwards, <span class="math inline">\(\chi_t\)</span>, follows the same recursion as before but now uses <span class="math inline">\(\tilde{p}_t\)</span> in place of the single-occasion <span class="math inline">\(p\)</span>:</p>
+<p><span class="math display">\[\chi_T = 1\]</span></p>
+<p><span class="math display">\[\chi_t = (1 - \phi_t) + \phi_t (1 - \tilde{p}_{t+1}) \chi_{t+1}\]</span></p>
+</section>
+<section id="the-full-likelihood" class="level2">
+<h2 class="anchored" data-anchor-id="the-full-likelihood">The full likelihood</h2>
+<p>The full robust design likelihood is the product of the two parts:</p>
+<p><span class="math display">\[\mathcal{L} = \mathcal{L}_{\text{open}}(\phi, \tilde{p}) \times \prod_{t=1}^{T} \mathcal{L}_{\text{closed},t}(p_t)\]</span></p>
+<p>The closed-population component is estimated separately within each primary period and delivers <span class="math inline">\(\hat{p}_t\)</span> and <span class="math inline">\(\hat{N}_t\)</span>. The open-population component uses <span class="math inline">\(\tilde{p}_t\)</span> derived from <span class="math inline">\(\hat{p}_t\)</span> and delivers <span class="math inline">\(\hat{\phi}_t\)</span>. The two parts talk to each other through <span class="math inline">\(\tilde{p}_t\)</span>, which is the bridge between the two time scales.</p>
+</section>
+</section>
+<section id="what-we-can-now-estimate" class="level1">
+<h1>What we can now estimate</h1>
+<p>The robust design delivers parameters that neither LP nor CJS could provide alone:</p>
+<table class="table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Symbol</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Population size at each primary period</td>
+<td><span class="math inline">\(N_t\)</span></td>
+<td>Closed component</td>
+</tr>
+<tr class="even">
+<td>Detection probability (single occasion)</td>
+<td><span class="math inline">\(p\)</span></td>
+<td>Closed component</td>
+</tr>
+<tr class="odd">
+<td>Effective detection probability (per primary period)</td>
+<td><span class="math inline">\(\tilde{p}_t\)</span></td>
+<td>Derived from <span class="math inline">\(p\)</span> and <span class="math inline">\(s\)</span></td>
+</tr>
+<tr class="even">
+<td>Apparent survival between primary periods</td>
+<td><span class="math inline">\(\phi_t\)</span></td>
+<td>Open component</td>
+</tr>
+<tr class="odd">
+<td>Population growth rate</td>
+<td><span class="math inline">\(\lambda_t = N_{t+1}/N_t\)</span></td>
+<td>Derived from <span class="math inline">\(N_t\)</span></td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(\lambda_t\)</span> is perhaps the most practically useful derived quantity of all. It tells you directly whether the population is growing, stable, or declining between primary periods, and it is estimated honestly, accounting for imperfect detection at both the secondary occasion level and the primary period level.</p>
+</section>
+<section id="a-small-simulation" class="level1">
+<h1>A small simulation</h1>
+<p>Let us simulate a robust design dataset and get a feel for how the parameter estimates behave. We will use six primary periods with three secondary occasions each, and keep everything simple with constant <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span>. Six primary periods gives the model five survival intervals to work with, which is enough to estimate <span class="math inline">\(\phi\)</span> reliably.</p>
+<p>Be aware that I’m going to use a package called RMark for the modelling here. I’ll come back to this later on, but just know that it requires another piece of software, called program MARK, to be installed in order to run. You can find it <a href="http://www.phidot.org/software/mark/downloads/">here</a> if you want to download and install it now.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RMark)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>N_true      <span class="ot">&lt;-</span> <span class="dv">300</span>    <span class="co"># Initial population size</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>phi_true    <span class="ot">&lt;-</span> <span class="fl">0.80</span>   <span class="co"># Survival between primary periods</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>p_true      <span class="ot">&lt;-</span> <span class="fl">0.40</span>   <span class="co"># Detection on each secondary occasion</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>n_primary   <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>n_secondary <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Effective detection probability per primary period</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>p_tilde <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> (<span class="dv">1</span> <span class="sc">-</span> p_true)<span class="sc">^</span>n_secondary</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"True N:"</span>, N_true,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"</span><span class="sc">\n</span><span class="st">True phi:"</span>, phi_true,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"</span><span class="sc">\n</span><span class="st">True p (single occasion):"</span>, p_true,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"</span><span class="sc">\n</span><span class="st">Effective p per primary period:"</span>, <span class="fu">round</span>(p_tilde, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>True N: 300 
+True phi: 0.8 
+True p (single occasion): 0.4 
+Effective p per primary period: 0.784</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate capture histories</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>sim_robust <span class="ot">&lt;-</span> <span class="cf">function</span>(N, phi, p, n_prim, n_sec, <span class="at">seed =</span> <span class="dv">1988</span>) {</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(seed)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># True alive state across primary periods</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  alive <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> n_prim)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  alive[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n_prim) {</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    alive[, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(N, <span class="dv">1</span>, alive[, t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">*</span> phi)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Detection history: N x (n_prim * n_sec)</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  det <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> n_prim <span class="sc">*</span> n_sec)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_prim) {</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sec) {</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>      col <span class="ot">&lt;-</span> (t <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> n_sec <span class="sc">+</span> s</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>      det[, col] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(N, <span class="dv">1</span>, alive[, t] <span class="sc">*</span> p)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Keep only animals detected at least once</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  det[<span class="fu">rowSums</span>(det) <span class="sc">&gt;</span> <span class="dv">0</span>, ]</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>ch_data <span class="ot">&lt;-</span> <span class="fu">sim_robust</span>(N_true, phi_true, p_true, n_primary, n_secondary)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>ch_strings <span class="ot">&lt;-</span> <span class="fu">apply</span>(ch_data, <span class="dv">1</span>, paste, <span class="at">collapse =</span> <span class="st">""</span>)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>rd_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ch =</span> ch_strings, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Number of individuals detected at least once:"</span>, <span class="fu">nrow</span>(rd_df), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of individuals detected at least once: 281 </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"First 10 capture histories:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>First 10 capture histories:</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ch_strings, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "101101100010111110" "000001101111100001" "111111000000011000"
+ [4] "001100000000000000" "110101011110011101" "100010000000000000"
+ [7] "010011110000000000" "000101010001000110" "100000000000000000"
+[10] "110100100100000000"</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Process data for robust design in RMark</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># time.intervals: 0 = within primary period (closed), 1 = between primary periods (open)</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 6 primary periods x 3 secondary occasions = 18 columns</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Intervals: 0 0 | 1 | 0 0 | 1 | 0 0 | 1 | 0 0 | 1 | 0 0 | 1 | 0 0</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>time_intervals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>rd_processed <span class="ot">&lt;-</span> <span class="fu">process.data</span>(rd_df,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                              <span class="at">model =</span> <span class="st">"Robust"</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>                              <span class="at">time.intervals =</span> time_intervals)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>rd_ddl <span class="ot">&lt;-</span> <span class="fu">make.design.data</span>(rd_processed)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit model with constant phi and p, no temporary emigration</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># GammaPrime and GammaDoublePrime fixed to -10 on logit scale (effectively zero)</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co"># We will deal with temporary emigration properly on the next page</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>rd_fit <span class="ot">&lt;-</span> <span class="fu">mark</span>(rd_processed, rd_ddl,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">model.parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>                 <span class="at">S              =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>),</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>                 <span class="at">p              =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>),</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>                 <span class="at">GammaPrime     =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="at">fixed =</span> <span class="sc">-</span><span class="dv">10</span>),</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">GammaDoublePrime =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="at">fixed =</span> <span class="sc">-</span><span class="dv">10</span>)</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>               ),</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>               <span class="at">output =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>               <span class="at">silent =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> rd_fit<span class="sc">$</span>results<span class="sc">$</span>beta</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>phi_est <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[<span class="st">"S:(Intercept)"</span>, <span class="st">"estimate"</span>])</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>phi_lcl <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[<span class="st">"S:(Intercept)"</span>, <span class="st">"estimate"</span>] <span class="sc">-</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                    <span class="fl">1.96</span> <span class="sc">*</span> beta[<span class="st">"S:(Intercept)"</span>, <span class="st">"se"</span>])</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>phi_ucl <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[<span class="st">"S:(Intercept)"</span>, <span class="st">"estimate"</span>] <span class="sc">+</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                    <span class="fl">1.96</span> <span class="sc">*</span> beta[<span class="st">"S:(Intercept)"</span>, <span class="st">"se"</span>])</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>p_est <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[<span class="st">"p:(Intercept)"</span>, <span class="st">"estimate"</span>])</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>p_lcl <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[<span class="st">"p:(Intercept)"</span>, <span class="st">"estimate"</span>] <span class="sc">-</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>                  <span class="fl">1.96</span> <span class="sc">*</span> beta[<span class="st">"p:(Intercept)"</span>, <span class="st">"se"</span>])</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>p_ucl <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[<span class="st">"p:(Intercept)"</span>, <span class="st">"estimate"</span>] <span class="sc">+</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>                  <span class="fl">1.96</span> <span class="sc">*</span> beta[<span class="st">"p:(Intercept)"</span>, <span class="st">"se"</span>])</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Survival estimate (true ="</span>, phi_true, <span class="st">"):"</span>,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round</span>(phi_est, <span class="dv">3</span>),</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"  95% CI:"</span>, <span class="fu">round</span>(phi_lcl, <span class="dv">3</span>), <span class="st">"to"</span>, <span class="fu">round</span>(phi_ucl, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Survival estimate (true = 0.8 ): 0.781   95% CI: 0.75 to 0.809</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Detection estimate (true ="</span>, p_true, <span class="st">"):"</span>,</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round</span>(p_est, <span class="dv">3</span>),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"  95% CI:"</span>, <span class="fu">round</span>(p_lcl, <span class="dv">3</span>), <span class="st">"to"</span>, <span class="fu">round</span>(p_ucl, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Detection estimate (true = 0.4 ): 0.025   95% CI: 0.024 to 0.026</code></pre>
+</div>
+</div>
+<p>The estimates should land reasonably close to the true values. They will not be exact because we are working with a simulated sample, but the true values should sit comfortably within the confidence intervals.</p>
+</section>
+<section id="what-is-still-missing" class="level1">
+<h1>What is still missing</h1>
+<p>The model above fixes temporary emigration to zero, which is a simplification we have made deliberately. In reality, animals may temporarily leave your study area between primary periods and return later. They are not dead and not permanently gone, but during their absence they cannot be detected, which creates yet another flavour of ambiguous non-detection.</p>
+<p>This is temporary emigration, captured by the parameters <span class="math inline">\(\gamma'\)</span> and <span class="math inline">\(\gamma''\)</span> (gamma prime and gamma double prime) that we have quietly set aside here. It is the subject of the next page.</p>
+<p>For now, the important thing is that you have the core structure. Closure within primary periods gives you <span class="math inline">\(N_t\)</span> and <span class="math inline">\(p\)</span>. Openness between primary periods gives you <span class="math inline">\(\phi\)</span>. The two time scales work together through <span class="math inline">\(\tilde{p}_t\)</span>. That structure is the robust design.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
