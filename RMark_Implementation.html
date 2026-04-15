@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Deon Roos">
-<meta name="dcterms.date" content="2026-03-04">
+<meta name="dcterms.date" content="2026-04-12">
 
 <title>Robust Design Mark-Recapture - Implementing the Robust Design in RMark</title>
 <style>
@@ -98,6 +98,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -208,7 +209,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 4, 2026</p>
+      <p class="date">April 12, 2026</p>
     </div>
   </div>
   
@@ -248,8 +249,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="the-structure-of-covariates-in-rmark" class="level2">
 <h2 class="anchored" data-anchor-id="the-structure-of-covariates-in-rmark">The structure of covariates in RMark</h2>
 <p>In RMark, covariates can be of two types.</p>
-<p><strong>Individual covariates</strong> are fixed properties of each animal: sex, age at first capture, body condition measured once. These go directly into the data frame as a column alongside <code>ch</code>, one value per row.</p>
-<p><strong>Time-varying covariates</strong> change across occasions: temperature on each sampling day, season at each primary period. For the survival and availability parameters, these vary at the primary period level and are added as numbered columns (<code>varname1</code>, <code>varname2</code>, …, one per primary period). For detection, they vary at the secondary occasion level and are added similarly, one column per secondary occasion across all primary periods. RMark matches these to the correct design matrix rows automatically.</p>
+<p>Individual covariates are fixed properties of each animal: sex, age at first capture, body condition measured once. These go directly into the data frame as a column alongside <code>ch</code>, one value per row.</p>
+<p>Time-varying covariates change across occasions: temperature on each sampling day, season at each primary period. For the survival and availability parameters, these vary at the primary period level and are added as numbered columns (<code>varname1</code>, <code>varname2</code>, …, one per primary period). For detection, they vary at the secondary occasion level and are added similarly, one column per secondary occasion across all primary periods. RMark matches these to the correct design matrix rows automatically.</p>
 </section>
 </section>
 <section id="how-should-your-data-be-organised" class="level1">
@@ -477,12 +478,12 @@ f0:session6                  -2.0558175 0.3328917 -2.7082852 -1.4033499</code></
 <section id="visualising-the-results" class="level1">
 <h1>Visualising the results</h1>
 <p>The logic for every predicted relationship figure in this tutorial follows the same four steps, and once you understand them you can apply them to any parameter in any model.</p>
-<p><strong>Step 1: Extract the relevant coefficients from the beta table.</strong> - The beta table gives you the estimated intercept and slope for each parameter on the logit scale. For a survival model with one covariate, you need the intercept (<span class="math inline">\(\beta_0\)</span>) and the slope (<span class="math inline">\(\beta_1\)</span>). For detection, you need the same two things for <span class="math inline">\(\alpha_0\)</span> and <span class="math inline">\(\alpha_1\)</span>. You also need the standard errors for both, which you will use in step 3.</p>
-<p><strong>Step 2: Build a sequence of covariate values and generate predictions on the logit scale.</strong> - Create a vector of evenly spaced values spanning the range of your covariate. For each value <span class="math inline">\(x\)</span>, calculate <span class="math inline">\(\beta_0 + \beta_1 \times x\)</span>. This gives you the predicted value on the logit scale across the range of the covariate.</p>
-<p><strong>Step 3: Calculate uncertainty using the delta method.</strong> - The confidence interval cannot be calculated by simply adding and subtracting 1.96 standard errors from the prediction, because the prediction combines two uncertain quantities: the intercept and the slope. The delta method accounts for both. The variance of <span class="math inline">\(\beta_0 + \beta_1 \times x\)</span> on the logit scale is:</p>
+<p>Start by extracting the relevant coefficients from the beta table. The beta table gives you the estimated intercept and slope for each parameter on the logit scale. For a survival model with one covariate, you need the intercept (<span class="math inline">\(\beta_0\)</span>) and the slope (<span class="math inline">\(\beta_1\)</span>). For detection, you need the same two things for <span class="math inline">\(\alpha_0\)</span> and <span class="math inline">\(\alpha_1\)</span>. You also need the standard errors for both, which you will use in the uncertainty step.</p>
+<p>Next, build a sequence of covariate values and generate predictions on the logit scale. Create a vector of evenly spaced values spanning the range of your covariate. For each value <span class="math inline">\(x\)</span>, calculate <span class="math inline">\(\beta_0 + \beta_1 \times x\)</span>. This gives you the predicted value on the logit scale across the range of the covariate.</p>
+<p>Then calculate uncertainty using the delta method. The confidence interval cannot be calculated by simply adding and subtracting 1.96 standard errors from the prediction, because the prediction combines two uncertain quantities: the intercept and the slope. The delta method accounts for both. The variance of <span class="math inline">\(\beta_0 + \beta_1 \times x\)</span> on the logit scale is:</p>
 <p><span class="math inline">\(\text{Var} = \text{SE}_{\beta_0}^2 + x^2 \times \text{SE}_{\beta_1}^2 + 2x \times \text{Cov}(\beta_0, \beta_1)\)</span></p>
-<p>The covariance term <span class="math inline">\(\text{Cov}(\beta_0, \beta_1)\)</span> comes from the variance-covariance matrix of the model ( <code>rd_fit$results$beta.vcv</code>), indexed by the row and column positions of the two parameters in the beta table.</p>
-<p><strong>Step 4: Back-transform everything with <code>plogis()</code>.</strong> - The predictions and confidence interval bounds are all on the logit scale. Apply <code>plogis()</code> to convert them to probabilities before plotting. The lower bound is <code>plogis(prediction - 1.96 * sqrt(variance))</code> and the upper bound is <code>plogis(prediction + 1.96 * sqrt(variance))</code>.</p>
+<p>The covariance term <span class="math inline">\(\text{Cov}(\beta_0, \beta_1)\)</span> comes from the variance-covariance matrix of the model (<code>rd_fit$results$beta.vcv</code>), indexed by the row and column positions of the two parameters in the beta table.</p>
+<p>Finally, back-transform everything with <code>plogis()</code>. The predictions and confidence interval bounds are all on the logit scale. Apply <code>plogis()</code> to convert them to probabilities before plotting. The lower bound is <code>plogis(prediction - 1.96 * sqrt(variance))</code> and the upper bound is <code>plogis(prediction + 1.96 * sqrt(variance))</code>.</p>
 <p>When you apply this to your own data, the only things that change are the covariate name, the row positions of the relevant parameters in the beta table, and the range of covariate values you predict over. The structure of the code is identical every time.</p>
 <section id="survival-as-a-function-of-body-condition" class="level2">
 <h2 class="anchored" data-anchor-id="survival-as-a-function-of-body-condition">Survival as a function of body condition</h2>
@@ -525,7 +526,7 @@ f0:session6                  -2.0558175 0.3328917 -2.7082852 -1.4033499</code></
 <span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">x        =</span> <span class="st">"Body condition (standardised)"</span>,</span>
 <span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">y        =</span> <span class="fu">expression</span>(<span class="fu">hat</span>(phi))</span>
 <span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dark_site</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="RMark_Implementation_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
@@ -569,7 +570,7 @@ f0:session6                  -2.0558175 0.3328917 -2.7082852 -1.4033499</code></
 <span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">x        =</span> <span class="st">"Temperature (standardised)"</span>,</span>
 <span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">y        =</span> <span class="fu">expression</span>(<span class="fu">hat</span>(p))</span>
 <span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dark_site</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="RMark_Implementation_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
@@ -612,7 +613,7 @@ f0:session6                  -2.0558175 0.3328917 -2.7082852 -1.4033499</code></
 <span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">x        =</span> <span class="st">"Primary period"</span>,</span>
 <span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">y        =</span> <span class="fu">expression</span>(<span class="fu">hat</span>(N))</span>
 <span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dark_site</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="RMark_Implementation_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
@@ -624,10 +625,10 @@ f0:session6                  -2.0558175 0.3328917 -2.7082852 -1.4033499</code></
 <section id="a-note-on-your-real-data" class="level1">
 <h1>A note on your real data</h1>
 <p>Everything above used simulated data where we knew the true values. With your own data there are a few practical things to be careful about.</p>
-<p><strong>Standardise your continuous covariates.</strong> Subtract the mean and divide by the standard deviation before fitting. MARK can be numerically unstable with covariates on very different scales, and standardised coefficients are directly comparable in magnitude. This is especially important when you write up: a coefficient of 0.3 on a standardised covariate is interpretable. A coefficient of 0.003 on rainfall measured in millimetres is not.</p>
-<p><strong>Check for missing covariate values.</strong> RMark does not handle <code>NA</code> in covariates gracefully. Either impute or drop individuals with missing covariate data before calling <code>process.data()</code>.</p>
-<p><strong>Make sure your <code>time.intervals</code> matches your data structure exactly.</strong> The most common source of cryptic errors in RMark is a mismatch between the length of the capture history strings and the length of <code>time.intervals</code>. Use the <code>build_time_intervals()</code> function above rather than constructing the vector by hand.</p>
-<p><strong>Keep your raw data and your RMark data frame separate.</strong> You will almost certainly need the original data again for plotting, checking, or sharing. Do not modify it in place.</p>
+<p>Standardise your continuous covariates. Subtract the mean and divide by the standard deviation before fitting. MARK can be numerically unstable with covariates on very different scales, and standardised coefficients are directly comparable in magnitude. This is especially important when you write up: a coefficient of 0.3 on a standardised covariate is interpretable. A coefficient of 0.003 on rainfall measured in millimetres is not.</p>
+<p>Check for missing covariate values. RMark does not handle <code>NA</code> in covariates gracefully. Either impute or drop individuals with missing covariate data before calling <code>process.data()</code>.</p>
+<p>Make sure your <code>time.intervals</code> matches your data structure exactly. The most common source of cryptic errors in RMark is a mismatch between the length of the capture history strings and the length of <code>time.intervals</code>. Use the <code>build_time_intervals()</code> function above rather than constructing the vector by hand.</p>
+<p>Keep your raw data and your RMark data frame separate. You will almost certainly need the original data again for plotting, checking, or sharing. Do not modify it in place.</p>
 
 
 </section>

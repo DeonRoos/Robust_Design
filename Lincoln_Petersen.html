@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Deon Roos">
-<meta name="dcterms.date" content="2026-03-04">
+<meta name="dcterms.date" content="2026-04-12">
 
 <title>Robust Design Mark-Recapture - Capture-Recapture Basics: The Lincoln-Petersen Estimator</title>
 <style>
@@ -98,6 +98,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -195,7 +196,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 4, 2026</p>
+      <p class="date">April 12, 2026</p>
     </div>
   </div>
   
@@ -334,7 +335,7 @@ SE: 54.8
 <span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"Distribution of "</span>, n_sims, <span class="st">" Lincoln-Petersen estimates"</span>),</span>
 <span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"True N = 200, n1 = 50, n2 = 40"</span></span>
 <span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dark_site</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="Lincoln_Petersen_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
@@ -358,7 +359,7 @@ SE: 54.8
 <p>It gives you a snapshot of <span class="math inline">\(N\)</span> at one point in time. It says nothing about whether <span class="math inline">\(N\)</span> is increasing or decreasing. It says nothing about survival. It cannot distinguish between a population that is stable and one that is rapidly declining but happens to be large right now.</p>
 <p>It also requires closure, which is only defensible over very short time windows. If your study spans weeks or months, animals will be born and die, and the assumption of a fixed, closed population becomes increasingly heroic.</p>
 <p>And critically, with only two sampling occasions, you have very limited ability to estimate detection probability reliably. If <span class="math inline">\(m_2\)</span> happens to be low because you had a bad day of sampling rather than because detection probability is genuinely low, you will overestimate <span class="math inline">\(N\)</span>.</p>
-<p>These limitations are not reasons to dismiss the Lincoln-Petersen estimator. They are reasons to understand it as a starting point. The models that follow in susbequent pages are, in various ways, responses to exactly these limitations.</p>
+<p>These limitations are not reasons to dismiss the Lincoln-Petersen estimator. They are reasons to understand it as a starting point. The models that follow in subsequent pages are, in various ways, responses to exactly these limitations.</p>
 </section>
 <section id="where-we-are-headed" class="level1">
 <h1>Where we are headed</h1>

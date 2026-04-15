@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Deon Roos">
-<meta name="dcterms.date" content="2026-03-04">
+<meta name="dcterms.date" content="2026-04-12">
 
 <title>Robust Design Mark-Recapture - The Detection Problem</title>
 <style>
@@ -98,6 +98,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -193,7 +194,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 4, 2026</p>
+      <p class="date">April 12, 2026</p>
     </div>
   </div>
   
@@ -206,6 +207,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="how-many-animals-are-there-and-are-they-surviving" class="level1">
 <h1>How many animals are there, and are they surviving?</h1>
 <p>Two of the most fundamental questions in ecology and conservation are: how many individuals of a species are there, and how well are they surviving? How many Atlantic salmon are in the River Dee? What proportion of juveniles survive to adulthood? Is that survival rate declining? Is a conservation intervention actually working?</p>
+<blockquote class="blockquote">
+<p><strong>Lily</strong>, in your case these questions become; How many willow warblers are present at your study sites? How well are they surviving between breeding seasons? Is survival declining? Are any interventions or habitat changes making a difference?</p>
+<p>These are not easy questions to answer, and the reason comes down to the same problem that runs through this entire tutorial: you will never see every bird that is there.</p>
+</blockquote>
 <p>These questions sound simple. They are not. And the reason they are not comes down to a problem that is easy to state but surprisingly easy to forget about when you are standing in a river with a net.</p>
 </section>
 <section id="the-naive-approach" class="level1">
@@ -284,7 +289,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Green = truly alive  |  Orange = actually detected"</span></span>
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>occasions) <span class="sc">+</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dark_site</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="Detection_Problem_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
@@ -320,7 +325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Two explanations for a non-recapture"</span>,</span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste0</span>(<span class="st">"True \u03d5 = "</span>, phi_true, <span class="st">"  |  True p = "</span>, p_true)</span>
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dark_site</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="Detection_Problem_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
@@ -338,10 +343,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="what-we-need-to-make-progress" class="level1">
 <h1>What we need to make progress</h1>
-<p>To estimate survival and detection simultaneously, rather than having them hopelessly tangled together, we need three things:</p>
-<p><strong>Individually marked animals.</strong> Not just a count of how many we saw, but a record of <em>which specific individuals</em> we saw on each occasion. This is what allows us to track fates through time rather than just tallying up numbers.</p>
-<p><strong>Multiple sampling occasions.</strong> A single occasion gives us a count. Multiple occasions give us a <em>pattern</em> of detections and non-detections across time, and that pattern contains the information we need to estimate both <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span> separately.</p>
-<p><strong>A model that represents both processes explicitly.</strong> One that says, formally, that a detection requires both survival and detection, and uses that structure to estimate each parameter on its own terms.</p>
+<p>To estimate survival and detection simultaneously, rather than having them hopelessly tangled together, we need three things.</p>
+<p>First, individually marked animals. Not just a count of how many we saw, but a record of <em>which specific individuals</em> we saw on each occasion. This is what allows us to track fates through time rather than just tallying up numbers.</p>
+<p>Second, multiple sampling occasions. A single occasion gives us a count. Multiple occasions give us a <em>pattern</em> of detections and non-detections across time, and that pattern contains the information we need to estimate both <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span> separately.</p>
+<p>Third, a model that represents both processes explicitly. One that says, formally, that a detection requires both survival and detection, and uses that structure to estimate each parameter on its own terms.</p>
 <p>The next page introduces the simplest version of this thinking: the Lincoln-Petersen estimator. It does not quite tick all three boxes but it builds the intuition clearly and cleanly before we move on to models that do.</p>
 
 

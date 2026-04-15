@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Deon Roos">
-<meta name="dcterms.date" content="2026-03-04">
+<meta name="dcterms.date" content="2026-04-12">
 
 <title>Robust Design Mark-Recapture - From Lincoln-Petersen to the Cormack-Jolly-Seber Model</title>
 <style>
@@ -98,6 +98,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -195,7 +196,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 4, 2026</p>
+      <p class="date">April 12, 2026</p>
     </div>
   </div>
   
@@ -278,7 +279,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Not detected"</span> <span class="ot">=</span> <span class="st">"#FF5733"</span>)) <span class="sc">+</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">labels =</span> <span class="fu">paste</span>(<span class="st">"Occasion"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)) <span class="sc">+</span></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dark_site</span>() <span class="sc">+</span></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -294,8 +295,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="the-two-processes" class="level1">
 <h1>The two processes</h1>
 <p>Just like in the previous page, CJS explicitly models two separate processes:</p>
-<p><strong>Process 1: Survival.</strong> Between each pair of consecutive occasions, an animal either survives with probability <span class="math inline">\(\phi\)</span> (e.g.&nbsp;<span class="math inline">\(0.9\)</span> or 90%) or dies with probability <span class="math inline">\(1 - \phi\)</span> (e.g.&nbsp;<span class="math inline">\(1-0.9=0.1\)</span> or 100-90=10%). Once dead, it stays dead. It cannot come back. Zombies don’t exist in this house.</p>
-<p><strong>Process 2: Detection.</strong> On each occasion, an animal that is alive is detected with probability <span class="math inline">\(p\)</span>, or missed with probability <span class="math inline">\(1 - p\)</span>.</p>
+<p>The first is survival. Between each pair of consecutive occasions, an animal either survives with probability <span class="math inline">\(\phi\)</span> (e.g.&nbsp;<span class="math inline">\(0.9\)</span> or 90%) or dies with probability <span class="math inline">\(1 - \phi\)</span> (e.g.&nbsp;<span class="math inline">\(1-0.9=0.1\)</span> or 100-90=10%). Once dead, it stays dead. It cannot come back. Zombies don’t exist in this house.</p>
+<p>The second is detection. On each occasion, an animal that is alive is detected with probability <span class="math inline">\(p\)</span>, or missed with probability <span class="math inline">\(1 - p\)</span>.</p>
 <p>A detection in your data requires <em>both</em> processes to go the right way: the animal must have survived to that occasion, and you must have detected it. A non-detection could be either process failing.</p>
 <p>This is the same logic as the previous page, just now written as a model with two explicit parameters.</p>
 </section>
@@ -306,9 +307,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Take an animal with history <code>1 0 1 1</code>. It was caught on occasion 1 (that is how it got tagged), missed on occasion 2, then caught on occasions 3 and 4.</p>
 <p>What is the probability of observing this history? Working occasion by occasion after first capture:</p>
 <ul>
-<li><p><strong>Occasion 1 to 2</strong>: The animal survived (<span class="math inline">\(\phi\)</span>) but was not detected (<span class="math inline">\(1 - p\)</span>). Probability: <span class="math inline">\(\phi \times (1 - p)\)</span></p></li>
-<li><p><strong>Occasion 2 to 3</strong>: The animal survived (<span class="math inline">\(\phi\)</span>) and was detected (<span class="math inline">\(p\)</span>). Probability: <span class="math inline">\(\phi \times p\)</span></p></li>
-<li><p><strong>Occasion 3 to 4</strong>: The animal survived (<span class="math inline">\(\phi\)</span>) and was detected (<span class="math inline">\(p\)</span>). Probability: <span class="math inline">\(\phi \times p\)</span></p></li>
+<li><p>Occasion 1 to 2: the animal survived (<span class="math inline">\(\phi\)</span>) but was not detected (<span class="math inline">\(1 - p\)</span>). Probability: <span class="math inline">\(\phi \times (1 - p)\)</span></p></li>
+<li><p>Occasion 2 to 3: the animal survived (<span class="math inline">\(\phi\)</span>) and was detected (<span class="math inline">\(p\)</span>). Probability: <span class="math inline">\(\phi \times p\)</span></p></li>
+<li><p>Occasion 3 to 4: the animal survived (<span class="math inline">\(\phi\)</span>) and was detected (<span class="math inline">\(p\)</span>). Probability: <span class="math inline">\(\phi \times p\)</span></p></li>
 </ul>
 <p>Putting it together, the probability of the full history <code>1 0 1 1</code> (after first capture) is:</p>
 <p><span class="math display">\[P(\text{1 0 1 1}) = [\phi(1-p)] \times [\phi \cdot p] \times [\phi \cdot p]\]</span></p>
@@ -332,7 +333,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Probability of capture history 1 0 1 1"</span>,</span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">expression</span>(phi<span class="sc">^</span><span class="dv">3</span> <span class="sc">~</span> <span class="st">"\u00d7"</span> <span class="sc">~</span> p<span class="sc">^</span><span class="dv">2</span> <span class="sc">~</span> <span class="st">"\u00d7"</span> <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">-</span> p))</span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dark_site</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="CJS_Model_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
