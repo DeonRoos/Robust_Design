@@ -268,7 +268,7 @@ The practical page. How to organise your data, write out the full model, fit it,
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("index\.qmd");
+        var filterRegex = new RegExp("https:\/\/deonroos\.github\.io\/Robust_Design\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

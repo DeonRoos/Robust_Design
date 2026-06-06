@@ -761,7 +761,7 @@ f0:session6                  -2.0558175 0.3328917 -2.7082852 -1.4033499</code></
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("index\.qmd");
+        var filterRegex = new RegExp("https:\/\/deonroos\.github\.io\/Robust_Design\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
