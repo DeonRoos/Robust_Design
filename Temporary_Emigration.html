@@ -2,15 +2,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.353">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Deon Roos">
-<meta name="dcterms.date" content="2026-04-12">
+<meta name="dcterms.date" content="2026-06-06">
 
-<title>Robust Design Mark-Recapture - Temporary Emigration</title>
+<title>Temporary Emigration – Robust Design Mark-Recapture</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -23,6 +26,7 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 /* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -66,22 +70,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-43b2d995d73a1754bd3a6f5d899fe64b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-84a65f7c8d3e6e4752320fbc265103cc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -90,66 +101,97 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
+<script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Robust Design Mark-Recapture</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./GLM_Refresher.html" rel="" target="">
- <span class="menu-text">A refresher on GLMs</span></a>
+    <a class="nav-link" href="./GLM_Refresher.html"> 
+<span class="menu-text">A refresher on GLMs</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./Detection_Problem.html" rel="" target="">
- <span class="menu-text">The detection problem</span></a>
+    <a class="nav-link" href="./Detection_Problem.html"> 
+<span class="menu-text">The detection problem</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./Lincoln_Petersen.html" rel="" target="">
- <span class="menu-text">Lincoln-Petersen estimator</span></a>
+    <a class="nav-link" href="./Lincoln_Petersen.html"> 
+<span class="menu-text">Lincoln-Petersen estimator</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./CJS_Model.html" rel="" target="">
- <span class="menu-text">Cormack-Jolly-Seber model</span></a>
+    <a class="nav-link" href="./CJS_Model.html"> 
+<span class="menu-text">Cormack-Jolly-Seber model</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./Robust_Design_Likelihood.html" rel="" target="">
- <span class="menu-text">The robust design</span></a>
+    <a class="nav-link" href="./Robust_Design_Likelihood.html"> 
+<span class="menu-text">The robust design</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./Temporary_Emigration.html" rel="" target="" aria-current="page">
- <span class="menu-text">Temporary emigration</span></a>
+    <a class="nav-link active" href="./Temporary_Emigration.html" aria-current="page"> 
+<span class="menu-text">Temporary emigration</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./RMark_Implementation.html" rel="" target="">
- <span class="menu-text">Implementing in RMark</span></a>
+    <a class="nav-link" href="./RMark_Implementation.html"> 
+<span class="menu-text">Implementing in RMark</span></a>
   </li>  
 </ul>
-            <div class="quarto-navbar-tools ms-auto">
-</div>
           </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -201,7 +243,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 12, 2026</p>
+      <p class="date">June 6, 2026</p>
     </div>
   </div>
   
@@ -209,7 +251,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
   
 
+
 </header>
+
 
 <section id="another-ambiguous-zero" class="level1">
 <h1>Another ambiguous zero</h1>
@@ -244,9 +288,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><span class="math inline">\(\gamma'_t\)</span> is the probability that an animal is <strong>unavailable</strong> at primary period <span class="math inline">\(t\)</span>, given that it was also <strong>unavailable</strong> at primary period <span class="math inline">\(t-1\)</span>. In other words, the probability of <em>staying away</em> once already absent.</p>
 <p>So <span class="math inline">\(\gamma''\)</span> governs transitions from available to unavailable, and <span class="math inline">\(\gamma'\)</span> governs staying unavailable once you are already there.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
@@ -282,10 +326,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Between consecutive primary periods"</span>) <span class="sc">+</span></span>
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void_dark_site</span>() <span class="sc">+</span></span>
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">colour =</span> <span class="st">"#999999"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">colour =</span> <span class="st">"#999999"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Temporary_Emigration_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="Temporary_Emigration_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>The key thing to notice is that the two gamma parameters allow the model to represent <strong>memory</strong> in the availability process. Whether an animal is available at time <span class="math inline">\(t\)</span> can depend on whether it was available at time <span class="math inline">\(t-1\)</span>. This is a Markov process, which is just a fancy way of saying the next state depends only on the current state.</p>
@@ -303,79 +351,142 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>This is the special case where <span class="math inline">\(\gamma' = \gamma''\)</span>. The probability of being unavailable at time <span class="math inline">\(t\)</span> is the same regardless of whether the animal was available or unavailable at time <span class="math inline">\(t-1\)</span>. Availability has no memory. Each primary period, each animal independently draws its availability state with the same probability.</p>
 <p>Under random temporary emigration, the proportion of animals available at any given time is simply <span class="math inline">\(1 - \gamma'\)</span>, and this proportion is constant across primary periods.</p>
 <p>Random temporary emigration is a simpler model with one fewer parameter, and it is often a reasonable starting assumption. If you have no strong biological reason to expect that availability is persistent, it is a sensible default.</p>
+<p>Use the sliders below to explore how the two gamma parameters shape availability patterns. Start with <span class="math inline">\(\gamma' \approx \gamma''\)</span> for random emigration, then pull them apart to see Markovian behaviour emerge.</p>
 <div class="cell">
-<details>
+<details class="code-fold hidden">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">666</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>n_periods <span class="ot">&lt;-</span> <span class="dv">8</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>n_animals <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Markovian: gamma_prime != gamma_double_prime</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Here gamma_prime = prob of staying away, gamma_double_prime = prob of leaving</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>gamma_prime_m      <span class="ot">&lt;-</span> <span class="fl">0.8</span>  <span class="co"># High: once away, tends to stay away</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>gamma_dbl_prime_m  <span class="ot">&lt;-</span> <span class="fl">0.3</span>  <span class="co"># Lower: available animals less likely to leave</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Random: gamma_prime == gamma_double_prime</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>gamma_random <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>sim_availability <span class="ot">&lt;-</span> <span class="cf">function</span>(n_animals, n_periods, gp, gdp, <span class="at">seed =</span> <span class="dv">1988</span>) {</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(seed)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  avail <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> n_animals, <span class="at">ncol =</span> n_periods)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  avail[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span>  <span class="co"># All available at start</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n_periods) {</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_animals) {</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (avail[i, t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">==</span> <span class="dv">1</span>) {</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Was available: leaves with prob gdp (GammaDoublePrime)</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        avail[i, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> gdp)</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Was unavailable: stays away with prob gp (GammaPrime)</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        avail[i, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> gp)</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  avail</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>avail_markov <span class="ot">&lt;-</span> <span class="fu">sim_availability</span>(n_animals, n_periods,</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>                                  gamma_prime_m, gamma_dbl_prime_m)</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>avail_random <span class="ot">&lt;-</span> <span class="fu">sim_availability</span>(n_animals, n_periods,</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>                                  gamma_random, gamma_random)</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>format_avail <span class="ot">&lt;-</span> <span class="cf">function</span>(mat, type) {</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>(mat) <span class="sc">|&gt;</span></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">setNames</span>(<span class="fu">paste0</span>(<span class="st">"P"</span>, <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(mat))) <span class="sc">|&gt;</span></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">"animal"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="sc">-</span>animal, <span class="at">names_to =</span> <span class="st">"period"</span>, <span class="at">values_to =</span> <span class="st">"available"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">type =</span> type,</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">period =</span> <span class="fu">as.integer</span>(<span class="fu">gsub</span>(<span class="st">"P"</span>, <span class="st">""</span>, period)),</span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>      <span class="at">state =</span> <span class="fu">if_else</span>(available <span class="sc">==</span> <span class="dv">1</span>, <span class="st">"Available"</span>, <span class="st">"Unavailable"</span>)</span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>avail_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">format_avail</span>(avail_markov, <span class="st">"Markovian"</span>),</span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">format_avail</span>(avail_random, <span class="st">"Random"</span>)</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(avail_df, <span class="fu">aes</span>(<span class="at">x =</span> period, <span class="at">y =</span> animal, <span class="at">fill =</span> state)) <span class="sc">+</span></span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">colour =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> type) <span class="sc">+</span></span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Available"</span> <span class="ot">=</span> <span class="st">"#00A68A"</span>,</span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Unavailable"</span> <span class="ot">=</span> <span class="st">"#FF5733"</span>)) <span class="sc">+</span></span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_periods, <span class="at">labels =</span> <span class="fu">paste0</span>(<span class="st">"P"</span>, <span class="dv">1</span><span class="sc">:</span>n_periods)) <span class="sc">+</span></span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Primary period"</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="cn">NULL</span>,</span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Availability patterns under Markovian vs random temporary emigration"</span>) <span class="sc">+</span></span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dark_site</span>() <span class="sc">+</span></span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb2" data-startfrom="158" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 157;"><span id="cb2-158"><a href="#cb2-158" aria-hidden="true" tabindex="-1"></a>viewof gp_te <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="fl">0.99</span>]<span class="op">,</span> {</span>
+<span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a>  <span class="dt">value</span><span class="op">:</span> <span class="fl">0.8</span><span class="op">,</span></span>
+<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a>  <span class="dt">step</span><span class="op">:</span> <span class="fl">0.01</span><span class="op">,</span></span>
+<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a>  <span class="dt">label</span><span class="op">:</span> <span class="st">"γ′ — probability of staying unavailable (once already absent)"</span></span>
+<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output-display">
-<p><img src="Temporary_Emigration_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="declaration">
+
 </div>
 </div>
-<p>In the Markovian panel, notice how unavailability tends to persist? Once an animal goes red it tends to stay red for several consecutive periods before returning. In the random panel, unavailability is independent each period, so the pattern looks more scattered with no obvious runs of consecutive absence.</p>
+</div>
+<div class="cell">
+<details class="code-fold hidden">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb3" data-startfrom="167" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 166;"><span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>viewof gdp_te <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="fl">0.99</span>]<span class="op">,</span> {</span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>  <span class="dt">value</span><span class="op">:</span> <span class="fl">0.3</span><span class="op">,</span></span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>  <span class="dt">step</span><span class="op">:</span> <span class="fl">0.01</span><span class="op">,</span></span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>  <span class="dt">label</span><span class="op">:</span> <span class="st">"γ″ — probability of becoming unavailable (if currently present)"</span></span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold hidden">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb4" data-startfrom="176" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 175;"><span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Deterministic PRNG so the grid is stable as sliders move</span></span>
+<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a>  <span class="kw">function</span> <span class="fu">mulberry32</span>(a) {</span>
+<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="kw">function</span>() {</span>
+<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a>      a <span class="op">|=</span> <span class="dv">0</span><span class="op">;</span> a <span class="op">=</span> a <span class="op">+</span> <span class="bn">0x6D2B79F5</span> <span class="op">|</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> t <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">imul</span>(a <span class="op">^</span> a <span class="op">&gt;&gt;&gt;</span> <span class="dv">15</span><span class="op">,</span> <span class="dv">1</span> <span class="op">|</span> a)<span class="op">;</span></span>
+<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a>      t <span class="op">=</span> t <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">imul</span>(t <span class="op">^</span> t <span class="op">&gt;&gt;&gt;</span> <span class="dv">7</span><span class="op">,</span> <span class="dv">61</span> <span class="op">|</span> t) <span class="op">^</span> t<span class="op">;</span></span>
+<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> ((t <span class="op">^</span> t <span class="op">&gt;&gt;&gt;</span> <span class="dv">14</span>) <span class="op">&gt;&gt;&gt;</span> <span class="dv">0</span>) <span class="op">/</span> <span class="dv">4294967296</span><span class="op">;</span></span>
+<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> N_ANIMALS <span class="op">=</span> <span class="dv">6</span><span class="op">;</span></span>
+<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> N_PERIODS <span class="op">=</span> <span class="dv">8</span><span class="op">;</span></span>
+<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Pre-generate a fixed pool of uniform draws (same seed every render)</span></span>
+<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> rng  <span class="op">=</span> <span class="fu">mulberry32</span>(<span class="dv">1988</span>)<span class="op">;</span></span>
+<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> pool <span class="op">=</span> <span class="bu">Array</span><span class="op">.</span><span class="fu">from</span>({ <span class="dt">length</span><span class="op">:</span> N_ANIMALS <span class="op">*</span> N_PERIODS }<span class="op">,</span> () <span class="kw">=&gt;</span> <span class="fu">rng</span>())<span class="op">;</span></span>
+<span id="cb4-193"><a href="#cb4-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-194"><a href="#cb4-194" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Simulate availability</span></span>
+<span id="cb4-195"><a href="#cb4-195" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> avail <span class="op">=</span> []<span class="op">;</span></span>
+<span id="cb4-196"><a href="#cb4-196" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N_ANIMALS<span class="op">;</span> i<span class="op">++</span>) {</span>
+<span id="cb4-197"><a href="#cb4-197" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> row <span class="op">=</span> [<span class="dv">1</span>]<span class="op">;</span> <span class="co">// all present at period 1</span></span>
+<span id="cb4-198"><a href="#cb4-198" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (<span class="kw">let</span> t <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> t <span class="op">&lt;</span> N_PERIODS<span class="op">;</span> t<span class="op">++</span>) {</span>
+<span id="cb4-199"><a href="#cb4-199" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> r <span class="op">=</span> pool[i <span class="op">*</span> N_PERIODS <span class="op">+</span> t]<span class="op">;</span></span>
+<span id="cb4-200"><a href="#cb4-200" aria-hidden="true" tabindex="-1"></a>      row<span class="op">.</span><span class="fu">push</span>(row[t <span class="op">-</span> <span class="dv">1</span>] <span class="op">===</span> <span class="dv">1</span></span>
+<span id="cb4-201"><a href="#cb4-201" aria-hidden="true" tabindex="-1"></a>        <span class="op">?</span> (r <span class="op">&lt;</span> gdp_te <span class="op">?</span> <span class="dv">0</span> <span class="op">:</span> <span class="dv">1</span>)   <span class="co">// present  → leaves    with prob γ″</span></span>
+<span id="cb4-202"><a href="#cb4-202" aria-hidden="true" tabindex="-1"></a>        <span class="op">:</span> (r <span class="op">&lt;</span> gp_te  <span class="op">?</span> <span class="dv">0</span> <span class="op">:</span> <span class="dv">1</span>))<span class="op">;</span> <span class="co">// absent   → stays away with prob γ′</span></span>
+<span id="cb4-203"><a href="#cb4-203" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-204"><a href="#cb4-204" aria-hidden="true" tabindex="-1"></a>    avail<span class="op">.</span><span class="fu">push</span>(row)<span class="op">;</span></span>
+<span id="cb4-205"><a href="#cb4-205" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-206"><a href="#cb4-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-207"><a href="#cb4-207" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Summary statistics</span></span>
+<span id="cb4-208"><a href="#cb4-208" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> flat        <span class="op">=</span> avail<span class="op">.</span><span class="fu">flat</span>()<span class="op">;</span></span>
+<span id="cb4-209"><a href="#cb4-209" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> propUn      <span class="op">=</span> flat<span class="op">.</span><span class="fu">filter</span>(x <span class="kw">=&gt;</span> x <span class="op">===</span> <span class="dv">0</span>)<span class="op">.</span><span class="at">length</span> <span class="op">/</span> flat<span class="op">.</span><span class="at">length</span><span class="op">;</span></span>
+<span id="cb4-210"><a href="#cb4-210" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> expectedUn  <span class="op">=</span> gdp_te <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> gp_te <span class="op">+</span> gdp_te)<span class="op">;</span>   <span class="co">// steady-state unavailability</span></span>
+<span id="cb4-211"><a href="#cb4-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-212"><a href="#cb4-212" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> runs <span class="op">=</span> <span class="dv">0</span><span class="op">,</span> runTotal <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb4-213"><a href="#cb4-213" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N_ANIMALS<span class="op">;</span> i<span class="op">++</span>) {</span>
+<span id="cb4-214"><a href="#cb4-214" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> len <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb4-215"><a href="#cb4-215" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (<span class="kw">let</span> t <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> t <span class="op">&lt;</span> N_PERIODS<span class="op">;</span> t<span class="op">++</span>) {</span>
+<span id="cb4-216"><a href="#cb4-216" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (avail[i][t] <span class="op">===</span> <span class="dv">0</span>) { len<span class="op">++;</span> }</span>
+<span id="cb4-217"><a href="#cb4-217" aria-hidden="true" tabindex="-1"></a>      <span class="cf">else</span> <span class="cf">if</span> (len <span class="op">&gt;</span> <span class="dv">0</span>)      { runs<span class="op">++;</span> runTotal <span class="op">+=</span> len<span class="op">;</span> len <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> }</span>
+<span id="cb4-218"><a href="#cb4-218" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-219"><a href="#cb4-219" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (len <span class="op">&gt;</span> <span class="dv">0</span>) { runs<span class="op">++;</span> runTotal <span class="op">+=</span> len<span class="op">;</span> }</span>
+<span id="cb4-220"><a href="#cb4-220" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-221"><a href="#cb4-221" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> meanRun <span class="op">=</span> runs <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">?</span> (runTotal <span class="op">/</span> runs)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>) <span class="op">:</span> <span class="st">"0.0"</span><span class="op">;</span></span>
+<span id="cb4-222"><a href="#cb4-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-223"><a href="#cb4-223" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> diff     <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(gp_te <span class="op">-</span> gdp_te)<span class="op">;</span></span>
+<span id="cb4-224"><a href="#cb4-224" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> isRandom <span class="op">=</span> diff <span class="op">&lt;</span> <span class="fl">0.05</span><span class="op">;</span></span>
+<span id="cb4-225"><a href="#cb4-225" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> typeText <span class="op">=</span> isRandom</span>
+<span id="cb4-226"><a href="#cb4-226" aria-hidden="true" tabindex="-1"></a>    <span class="op">?</span> <span class="vs">`&lt;strong style="color:#FFD700"&gt;Random&lt;/strong&gt; — γ′ ≈ γ″, availability at each period is independent of the previous one`</span></span>
+<span id="cb4-227"><a href="#cb4-227" aria-hidden="true" tabindex="-1"></a>    <span class="op">:</span> gp_te <span class="op">&gt;</span> gdp_te</span>
+<span id="cb4-228"><a href="#cb4-228" aria-hidden="true" tabindex="-1"></a>      <span class="op">?</span> <span class="vs">`&lt;strong style="color:#FFD700"&gt;Markovian&lt;/strong&gt; — γ′ &gt; γ″, once absent animals tend to stay away for multiple periods`</span></span>
+<span id="cb4-229"><a href="#cb4-229" aria-hidden="true" tabindex="-1"></a>      <span class="op">:</span> <span class="vs">`&lt;strong style="color:#FFD700"&gt;Markovian&lt;/strong&gt; — γ′ &lt; γ″, animals return quickly relative to how often they leave`</span><span class="op">;</span></span>
+<span id="cb4-230"><a href="#cb4-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-231"><a href="#cb4-231" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Build grid rows</span></span>
+<span id="cb4-232"><a href="#cb4-232" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> rows <span class="op">=</span> <span class="vs">`&lt;div&gt;&lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb4-233"><a href="#cb4-233" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="kw">let</span> t <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> t <span class="op">&lt;</span> N_PERIODS<span class="op">;</span> t<span class="op">++</span>) {</span>
+<span id="cb4-234"><a href="#cb4-234" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">+=</span> <span class="vs">`&lt;div style="font-size:11px;color:#888;text-align:center;padding-bottom:4px"&gt;P</span><span class="sc">${</span>t <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="vs">&lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb4-235"><a href="#cb4-235" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-236"><a href="#cb4-236" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N_ANIMALS<span class="op">;</span> i<span class="op">++</span>) {</span>
+<span id="cb4-237"><a href="#cb4-237" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">+=</span> <span class="vs">`&lt;div style="font-size:12px;color:#888;display:flex;align-items:center"&gt;Animal </span><span class="sc">${</span>i <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="vs">&lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb4-238"><a href="#cb4-238" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (<span class="kw">let</span> t <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> t <span class="op">&lt;</span> N_PERIODS<span class="op">;</span> t<span class="op">++</span>) {</span>
+<span id="cb4-239"><a href="#cb4-239" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> ok <span class="op">=</span> avail[i][t] <span class="op">===</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb4-240"><a href="#cb4-240" aria-hidden="true" tabindex="-1"></a>      rows <span class="op">+=</span> <span class="vs">`&lt;div style="background:</span><span class="sc">${</span>ok <span class="op">?</span> <span class="st">"#1a3a2a"</span> <span class="op">:</span> <span class="st">"#3a1a1a"</span><span class="sc">}</span><span class="vs">;border:1px solid </span><span class="sc">${</span>ok <span class="op">?</span> <span class="st">"#00A68A"</span> <span class="op">:</span> <span class="st">"#FF5733"</span><span class="sc">}</span><span class="vs">;border-radius:3px;height:34px;display:flex;align-items:center;justify-content:center;font-size:14px;color:</span><span class="sc">${</span>ok <span class="op">?</span> <span class="st">"#00A68A"</span> <span class="op">:</span> <span class="st">"#FF5733"</span><span class="sc">}</span><span class="vs">"&gt;</span><span class="sc">${</span>ok <span class="op">?</span> <span class="st">"&amp;#10003;"</span> <span class="op">:</span> <span class="st">"&amp;#10007;"</span><span class="sc">}</span><span class="vs">&lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb4-241"><a href="#cb4-241" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-242"><a href="#cb4-242" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-243"><a href="#cb4-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-244"><a href="#cb4-244" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> el <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">"div"</span>)<span class="op">;</span></span>
+<span id="cb4-245"><a href="#cb4-245" aria-hidden="true" tabindex="-1"></a>  el<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">cssText</span> <span class="op">=</span> <span class="st">"background:#202123;border-radius:8px;padding:16px;font-family:sans-serif;color:#cccccc"</span><span class="op">;</span></span>
+<span id="cb4-246"><a href="#cb4-246" aria-hidden="true" tabindex="-1"></a>  el<span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> <span class="vs">`</span></span>
+<span id="cb4-247"><a href="#cb4-247" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;div style="display:grid;grid-template-columns:80px repeat(</span><span class="sc">${</span>N_PERIODS<span class="sc">}</span><span class="vs">,1fr);gap:3px;margin-bottom:8px"&gt;</span><span class="sc">${</span>rows<span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
+<span id="cb4-248"><a href="#cb4-248" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;div style="display:flex;gap:20px;font-size:12px;color:#666;margin-bottom:14px"&gt;</span></span>
+<span id="cb4-249"><a href="#cb4-249" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;span style="color:#00A68A"&gt;&amp;#10003; Available&lt;/span&gt;</span></span>
+<span id="cb4-250"><a href="#cb4-250" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;span style="color:#FF5733"&gt;&amp;#10007; Unavailable (absent from study area)&lt;/span&gt;</span></span>
+<span id="cb4-251"><a href="#cb4-251" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/div&gt;</span></span>
+<span id="cb4-252"><a href="#cb4-252" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px"&gt;</span></span>
+<span id="cb4-253"><a href="#cb4-253" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;div style="background:#252525;border-radius:6px;padding:10px;text-align:center"&gt;</span></span>
+<span id="cb4-254"><a href="#cb4-254" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;div style="font-size:11px;color:#999;margin-bottom:4px"&gt;Expected unavailable&lt;/div&gt;</span></span>
+<span id="cb4-255"><a href="#cb4-255" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;div style="font-size:20px;color:#FF5733"&gt;</span><span class="sc">${</span>(expectedUn <span class="op">*</span> <span class="dv">100</span>)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs">%&lt;/div&gt;</span></span>
+<span id="cb4-256"><a href="#cb4-256" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;/div&gt;</span></span>
+<span id="cb4-257"><a href="#cb4-257" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;div style="background:#252525;border-radius:6px;padding:10px;text-align:center"&gt;</span></span>
+<span id="cb4-258"><a href="#cb4-258" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;div style="font-size:11px;color:#999;margin-bottom:4px"&gt;Observed in simulation&lt;/div&gt;</span></span>
+<span id="cb4-259"><a href="#cb4-259" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;div style="font-size:20px;color:#cccccc"&gt;</span><span class="sc">${</span>(propUn <span class="op">*</span> <span class="dv">100</span>)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs">%&lt;/div&gt;</span></span>
+<span id="cb4-260"><a href="#cb4-260" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;/div&gt;</span></span>
+<span id="cb4-261"><a href="#cb4-261" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;div style="background:#252525;border-radius:6px;padding:10px;text-align:center"&gt;</span></span>
+<span id="cb4-262"><a href="#cb4-262" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;div style="font-size:11px;color:#999;margin-bottom:4px"&gt;Mean absence run&lt;/div&gt;</span></span>
+<span id="cb4-263"><a href="#cb4-263" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;div style="font-size:20px;color:#cccccc"&gt;</span><span class="sc">${</span>meanRun<span class="sc">}</span><span class="vs"> periods&lt;/div&gt;</span></span>
+<span id="cb4-264"><a href="#cb4-264" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;/div&gt;</span></span>
+<span id="cb4-265"><a href="#cb4-265" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/div&gt;</span></span>
+<span id="cb4-266"><a href="#cb4-266" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;p style="font-size:13px;color:#999;margin:0"&gt;Type: </span><span class="sc">${</span>typeText<span class="sc">}</span><span class="vs">&lt;/p&gt;</span></span>
+<span id="cb4-267"><a href="#cb4-267" aria-hidden="true" tabindex="-1"></a><span class="vs">  `</span><span class="op">;</span></span>
+<span id="cb4-268"><a href="#cb4-268" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> el<span class="op">;</span></span>
+<span id="cb4-269"><a href="#cb4-269" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<p>Try setting <span class="math inline">\(\gamma' = \gamma''\)</span> — the mean absence run drops close to 1 and the grid looks scattered with no obvious clusters. Then increase <span class="math inline">\(\gamma'\)</span> well above <span class="math inline">\(\gamma''\)</span> and watch long runs of consecutive absence appear. The mean absence run length in the stats above is a direct measure of how much memory the availability process has — and for Lily’s willow warblers, that number will be very large during the months the birds are on migration.</p>
 </section>
 </section>
 <section id="what-temporary-emigration-does-to-your-estimates" class="level1">
@@ -401,133 +512,133 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>Fitting the model with temporary emigration</h1>
 <p>Now let us fit the full model, allowing the gamma parameters to be estimated from the data rather than fixed at zero.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RMark)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>N_true               <span class="ot">&lt;-</span> <span class="dv">300</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>phi_true             <span class="ot">&lt;-</span> <span class="fl">0.80</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>p_true               <span class="ot">&lt;-</span> <span class="fl">0.40</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>gamma_prime_true     <span class="ot">&lt;-</span> <span class="fl">0.1</span>  <span class="co"># Prob of staying away if currently unavailable </span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>gamma_dbl_prime_true <span class="ot">&lt;-</span> <span class="fl">0.5</span>  <span class="co"># Prob of leaving if currently available</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>n_primary            <span class="ot">&lt;-</span> <span class="dv">6</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>n_secondary          <span class="ot">&lt;-</span> <span class="dv">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RMark)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>N_true               <span class="ot">&lt;-</span> <span class="dv">300</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>phi_true             <span class="ot">&lt;-</span> <span class="fl">0.80</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>p_true               <span class="ot">&lt;-</span> <span class="fl">0.40</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>gamma_prime_true     <span class="ot">&lt;-</span> <span class="fl">0.1</span>  <span class="co"># Prob of staying away if currently unavailable </span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>gamma_dbl_prime_true <span class="ot">&lt;-</span> <span class="fl">0.5</span>  <span class="co"># Prob of leaving if currently available</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>n_primary            <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>n_secondary          <span class="ot">&lt;-</span> <span class="dv">3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sim_robust_te <span class="ot">&lt;-</span> <span class="cf">function</span>(N, phi, p, gp, gdp, n_prim, n_sec, <span class="at">seed =</span> <span class="dv">1988</span>) {</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(seed)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Survival states</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  alive <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> n_prim)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  alive[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n_prim) {</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    alive[, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(N, <span class="dv">1</span>, alive[, t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">*</span> phi)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Availability states</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  avail <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> n_prim)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  avail[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n_prim) {</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (alive[i, t] <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        avail[i, t] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (avail[i, t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">==</span> <span class="dv">1</span>) {</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Was available: becomes unavailable with prob gdp</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        avail[i, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> gdp)</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Was unavailable: stays unavailable with prob gp</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        avail[i, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> gp)</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Detection history</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  det <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> n_prim <span class="sc">*</span> n_sec)</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_prim) {</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sec) {</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>      col <span class="ot">&lt;-</span> (t <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> n_sec <span class="sc">+</span> s</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>      det[, col] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(N, <span class="dv">1</span>, avail[, t] <span class="sc">*</span> p)</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  det[<span class="fu">rowSums</span>(det) <span class="sc">&gt;</span> <span class="dv">0</span>, ]</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>ch_data <span class="ot">&lt;-</span> <span class="fu">sim_robust_te</span>(N_true, phi_true, p_true,</span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>                          gamma_prime_true, gamma_dbl_prime_true,</span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>                          n_primary, n_secondary)</span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>ch_strings <span class="ot">&lt;-</span> <span class="fu">apply</span>(ch_data, <span class="dv">1</span>, paste, <span class="at">collapse =</span> <span class="st">""</span>)</span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>rd_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ch =</span> ch_strings, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Individuals detected at least once:"</span>, <span class="fu">nrow</span>(rd_df))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>sim_robust_te <span class="ot">&lt;-</span> <span class="cf">function</span>(N, phi, p, gp, gdp, n_prim, n_sec, <span class="at">seed =</span> <span class="dv">1988</span>) {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(seed)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Survival states</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  alive <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> n_prim)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  alive[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n_prim) {</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    alive[, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(N, <span class="dv">1</span>, alive[, t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">*</span> phi)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Availability states</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  avail <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> n_prim)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  avail[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n_prim) {</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (alive[i, t] <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        avail[i, t] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (avail[i, t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Was available: becomes unavailable with prob gdp</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        avail[i, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> gdp)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Was unavailable: stays unavailable with prob gp</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>        avail[i, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> gp)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Detection history</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  det <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> n_prim <span class="sc">*</span> n_sec)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_prim) {</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sec) {</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>      col <span class="ot">&lt;-</span> (t <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> n_sec <span class="sc">+</span> s</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>      det[, col] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(N, <span class="dv">1</span>, avail[, t] <span class="sc">*</span> p)</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  det[<span class="fu">rowSums</span>(det) <span class="sc">&gt;</span> <span class="dv">0</span>, ]</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>ch_data <span class="ot">&lt;-</span> <span class="fu">sim_robust_te</span>(N_true, phi_true, p_true,</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>                          gamma_prime_true, gamma_dbl_prime_true,</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>                          n_primary, n_secondary)</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>ch_strings <span class="ot">&lt;-</span> <span class="fu">apply</span>(ch_data, <span class="dv">1</span>, paste, <span class="at">collapse =</span> <span class="st">""</span>)</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>rd_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ch =</span> ch_strings, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Individuals detected at least once:"</span>, <span class="fu">nrow</span>(rd_df))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Individuals detected at least once: 280</code></pre>
 </div>
 </div>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>time_intervals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>rd_processed <span class="ot">&lt;-</span> <span class="fu">process.data</span>(rd_df,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                              <span class="at">model =</span> <span class="st">"Robust"</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                              <span class="at">time.intervals =</span> time_intervals)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>rd_ddl <span class="ot">&lt;-</span> <span class="fu">make.design.data</span>(rd_processed)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>rd_fit <span class="ot">&lt;-</span> <span class="fu">mark</span>(rd_processed, rd_ddl,</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">model.parameters =</span> <span class="fu">list</span>(</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">S                =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>),</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">p                =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>),</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                 <span class="at">GammaPrime       =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>),</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">GammaDoublePrime =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>)</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>               ),</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>               <span class="at">output =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">silent =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>time_intervals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>rd_processed <span class="ot">&lt;-</span> <span class="fu">process.data</span>(rd_df,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                              <span class="at">model =</span> <span class="st">"Robust"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                              <span class="at">time.intervals =</span> time_intervals)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>rd_ddl <span class="ot">&lt;-</span> <span class="fu">make.design.data</span>(rd_processed)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>rd_fit <span class="ot">&lt;-</span> <span class="fu">mark</span>(rd_processed, rd_ddl,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">model.parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">S                =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>),</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">p                =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>),</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                 <span class="at">GammaPrime       =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>),</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">GammaDoublePrime =</span> <span class="fu">list</span>(<span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>               ),</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>               <span class="at">output =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">silent =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> rd_fit<span class="sc">$</span>results<span class="sc">$</span>beta</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>extract_est <span class="ot">&lt;-</span> <span class="cf">function</span>(beta, param, true_val) {</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  est <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[param, <span class="st">"estimate"</span>])</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  lcl <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[param, <span class="st">"estimate"</span>] <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> beta[param, <span class="st">"se"</span>])</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  ucl <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[param, <span class="st">"estimate"</span>] <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> beta[param, <span class="st">"se"</span>])</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(param, <span class="st">"(true ="</span>, true_val, <span class="st">"):"</span>,</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">round</span>(est, <span class="dv">3</span>), <span class="st">"  95% CI:"</span>, <span class="fu">round</span>(lcl, <span class="dv">3</span>), <span class="st">"to"</span>, <span class="fu">round</span>(ucl, <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_est</span>(beta, <span class="st">"S:(Intercept)"</span>,                phi_true)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> rd_fit<span class="sc">$</span>results<span class="sc">$</span>beta</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>extract_est <span class="ot">&lt;-</span> <span class="cf">function</span>(beta, param, true_val) {</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  est <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[param, <span class="st">"estimate"</span>])</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  lcl <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[param, <span class="st">"estimate"</span>] <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> beta[param, <span class="st">"se"</span>])</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  ucl <span class="ot">&lt;-</span> <span class="fu">plogis</span>(beta[param, <span class="st">"estimate"</span>] <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> beta[param, <span class="st">"se"</span>])</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(param, <span class="st">"(true ="</span>, true_val, <span class="st">"):"</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">round</span>(est, <span class="dv">3</span>), <span class="st">"  95% CI:"</span>, <span class="fu">round</span>(lcl, <span class="dv">3</span>), <span class="st">"to"</span>, <span class="fu">round</span>(ucl, <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_est</span>(beta, <span class="st">"S:(Intercept)"</span>,                phi_true)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>S:(Intercept) (true = 0.8 ): 0.802   95% CI: 0.768 to 0.831 </code></pre>
 </div>
-<details>
+<details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_est</span>(beta, <span class="st">"p:(Intercept)"</span>,                p_true)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_est</span>(beta, <span class="st">"p:(Intercept)"</span>,                p_true)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>p:(Intercept) (true = 0.4 ): 0.378   95% CI: 0.321 to 0.439 </code></pre>
 </div>
-<details>
+<details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_est</span>(beta, <span class="st">"GammaPrime:(Intercept)"</span>,       gamma_prime_true)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_est</span>(beta, <span class="st">"GammaPrime:(Intercept)"</span>,       gamma_prime_true)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>GammaPrime:(Intercept) (true = 0.1 ): 0.017   95% CI: 0 to 0.995 </code></pre>
 </div>
-<details>
+<details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_est</span>(beta, <span class="st">"GammaDoublePrime:(Intercept)"</span>, gamma_dbl_prime_true)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_est</span>(beta, <span class="st">"GammaDoublePrime:(Intercept)"</span>, gamma_dbl_prime_true)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>GammaDoublePrime:(Intercept) (true = 0.5 ): 0.476   95% CI: 0.399 to 0.553 </code></pre>
@@ -561,44 +672,70 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 
 </main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6InZpZXdvZiBncF90ZSA9IElucHV0cy5yYW5nZShbMCwgMC45OV0sIHtcbiAgdmFsdWU6IDAuOCxcbiAgc3RlcDogMC4wMSxcbiAgbGFiZWw6IFwizrPigLIg4oCUIHByb2JhYmlsaXR5IG9mIHN0YXlpbmcgdW5hdmFpbGFibGUgKG9uY2UgYWxyZWFkeSBhYnNlbnQpXCJcbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ2aWV3b2YgZ2RwX3RlID0gSW5wdXRzLnJhbmdlKFswLCAwLjk5XSwge1xuICB2YWx1ZTogMC4zLFxuICBzdGVwOiAwLjAxLFxuICBsYWJlbDogXCLOs+KAsyDigJQgcHJvYmFiaWxpdHkgb2YgYmVjb21pbmcgdW5hdmFpbGFibGUgKGlmIGN1cnJlbnRseSBwcmVzZW50KVwiXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0zIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICAvLyBEZXRlcm1pbmlzdGljIFBSTkcgc28gdGhlIGdyaWQgaXMgc3RhYmxlIGFzIHNsaWRlcnMgbW92ZVxuICBmdW5jdGlvbiBtdWxiZXJyeTMyKGEpIHtcbiAgICByZXR1cm4gZnVuY3Rpb24oKSB7XG4gICAgICBhIHw9IDA7IGEgPSBhICsgMHg2RDJCNzlGNSB8IDA7XG4gICAgICBsZXQgdCA9IE1hdGguaW11bChhIF4gYSA+Pj4gMTUsIDEgfCBhKTtcbiAgICAgIHQgPSB0ICsgTWF0aC5pbXVsKHQgXiB0ID4+PiA3LCA2MSB8IHQpIF4gdDtcbiAgICAgIHJldHVybiAoKHQgXiB0ID4+PiAxNCkgPj4+IDApIC8gNDI5NDk2NzI5NjtcbiAgICB9O1xuICB9XG5cbiAgY29uc3QgTl9BTklNQUxTID0gNjtcbiAgY29uc3QgTl9QRVJJT0RTID0gODtcblxuICAvLyBQcmUtZ2VuZXJhdGUgYSBmaXhlZCBwb29sIG9mIHVuaWZvcm0gZHJhd3MgKHNhbWUgc2VlZCBldmVyeSByZW5kZXIpXG4gIGNvbnN0IHJuZyAgPSBtdWxiZXJyeTMyKDE5ODgpO1xuICBjb25zdCBwb29sID0gQXJyYXkuZnJvbSh7IGxlbmd0aDogTl9BTklNQUxTICogTl9QRVJJT0RTIH0sICgpID0+IHJuZygpKTtcblxuICAvLyBTaW11bGF0ZSBhdmFpbGFiaWxpdHlcbiAgY29uc3QgYXZhaWwgPSBbXTtcbiAgZm9yIChsZXQgaSA9IDA7IGkgPCBOX0FOSU1BTFM7IGkrKykge1xuICAgIGNvbnN0IHJvdyA9IFsxXTsgLy8gYWxsIHByZXNlbnQgYXQgcGVyaW9kIDFcbiAgICBmb3IgKGxldCB0ID0gMTsgdCA8IE5fUEVSSU9EUzsgdCsrKSB7XG4gICAgICBjb25zdCByID0gcG9vbFtpICogTl9QRVJJT0RTICsgdF07XG4gICAgICByb3cucHVzaChyb3dbdCAtIDFdID09PSAxXG4gICAgICAgID8gKHIgPCBnZHBfdGUgPyAwIDogMSkgICAvLyBwcmVzZW50ICDihpIgbGVhdmVzICAgIHdpdGggcHJvYiDOs+KAs1xuICAgICAgICA6IChyIDwgZ3BfdGUgID8gMCA6IDEpKTsgLy8gYWJzZW50ICAg4oaSIHN0YXlzIGF3YXkgd2l0aCBwcm9iIM6z4oCyXG4gICAgfVxuICAgIGF2YWlsLnB1c2gocm93KTtcbiAgfVxuXG4gIC8vIFN1bW1hcnkgc3RhdGlzdGljc1xuICBjb25zdCBmbGF0ICAgICAgICA9IGF2YWlsLmZsYXQoKTtcbiAgY29uc3QgcHJvcFVuICAgICAgPSBmbGF0LmZpbHRlcih4ID0+IHggPT09IDApLmxlbmd0aCAvIGZsYXQubGVuZ3RoO1xuICBjb25zdCBleHBlY3RlZFVuICA9IGdkcF90ZSAvICgxIC0gZ3BfdGUgKyBnZHBfdGUpOyAgIC8vIHN0ZWFkeS1zdGF0ZSB1bmF2YWlsYWJpbGl0eVxuXG4gIGxldCBydW5zID0gMCwgcnVuVG90YWwgPSAwO1xuICBmb3IgKGxldCBpID0gMDsgaSA8IE5fQU5JTUFMUzsgaSsrKSB7XG4gICAgbGV0IGxlbiA9IDA7XG4gICAgZm9yIChsZXQgdCA9IDA7IHQgPCBOX1BFUklPRFM7IHQrKykge1xuICAgICAgaWYgKGF2YWlsW2ldW3RdID09PSAwKSB7IGxlbisrOyB9XG4gICAgICBlbHNlIGlmIChsZW4gPiAwKSAgICAgIHsgcnVucysrOyBydW5Ub3RhbCArPSBsZW47IGxlbiA9IDA7IH1cbiAgICB9XG4gICAgaWYgKGxlbiA+IDApIHsgcnVucysrOyBydW5Ub3RhbCArPSBsZW47IH1cbiAgfVxuICBjb25zdCBtZWFuUnVuID0gcnVucyA+IDAgPyAocnVuVG90YWwgLyBydW5zKS50b0ZpeGVkKDEpIDogXCIwLjBcIjtcblxuICBjb25zdCBkaWZmICAgICA9IE1hdGguYWJzKGdwX3RlIC0gZ2RwX3RlKTtcbiAgY29uc3QgaXNSYW5kb20gPSBkaWZmIDwgMC4wNTtcbiAgY29uc3QgdHlwZVRleHQgPSBpc1JhbmRvbVxuICAgID8gYDxzdHJvbmcgc3R5bGU9XCJjb2xvcjojRkZENzAwXCI+UmFuZG9tPC9zdHJvbmc+IOKAlCDOs+KAsiDiiYggzrPigLMsIGF2YWlsYWJpbGl0eSBhdCBlYWNoIHBlcmlvZCBpcyBpbmRlcGVuZGVudCBvZiB0aGUgcHJldmlvdXMgb25lYFxuICAgIDogZ3BfdGUgPiBnZHBfdGVcbiAgICAgID8gYDxzdHJvbmcgc3R5bGU9XCJjb2xvcjojRkZENzAwXCI+TWFya292aWFuPC9zdHJvbmc+IOKAlCDOs+KAsiA+IM6z4oCzLCBvbmNlIGFic2VudCBhbmltYWxzIHRlbmQgdG8gc3RheSBhd2F5IGZvciBtdWx0aXBsZSBwZXJpb2RzYFxuICAgICAgOiBgPHN0cm9uZyBzdHlsZT1cImNvbG9yOiNGRkQ3MDBcIj5NYXJrb3ZpYW48L3N0cm9uZz4g4oCUIM6z4oCyIDwgzrPigLMsIGFuaW1hbHMgcmV0dXJuIHF1aWNrbHkgcmVsYXRpdmUgdG8gaG93IG9mdGVuIHRoZXkgbGVhdmVgO1xuXG4gIC8vIEJ1aWxkIGdyaWQgcm93c1xuICBsZXQgcm93cyA9IGA8ZGl2PjwvZGl2PmA7XG4gIGZvciAobGV0IHQgPSAwOyB0IDwgTl9QRVJJT0RTOyB0KyspIHtcbiAgICByb3dzICs9IGA8ZGl2IHN0eWxlPVwiZm9udC1zaXplOjExcHg7Y29sb3I6Izg4ODt0ZXh0LWFsaWduOmNlbnRlcjtwYWRkaW5nLWJvdHRvbTo0cHhcIj5QJHt0ICsgMX08L2Rpdj5gO1xuICB9XG4gIGZvciAobGV0IGkgPSAwOyBpIDwgTl9BTklNQUxTOyBpKyspIHtcbiAgICByb3dzICs9IGA8ZGl2IHN0eWxlPVwiZm9udC1zaXplOjEycHg7Y29sb3I6Izg4ODtkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyXCI+QW5pbWFsICR7aSArIDF9PC9kaXY+YDtcbiAgICBmb3IgKGxldCB0ID0gMDsgdCA8IE5fUEVSSU9EUzsgdCsrKSB7XG4gICAgICBjb25zdCBvayA9IGF2YWlsW2ldW3RdID09PSAxO1xuICAgICAgcm93cyArPSBgPGRpdiBzdHlsZT1cImJhY2tncm91bmQ6JHtvayA/IFwiIzFhM2EyYVwiIDogXCIjM2ExYTFhXCJ9O2JvcmRlcjoxcHggc29saWQgJHtvayA/IFwiIzAwQTY4QVwiIDogXCIjRkY1NzMzXCJ9O2JvcmRlci1yYWRpdXM6M3B4O2hlaWdodDozNHB4O2Rpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OmNlbnRlcjtmb250LXNpemU6MTRweDtjb2xvcjoke29rID8gXCIjMDBBNjhBXCIgOiBcIiNGRjU3MzNcIn1cIj4ke29rID8gXCImIzEwMDAzO1wiIDogXCImIzEwMDA3O1wifTwvZGl2PmA7XG4gICAgfVxuICB9XG5cbiAgY29uc3QgZWwgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KFwiZGl2XCIpO1xuICBlbC5zdHlsZS5jc3NUZXh0ID0gXCJiYWNrZ3JvdW5kOiMyMDIxMjM7Ym9yZGVyLXJhZGl1czo4cHg7cGFkZGluZzoxNnB4O2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Y29sb3I6I2NjY2NjY1wiO1xuICBlbC5pbm5lckhUTUwgPSBgXG4gICAgPGRpdiBzdHlsZT1cImRpc3BsYXk6Z3JpZDtncmlkLXRlbXBsYXRlLWNvbHVtbnM6ODBweCByZXBlYXQoJHtOX1BFUklPRFN9LDFmcik7Z2FwOjNweDttYXJnaW4tYm90dG9tOjhweFwiPiR7cm93c308L2Rpdj5cbiAgICA8ZGl2IHN0eWxlPVwiZGlzcGxheTpmbGV4O2dhcDoyMHB4O2ZvbnQtc2l6ZToxMnB4O2NvbG9yOiM2NjY7bWFyZ2luLWJvdHRvbToxNHB4XCI+XG4gICAgICA8c3BhbiBzdHlsZT1cImNvbG9yOiMwMEE2OEFcIj4mIzEwMDAzOyBBdmFpbGFibGU8L3NwYW4+XG4gICAgICA8c3BhbiBzdHlsZT1cImNvbG9yOiNGRjU3MzNcIj4mIzEwMDA3OyBVbmF2YWlsYWJsZSAoYWJzZW50IGZyb20gc3R1ZHkgYXJlYSk8L3NwYW4+XG4gICAgPC9kaXY+XG4gICAgPGRpdiBzdHlsZT1cImRpc3BsYXk6Z3JpZDtncmlkLXRlbXBsYXRlLWNvbHVtbnM6MWZyIDFmciAxZnI7Z2FwOjhweDttYXJnaW4tYm90dG9tOjEycHhcIj5cbiAgICAgIDxkaXYgc3R5bGU9XCJiYWNrZ3JvdW5kOiMyNTI1MjU7Ym9yZGVyLXJhZGl1czo2cHg7cGFkZGluZzoxMHB4O3RleHQtYWxpZ246Y2VudGVyXCI+XG4gICAgICAgIDxkaXYgc3R5bGU9XCJmb250LXNpemU6MTFweDtjb2xvcjojOTk5O21hcmdpbi1ib3R0b206NHB4XCI+RXhwZWN0ZWQgdW5hdmFpbGFibGU8L2Rpdj5cbiAgICAgICAgPGRpdiBzdHlsZT1cImZvbnQtc2l6ZToyMHB4O2NvbG9yOiNGRjU3MzNcIj4keyhleHBlY3RlZFVuICogMTAwKS50b0ZpeGVkKDEpfSU8L2Rpdj5cbiAgICAgIDwvZGl2PlxuICAgICAgPGRpdiBzdHlsZT1cImJhY2tncm91bmQ6IzI1MjUyNTtib3JkZXItcmFkaXVzOjZweDtwYWRkaW5nOjEwcHg7dGV4dC1hbGlnbjpjZW50ZXJcIj5cbiAgICAgICAgPGRpdiBzdHlsZT1cImZvbnQtc2l6ZToxMXB4O2NvbG9yOiM5OTk7bWFyZ2luLWJvdHRvbTo0cHhcIj5PYnNlcnZlZCBpbiBzaW11bGF0aW9uPC9kaXY+XG4gICAgICAgIDxkaXYgc3R5bGU9XCJmb250LXNpemU6MjBweDtjb2xvcjojY2NjY2NjXCI+JHsocHJvcFVuICogMTAwKS50b0ZpeGVkKDEpfSU8L2Rpdj5cbiAgICAgIDwvZGl2PlxuICAgICAgPGRpdiBzdHlsZT1cImJhY2tncm91bmQ6IzI1MjUyNTtib3JkZXItcmFkaXVzOjZweDtwYWRkaW5nOjEwcHg7dGV4dC1hbGlnbjpjZW50ZXJcIj5cbiAgICAgICAgPGRpdiBzdHlsZT1cImZvbnQtc2l6ZToxMXB4O2NvbG9yOiM5OTk7bWFyZ2luLWJvdHRvbTo0cHhcIj5NZWFuIGFic2VuY2UgcnVuPC9kaXY+XG4gICAgICAgIDxkaXYgc3R5bGU9XCJmb250LXNpemU6MjBweDtjb2xvcjojY2NjY2NjXCI+JHttZWFuUnVufSBwZXJpb2RzPC9kaXY+XG4gICAgICA8L2Rpdj5cbiAgICA8L2Rpdj5cbiAgICA8cCBzdHlsZT1cImZvbnQtc2l6ZToxM3B4O2NvbG9yOiM5OTk7bWFyZ2luOjBcIj5UeXBlOiAke3R5cGVUZXh0fTwvcD5cbiAgYDtcbiAgcmV0dXJuIGVsO1xufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJzaGlueUlucHV0KCdncF90ZScpIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJzaGlueUlucHV0KCdnZHBfdGUnKSJ9XX0=
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../..";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
-    }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
       }
+      return false;
     }
-    return false;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
@@ -606,195 +743,348 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
       return codeEl.innerText;
     }
-  });
-  clipboard.on('success', function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
-      }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  });
-  function tippyHover(el, contentFn) {
-    const config = {
-      allowHTML: true,
-      content: contentFn,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start'
-    };
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      return note.innerHTML;
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
     });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
     }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("index\.qmd");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
       });
     }
-  }
-});
-</script>
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 </div> <!-- /content -->
+
 
 
 

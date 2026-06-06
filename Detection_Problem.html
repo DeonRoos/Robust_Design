@@ -2,15 +2,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.353">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Deon Roos">
-<meta name="dcterms.date" content="2026-04-12">
+<meta name="dcterms.date" content="2026-06-06">
 
-<title>Robust Design Mark-Recapture - The Detection Problem</title>
+<title>The Detection Problem – Robust Design Mark-Recapture</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -23,6 +26,7 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 /* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -66,22 +70,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-43b2d995d73a1754bd3a6f5d899fe64b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-84a65f7c8d3e6e4752320fbc265103cc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -90,66 +101,97 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
+<script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Robust Design Mark-Recapture</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./GLM_Refresher.html" rel="" target="">
- <span class="menu-text">A refresher on GLMs</span></a>
+    <a class="nav-link" href="./GLM_Refresher.html"> 
+<span class="menu-text">A refresher on GLMs</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./Detection_Problem.html" rel="" target="" aria-current="page">
- <span class="menu-text">The detection problem</span></a>
+    <a class="nav-link active" href="./Detection_Problem.html" aria-current="page"> 
+<span class="menu-text">The detection problem</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./Lincoln_Petersen.html" rel="" target="">
- <span class="menu-text">Lincoln-Petersen estimator</span></a>
+    <a class="nav-link" href="./Lincoln_Petersen.html"> 
+<span class="menu-text">Lincoln-Petersen estimator</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./CJS_Model.html" rel="" target="">
- <span class="menu-text">Cormack-Jolly-Seber model</span></a>
+    <a class="nav-link" href="./CJS_Model.html"> 
+<span class="menu-text">Cormack-Jolly-Seber model</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./Robust_Design_Likelihood.html" rel="" target="">
- <span class="menu-text">The robust design</span></a>
+    <a class="nav-link" href="./Robust_Design_Likelihood.html"> 
+<span class="menu-text">The robust design</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./Temporary_Emigration.html" rel="" target="">
- <span class="menu-text">Temporary emigration</span></a>
+    <a class="nav-link" href="./Temporary_Emigration.html"> 
+<span class="menu-text">Temporary emigration</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./RMark_Implementation.html" rel="" target="">
- <span class="menu-text">Implementing in RMark</span></a>
+    <a class="nav-link" href="./RMark_Implementation.html"> 
+<span class="menu-text">Implementing in RMark</span></a>
   </li>  
 </ul>
-            <div class="quarto-navbar-tools ms-auto">
-</div>
           </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -164,10 +206,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#how-many-animals-are-there-and-are-they-surviving" id="toc-how-many-animals-are-there-and-are-they-surviving" class="nav-link active" data-scroll-target="#how-many-animals-are-there-and-are-they-surviving">How many animals are there, and are they surviving?</a></li>
   <li><a href="#the-naive-approach" id="toc-the-naive-approach" class="nav-link" data-scroll-target="#the-naive-approach">The naive approach</a></li>
-  <li><a href="#a-glimmer-of-hope-marking-individuals" id="toc-a-glimmer-of-hope-marking-individuals" class="nav-link" data-scroll-target="#a-glimmer-of-hope-marking-individuals">A glimmer of hope: marking individuals</a></li>
+  <li><a href="#mark-individuals" id="toc-mark-individuals" class="nav-link" data-scroll-target="#mark-individuals">Mark individuals</a></li>
   <li><a href="#the-second-problem-individuals-can-die" id="toc-the-second-problem-individuals-can-die" class="nav-link" data-scroll-target="#the-second-problem-individuals-can-die">The second problem: individuals can die</a></li>
-  <li><a href="#the-problem-stated-plainly" id="toc-the-problem-stated-plainly" class="nav-link" data-scroll-target="#the-problem-stated-plainly">The problem stated plainly</a></li>
-  <li><a href="#there-is-actually-a-third-problem" id="toc-there-is-actually-a-third-problem" class="nav-link" data-scroll-target="#there-is-actually-a-third-problem">There is actually a third problem</a></li>
+  <li><a href="#try-it-yourself-dead-or-hiding" id="toc-try-it-yourself-dead-or-hiding" class="nav-link" data-scroll-target="#try-it-yourself-dead-or-hiding">Try it yourself: dead or hiding?</a></li>
+  <li><a href="#the-problem" id="toc-the-problem" class="nav-link" data-scroll-target="#the-problem">The problem</a></li>
   <li><a href="#what-we-need-to-make-progress" id="toc-what-we-need-to-make-progress" class="nav-link" data-scroll-target="#what-we-need-to-make-progress">What we need to make progress</a></li>
   </ul>
 </nav>
@@ -194,7 +236,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 12, 2026</p>
+      <p class="date">June 6, 2026</p>
     </div>
   </div>
   
@@ -202,7 +244,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
   
 
+
 </header>
+
 
 <section id="how-many-animals-are-there-and-are-they-surviving" class="level1">
 <h1>How many animals are there, and are they surviving?</h1>
@@ -211,51 +255,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Lily</strong>, in your case these questions become; How many willow warblers are present at your study sites? How well are they surviving between breeding seasons? Is survival declining? Are any interventions or habitat changes making a difference?</p>
 <p>These are not easy questions to answer, and the reason comes down to the same problem that runs through this entire tutorial: you will never see every bird that is there.</p>
 </blockquote>
-<p>These questions sound simple. They are not. And the reason they are not comes down to a problem that is easy to state but surprisingly easy to forget about when you are standing in a river with a net.</p>
+<p>These questions sound simple but they’re not. And the reason for that comes down to a problem that seems simple but is hard to deal with.</p>
 </section>
 <section id="the-naive-approach" class="level1">
 <h1>The naive approach</h1>
 <p>Imagine I want to estimate how many otters live along a stretch of river. I go out and count them. I spot 23 otters.</p>
 <p>So there are 23 otters?</p>
-<p>Well. Maybe. But I almost certainly did not see every otter that was there. Some were in burrows. Some were around the bend. Some saw me coming and hid (otters are, frankly, suspicious animals). The 23 I counted is not the true population size. It is the true population size multiplied by my probability of detecting any given otter.</p>
+<p>Maybe. But I wouldn’t bet a £100 that I saw every single otter that was there. Some might’ve been in burrows. Some were maybe around the bend in the river. Some maybe saw me coming and hid. The 23 I counted is not the true population size. It is the true population size multiplied by my probability of detecting any given otter.</p>
 <p><span class="math display">\[\text{Count} = N \times p\]</span></p>
-<p>where <span class="math inline">\(N\)</span> is the true number of otters and <span class="math inline">\(p\)</span> is my detection probability. If <span class="math inline">\(p = 1\)</span>, my count equals the true population. If <span class="math inline">\(p &lt; 1\)</span>, and it is always less than 1, my count is an underestimate. How badly it underestimates depends entirely on how low <span class="math inline">\(p\)</span> is.</p>
-<p>This is <strong>imperfect detection</strong>, and it is not a quirk or an edge case. It is the default condition of every wildlife survey ever conducted. If you have ever counted animals in the field and assumed that count represented the true number present, you were almost certainly wrong.</p>
+<p>where <span class="math inline">\(N\)</span> is the true number of otters and <span class="math inline">\(p\)</span> is my detection probability. If <span class="math inline">\(p = 1\)</span> (i.e.&nbsp;I have 100% chance of seeing each otter), my count equals the true population. If <span class="math inline">\(p &lt; 1\)</span>, and it is almost always less than 1, my count is an underestimate. How badly it underestimates depends entirely on how low <span class="math inline">\(p\)</span> is.</p>
+<p>This is <strong>imperfect detection</strong>. This is the default condition of almost every single wildlife survey ever conducted. If you have ever counted animals in the field and assumed that count represented the true number present, you were almost certainly wrong.</p>
 </section>
-<section id="a-glimmer-of-hope-marking-individuals" class="level1">
-<h1>A glimmer of hope: marking individuals</h1>
-<p>Here is where mark-recapture comes in. The insight, which is beautifully simple once you see it, is this:</p>
+<section id="mark-individuals" class="level1">
+<h1>Mark individuals</h1>
+<p>Here is where the “mark” part of mark-recapture comes in. The idea is pretty simple:</p>
 <blockquote class="blockquote">
 <p>If you catch some animals, mark them, release them, and then go back and catch animals again, the proportion of marked animals in your second sample tells you something about how many unmarked ones you missed.</p>
 </blockquote>
-<p>Say I catch 20 otters, tag each one with a unique ID, and release them back into the river. A week later I return and catch another 20 otters. Of those 20, I find that 5 of them already have tags. So I recaptured 5 out of the 20 I originally marked. That recapture rate of <span class="math inline">\(\frac{5}{20} = 25\%\)</span> is an estimate of my detection probability. And if I only detected 25% of marked animals in my second sample, I probably only detected about 25% of unmarked animals too. Which means my second sample of 20 likely represents about 25% of the true population, implying there are roughly <span class="math inline">\(\frac{20}{0.25} = 80\)</span> otters in total.</p>
-<p>This is the Lincoln-Petersen estimator, and we will work through it properly on the next page. For now, the key idea is that <strong>recaptures give us leverage on detection probability</strong>, which is what allows us to estimate true population size rather than just report a count and hope for the best.</p>
-<p>But there is a second problem layered on top of imperfect detection, one that makes mark-recapture considerably more interesting, and considerably more complicated.</p>
+<p>Say I catch 20 otters, tag each one with a unique ID, and release them back into the river. A week later I come back and catch another 20 otters. Of these 20, I find that 5 of them have the tags I put on a week ago. So I recaptured 5 out of the 20 I originally marked. That recapture rate of <span class="math inline">\(\frac{5}{20} = 25\%\)</span> is an estimate of my detection probability. And if I only detected 25% of last weeks marked animals in my second sample, I probably only detected about 25% of unmarked animals too. Which means my second sample of 20 likely represents about 25% of the true population, meaning there are roughly <span class="math inline">\(\frac{20}{0.25} = 80\)</span> otters in total.</p>
+<p>That’s the Lincoln-Petersen estimator, and we’ll work through it properly on the next page. For now, the main idea is that recaptures allow us to figure out detection probability, which is what allows us to estimate true population size rather than just report a count and hope for the best.</p>
+<p>All good and well but there’s actually a second problem on top of imperfect detection.</p>
 </section>
 <section id="the-second-problem-individuals-can-die" class="level1">
 <h1>The second problem: individuals can die</h1>
-<p>Individual animals are not permanent fixtures. They move. They disperse. And, crucially, they die.</p>
-<p>This matters enormously because it creates a new version of the detection problem.</p>
-<p>Imagine I tag 50 fish in June. In August I go back and sample again. I catch 30 fish, of which 12 have tags. Fine. But what about the 38 tagged fish I did not recapture? There are two possible explanations:</p>
+<p>Individual animals are not immortal and static. They move, disperse, and/or they die.</p>
+<p>This matters a lot because it creates a new version of the detection problem.</p>
+<p>Imagine I tag 50 fish in June. In August I go back and sample again. I catch 30 fish, of which 12 have tags. Fine - same as before with the otters. But now I want you to think about the 38 tagged fish I did not recapture. Those “non-recaptures” have two possible explanations:</p>
 <ol type="1">
-<li><p>They are still alive, I just did not catch them. My detection probability is less than 1, so this is entirely plausible.</p></li>
+<li><p>They are still alive, I just did not catch them. My detection probability is (almost always) less than 100%, so that’s entirely plausible. (This is what we assumed above with the otters)</p></li>
 <li><p>They are dead.</p></li>
 </ol>
-<p>A non-recapture has <strong>two possible meanings</strong>: missed, or gone. And here’s the crap part of that: both explanations predict exactly the same observation in your data. A zero. Nothing. Silence. In both cases you do not see the fish.</p>
+<p>A non-recapture has two possible meanings: missed, or dead. The crap part of that: both explanations predict exactly the same observation in your data - a zero. In both cases you don’t see the fish but the biological distinction between missed and dead is obviously important…</p>
 <p>If you cannot separate these two explanations, you cannot estimate either detection probability or survival probability reliably. They are completely tangled up in each other.</p>
+<p>The following simulation hopefully makes this tangible (don’t worry about the code). We follow 50 tagged individuals across four sampling occasions, assuming a survival probability of 0.75 between occasions and detection probabilities that range from 0.30 to 0.80 across the four surveys.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">99</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>n_tagged <span class="ot">&lt;-</span> <span class="dv">50</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>occasions <span class="ot">&lt;-</span> <span class="dv">4</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>phi_true <span class="ot">&lt;-</span> <span class="fl">0.75</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>p_true <span class="ot">&lt;-</span> <span class="fl">0.40</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>p_true <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.5</span>, <span class="fl">0.6</span>, <span class="fl">0.8</span>)</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>survival_mat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> n_tagged, <span class="at">ncol =</span> occasions)</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>survival_mat[, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
@@ -266,7 +311,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>detection_mat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> n_tagged, <span class="at">ncol =</span> occasions)</span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>occasions) {</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  detection_mat[, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n_tagged, <span class="dv">1</span>, survival_mat[, t] <span class="sc">*</span> p_true)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  detection_mat[, t] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n_tagged, <span class="dv">1</span>, survival_mat[, t] <span class="sc">*</span> p_true[t])</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>observed_counts <span class="ot">&lt;-</span> <span class="fu">colSums</span>(detection_mat)</span>
@@ -289,108 +334,305 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Green = truly alive  |  Orange = actually detected"</span></span>
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>occasions) <span class="sc">+</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dark_site</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dark_site</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Detection_Problem_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="Detection_Problem_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
 </div>
-<p>The green bars show how many tagged animals are truly alive at each occasion. The orange bars show how many we actually detect. The gap between them is entirely due to imperfect detection, not death. But if I only showed you the orange bars and asked you to calculate a survival rate, you would badly underestimate it. Animals are disappearing from your data faster than they are actually dying.</p>
+</div>
+<p>The green bars show how many animals are truly alive at each occasion. The orange bars show how many we actually detect. The gap between them is entirely due to imperfect detection, not death. But if I only showed you the orange bars and asked you to calculate a survival rate, you’d probably conclude things look ok, but based on the green bars, this population is crashing fast.</p>
+<p>This is where using the right stats matters a lot. Imagine this is a critically endangered population, and you’re the conservation officer. If you use basic stats you’re going to tell everyone “don’t worry, the species are doing fine. They’re stable”. In doing so, you’ve likely just condemned a species to extinction. We don’t use complicated stats for the sake of it. We use it because there’s a god damned moral imperative to make sure you make the best decision with the data you have.</p>
 </section>
-<section id="the-problem-stated-plainly" class="level1">
-<h1>The problem stated plainly</h1>
+<section id="try-it-yourself-dead-or-hiding" class="level1">
+<h1>Try it yourself: dead or hiding?</h1>
+<p>Before we formalise this problem, try to get a proper sense of it. Below are four tagged animals. Their detection histories are shown one occasion at a time. Each time your survey draws a blank, you must decide: was the animal <strong>dead</strong>, or was it <strong>alive and just not detected</strong>?</p>
+<div class="cell">
+<details class="code-fold hidden">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb2" data-startfrom="159" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 158;"><span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> animals <span class="op">=</span> [</span>
+<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a>    { <span class="dt">id</span><span class="op">:</span> <span class="st">"Animal #7"</span><span class="op">,</span>  <span class="dt">alive</span><span class="op">:</span> [<span class="dv">1</span><span class="op">,</span><span class="dv">1</span><span class="op">,</span><span class="dv">1</span><span class="op">,</span><span class="dv">1</span>]<span class="op">,</span> <span class="dt">detected</span><span class="op">:</span> [<span class="dv">1</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">1</span>] }<span class="op">,</span></span>
+<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a>    { <span class="dt">id</span><span class="op">:</span> <span class="st">"Animal #12"</span><span class="op">,</span> <span class="dt">alive</span><span class="op">:</span> [<span class="dv">1</span><span class="op">,</span><span class="dv">1</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span>]<span class="op">,</span> <span class="dt">detected</span><span class="op">:</span> [<span class="dv">1</span><span class="op">,</span><span class="dv">1</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span>] }<span class="op">,</span></span>
+<span id="cb2-163"><a href="#cb2-163" aria-hidden="true" tabindex="-1"></a>    { <span class="dt">id</span><span class="op">:</span> <span class="st">"Animal #3"</span><span class="op">,</span>  <span class="dt">alive</span><span class="op">:</span> [<span class="dv">1</span><span class="op">,</span><span class="dv">1</span><span class="op">,</span><span class="dv">1</span><span class="op">,</span><span class="dv">1</span>]<span class="op">,</span> <span class="dt">detected</span><span class="op">:</span> [<span class="dv">1</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">1</span><span class="op">,</span><span class="dv">0</span>] }<span class="op">,</span></span>
+<span id="cb2-164"><a href="#cb2-164" aria-hidden="true" tabindex="-1"></a>    { <span class="dt">id</span><span class="op">:</span> <span class="st">"Animal #19"</span><span class="op">,</span> <span class="dt">alive</span><span class="op">:</span> [<span class="dv">1</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span>]<span class="op">,</span> <span class="dt">detected</span><span class="op">:</span> [<span class="dv">1</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span>] }</span>
+<span id="cb2-165"><a href="#cb2-165" aria-hidden="true" tabindex="-1"></a>  ]<span class="op">;</span></span>
+<span id="cb2-166"><a href="#cb2-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-167"><a href="#cb2-167" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> ai <span class="op">=</span> <span class="dv">0</span><span class="op">,</span> occ <span class="op">=</span> <span class="dv">0</span><span class="op">,</span> guesses <span class="op">=</span> []<span class="op">,</span> phase <span class="op">=</span> <span class="st">"playing"</span><span class="op">;</span></span>
+<span id="cb2-168"><a href="#cb2-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-169"><a href="#cb2-169" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> el <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">"div"</span>)<span class="op">;</span></span>
+<span id="cb2-170"><a href="#cb2-170" aria-hidden="true" tabindex="-1"></a>  el<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">cssText</span> <span class="op">=</span> <span class="st">"background:#202123;border-radius:8px;padding:20px;color:#cccccc;font-family:sans-serif"</span><span class="op">;</span></span>
+<span id="cb2-171"><a href="#cb2-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-172"><a href="#cb2-172" aria-hidden="true" tabindex="-1"></a>  <span class="kw">function</span> <span class="fu">draw</span>() {</span>
+<span id="cb2-173"><a href="#cb2-173" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> a <span class="op">=</span> animals[ai]<span class="op">;</span></span>
+<span id="cb2-174"><a href="#cb2-174" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> n <span class="op">=</span> a<span class="op">.</span><span class="at">alive</span><span class="op">.</span><span class="at">length</span><span class="op">;</span></span>
+<span id="cb2-175"><a href="#cb2-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-176"><a href="#cb2-176" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> tiles <span class="op">=</span> <span class="vs">`&lt;div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"&gt;`</span><span class="op">;</span></span>
+<span id="cb2-177"><a href="#cb2-177" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> i<span class="op">++</span>) {</span>
+<span id="cb2-178"><a href="#cb2-178" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> bg<span class="op">=</span><span class="st">"#2a2a2a"</span><span class="op">,</span> bd<span class="op">=</span><span class="st">"#444"</span><span class="op">,</span> icon<span class="op">=</span><span class="st">"·"</span><span class="op">,</span> sub<span class="op">=</span><span class="st">""</span><span class="op">;</span></span>
+<span id="cb2-179"><a href="#cb2-179" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (phase <span class="op">===</span> <span class="st">"revealed"</span>) {</span>
+<span id="cb2-180"><a href="#cb2-180" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (a<span class="op">.</span><span class="at">detected</span>[i])    { bg<span class="op">=</span><span class="st">"#1a3a2a"</span><span class="op">;</span> bd<span class="op">=</span><span class="st">"#00A68A"</span><span class="op">;</span> icon<span class="op">=</span><span class="st">"✓"</span><span class="op">;</span> sub<span class="op">=</span><span class="st">"Detected"</span><span class="op">;</span> }</span>
+<span id="cb2-181"><a href="#cb2-181" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span> <span class="cf">if</span> (a<span class="op">.</span><span class="at">alive</span>[i])  { bg<span class="op">=</span><span class="st">"#2e2a10"</span><span class="op">;</span> bd<span class="op">=</span><span class="st">"#FFD700"</span><span class="op">;</span> icon<span class="op">=</span><span class="st">"○"</span><span class="op">;</span> sub<span class="op">=</span><span class="st">"Alive, missed"</span><span class="op">;</span> }</span>
+<span id="cb2-182"><a href="#cb2-182" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>                  { bg<span class="op">=</span><span class="st">"#3a1a1a"</span><span class="op">;</span> bd<span class="op">=</span><span class="st">"#FF5733"</span><span class="op">;</span> icon<span class="op">=</span><span class="st">"✗"</span><span class="op">;</span> sub<span class="op">=</span><span class="st">"Dead"</span><span class="op">;</span> }</span>
+<span id="cb2-183"><a href="#cb2-183" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb2-184"><a href="#cb2-184" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (i <span class="op">&lt;</span> occ) {</span>
+<span id="cb2-185"><a href="#cb2-185" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span> (a<span class="op">.</span><span class="at">detected</span>[i])         { bg<span class="op">=</span><span class="st">"#1a3a2a"</span><span class="op">;</span> bd<span class="op">=</span><span class="st">"#00A68A"</span><span class="op">;</span> icon<span class="op">=</span><span class="st">"✓"</span><span class="op">;</span> sub<span class="op">=</span><span class="st">"Detected"</span><span class="op">;</span> }</span>
+<span id="cb2-186"><a href="#cb2-186" aria-hidden="true" tabindex="-1"></a>          <span class="cf">else</span> <span class="cf">if</span> (guesses[i]<span class="op">===</span><span class="st">"d"</span>) { bg<span class="op">=</span><span class="st">"#3a1a1a"</span><span class="op">;</span> bd<span class="op">=</span><span class="st">"#FF5733"</span><span class="op">;</span> icon<span class="op">=</span><span class="st">"✗"</span><span class="op">;</span> sub<span class="op">=</span><span class="st">"You said: Dead"</span><span class="op">;</span> }</span>
+<span id="cb2-187"><a href="#cb2-187" aria-hidden="true" tabindex="-1"></a>          <span class="cf">else</span> <span class="cf">if</span> (guesses[i]<span class="op">===</span><span class="st">"h"</span>) { bg<span class="op">=</span><span class="st">"#2e2a10"</span><span class="op">;</span> bd<span class="op">=</span><span class="st">"#FFD700"</span><span class="op">;</span> icon<span class="op">=</span><span class="st">"?"</span><span class="op">;</span> sub<span class="op">=</span><span class="st">"You said: Hiding"</span><span class="op">;</span> }</span>
+<span id="cb2-188"><a href="#cb2-188" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> <span class="cf">if</span> (i <span class="op">===</span> occ) {</span>
+<span id="cb2-189"><a href="#cb2-189" aria-hidden="true" tabindex="-1"></a>          bg<span class="op">=</span><span class="st">"#1a2535"</span><span class="op">;</span> bd<span class="op">=</span><span class="st">"#4a9eff"</span><span class="op">;</span> icon<span class="op">=</span><span class="st">"→"</span><span class="op">;</span> sub<span class="op">=</span><span class="st">"Current"</span><span class="op">;</span></span>
+<span id="cb2-190"><a href="#cb2-190" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb2-191"><a href="#cb2-191" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb2-192"><a href="#cb2-192" aria-hidden="true" tabindex="-1"></a>      tiles <span class="op">+=</span> <span class="vs">`&lt;div style="flex:1;min-width:72px;background:</span><span class="sc">${</span>bg<span class="sc">}</span><span class="vs">;border:2px solid </span><span class="sc">${</span>bd<span class="sc">}</span><span class="vs">;border-radius:6px;padding:8px;text-align:center"&gt;</span></span>
+<span id="cb2-193"><a href="#cb2-193" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;div style="font-size:11px;color:#888"&gt;Occasion </span><span class="sc">${</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
+<span id="cb2-194"><a href="#cb2-194" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;div style="font-size:22px;margin:4px 0"&gt;</span><span class="sc">${</span>icon<span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
+<span id="cb2-195"><a href="#cb2-195" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;div style="font-size:11px;color:#aaa;min-height:14px"&gt;</span><span class="sc">${</span>sub<span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
+<span id="cb2-196"><a href="#cb2-196" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb2-197"><a href="#cb2-197" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-198"><a href="#cb2-198" aria-hidden="true" tabindex="-1"></a>    tiles <span class="op">+=</span> <span class="vs">`&lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb2-199"><a href="#cb2-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-200"><a href="#cb2-200" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> action <span class="op">=</span> <span class="st">""</span><span class="op">;</span></span>
+<span id="cb2-201"><a href="#cb2-201" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (phase <span class="op">===</span> <span class="st">"revealed"</span>) {</span>
+<span id="cb2-202"><a href="#cb2-202" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> allAlive <span class="op">=</span> a<span class="op">.</span><span class="at">alive</span><span class="op">.</span><span class="fu">every</span>(x <span class="kw">=&gt;</span> x <span class="op">===</span> <span class="dv">1</span>)<span class="op">;</span></span>
+<span id="cb2-203"><a href="#cb2-203" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> diedAt   <span class="op">=</span> a<span class="op">.</span><span class="at">alive</span><span class="op">.</span><span class="fu">indexOf</span>(<span class="dv">0</span>)<span class="op">;</span></span>
+<span id="cb2-204"><a href="#cb2-204" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> summary  <span class="op">=</span> allAlive</span>
+<span id="cb2-205"><a href="#cb2-205" aria-hidden="true" tabindex="-1"></a>        <span class="op">?</span> <span class="vs">`&lt;strong style="color:#00A68A"&gt;This animal was alive for all four occasions.&lt;/strong&gt; Every non-detection was a missed observation, not a death.`</span></span>
+<span id="cb2-206"><a href="#cb2-206" aria-hidden="true" tabindex="-1"></a>        <span class="op">:</span> <span class="vs">`This animal died between occasion </span><span class="sc">${</span>diedAt<span class="sc">}</span><span class="vs"> and occasion </span><span class="sc">${</span>diedAt<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="vs">. Non-detections before that were misses; after that, the animal was gone.`</span><span class="op">;</span></span>
+<span id="cb2-207"><a href="#cb2-207" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> wrong <span class="op">=</span> <span class="dv">0</span><span class="op">,</span> total <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb2-208"><a href="#cb2-208" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> i<span class="op">++</span>) {</span>
+<span id="cb2-209"><a href="#cb2-209" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="op">!</span>a<span class="op">.</span><span class="at">detected</span>[i] <span class="op">&amp;&amp;</span> guesses[i] <span class="op">!=</span> <span class="kw">null</span>) {</span>
+<span id="cb2-210"><a href="#cb2-210" aria-hidden="true" tabindex="-1"></a>          total<span class="op">++;</span></span>
+<span id="cb2-211"><a href="#cb2-211" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span> (guesses[i] <span class="op">!==</span> (a<span class="op">.</span><span class="at">alive</span>[i] <span class="op">?</span> <span class="st">"h"</span> <span class="op">:</span> <span class="st">"d"</span>)) wrong<span class="op">++;</span></span>
+<span id="cb2-212"><a href="#cb2-212" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb2-213"><a href="#cb2-213" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb2-214"><a href="#cb2-214" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> verdict <span class="op">=</span> total <span class="op">===</span> <span class="dv">0</span> <span class="op">?</span> <span class="st">""</span></span>
+<span id="cb2-215"><a href="#cb2-215" aria-hidden="true" tabindex="-1"></a>        <span class="op">:</span> wrong <span class="op">&gt;</span> <span class="dv">0</span></span>
+<span id="cb2-216"><a href="#cb2-216" aria-hidden="true" tabindex="-1"></a>          <span class="op">?</span> <span class="vs">`&lt;p style="color:#FFD700;font-size:13px;margin:8px 0 0"&gt;You got </span><span class="sc">${</span>wrong<span class="sc">}</span><span class="vs"> of </span><span class="sc">${</span>total<span class="sc">}</span><span class="vs"> guess</span><span class="sc">${</span>total<span class="op">&gt;</span><span class="dv">1</span><span class="op">?</span><span class="st">"es"</span><span class="op">:</span><span class="st">""</span><span class="sc">}</span><span class="vs"> wrong — and there was no way to know from the data alone. That is the point.&lt;/p&gt;`</span></span>
+<span id="cb2-217"><a href="#cb2-217" aria-hidden="true" tabindex="-1"></a>          <span class="op">:</span> <span class="vs">`&lt;p style="color:#aaa;font-size:13px;margin:8px 0 0"&gt;You got them all right this time — but could you be certain? The data alone cannot prove it.&lt;/p&gt;`</span><span class="op">;</span></span>
+<span id="cb2-218"><a href="#cb2-218" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> nxt <span class="op">=</span> ai <span class="op">&lt;</span> animals<span class="op">.</span><span class="at">length</span> <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb2-219"><a href="#cb2-219" aria-hidden="true" tabindex="-1"></a>        <span class="op">?</span> <span class="vs">`&lt;button id="nxtA" style="margin-top:12px;background:#333;color:#ccc;border:1px solid #555;padding:8px 20px;border-radius:6px;cursor:pointer"&gt;Try another animal →&lt;/button&gt;`</span></span>
+<span id="cb2-220"><a href="#cb2-220" aria-hidden="true" tabindex="-1"></a>        <span class="op">:</span> <span class="vs">`&lt;p style="color:#666;font-size:13px;margin-top:12px"&gt;You have seen all four animals. The same ambiguity lives in every zero in every dataset.&lt;/p&gt;`</span><span class="op">;</span></span>
+<span id="cb2-221"><a href="#cb2-221" aria-hidden="true" tabindex="-1"></a>      action <span class="op">=</span> <span class="vs">`&lt;div style="background:#1a2a1a;border:1px solid #00A68A;border-radius:6px;padding:14px"&gt;</span></span>
+<span id="cb2-222"><a href="#cb2-222" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;p style="margin:0;color:#ccc;font-size:14px"&gt;</span><span class="sc">${</span>summary<span class="sc">}</span><span class="vs">&lt;/p&gt;</span><span class="sc">${</span>verdict<span class="sc">}</span><span class="vs">&lt;/div&gt;</span><span class="sc">${</span>nxt<span class="sc">}</span><span class="vs">`</span><span class="op">;</span></span>
+<span id="cb2-223"><a href="#cb2-223" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (occ <span class="op">&gt;=</span> n) {</span>
+<span id="cb2-224"><a href="#cb2-224" aria-hidden="true" tabindex="-1"></a>      action <span class="op">=</span> <span class="vs">`&lt;div style="text-align:center"&gt;</span></span>
+<span id="cb2-225"><a href="#cb2-225" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;p style="color:#999;margin-bottom:10px"&gt;All occasions complete. Ready to see what actually happened?&lt;/p&gt;</span></span>
+<span id="cb2-226"><a href="#cb2-226" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;button id="revBtn" style="background:#4a9eff;color:#fff;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:14px"&gt;Reveal the truth&lt;/button&gt;</span></span>
+<span id="cb2-227"><a href="#cb2-227" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb2-228"><a href="#cb2-228" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb2-229"><a href="#cb2-229" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (a<span class="op">.</span><span class="at">detected</span>[occ]) {</span>
+<span id="cb2-230"><a href="#cb2-230" aria-hidden="true" tabindex="-1"></a>        action <span class="op">=</span> <span class="vs">`&lt;div style="background:#1a3a2a;border:1px solid #00A68A;border-radius:6px;padding:14px;text-align:center"&gt;</span></span>
+<span id="cb2-231"><a href="#cb2-231" aria-hidden="true" tabindex="-1"></a><span class="vs">          &lt;p style="margin:0;color:#00A68A;font-weight:bold"&gt;✓ Detected at occasion </span><span class="sc">${</span>occ<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="vs">!&lt;/p&gt;</span></span>
+<span id="cb2-232"><a href="#cb2-232" aria-hidden="true" tabindex="-1"></a><span class="vs">          &lt;p style="margin:6px 0 0;color:#999;font-size:13px"&gt;The animal appeared in your survey. Definitely alive at this point.&lt;/p&gt;</span></span>
+<span id="cb2-233"><a href="#cb2-233" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;/div&gt;</span></span>
+<span id="cb2-234"><a href="#cb2-234" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;div style="text-align:center;margin-top:12px"&gt;</span></span>
+<span id="cb2-235"><a href="#cb2-235" aria-hidden="true" tabindex="-1"></a><span class="vs">          &lt;button id="nxtO" style="background:#333;color:#ccc;border:1px solid #555;padding:8px 20px;border-radius:6px;cursor:pointer"&gt;Next occasion →&lt;/button&gt;</span></span>
+<span id="cb2-236"><a href="#cb2-236" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb2-237"><a href="#cb2-237" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb2-238"><a href="#cb2-238" aria-hidden="true" tabindex="-1"></a>        action <span class="op">=</span> <span class="vs">`&lt;div style="background:#252525;border:1px solid #555;border-radius:6px;padding:14px;text-align:center"&gt;</span></span>
+<span id="cb2-239"><a href="#cb2-239" aria-hidden="true" tabindex="-1"></a><span class="vs">          &lt;p style="margin:0;color:#fff"&gt;Occasion </span><span class="sc">${</span>occ<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="vs">: &lt;strong&gt;not detected.&lt;/strong&gt;&lt;/p&gt;</span></span>
+<span id="cb2-240"><a href="#cb2-240" aria-hidden="true" tabindex="-1"></a><span class="vs">          &lt;p style="margin:8px 0 0;color:#999;font-size:13px"&gt;Your survey drew a blank. What do you think happened to this animal?&lt;/p&gt;</span></span>
+<span id="cb2-241"><a href="#cb2-241" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;/div&gt;</span></span>
+<span id="cb2-242"><a href="#cb2-242" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;div style="display:flex;gap:12px;justify-content:center;margin-top:12px"&gt;</span></span>
+<span id="cb2-243"><a href="#cb2-243" aria-hidden="true" tabindex="-1"></a><span class="vs">          &lt;button id="dBtn" style="background:#3a1a1a;color:#FF5733;border:2px solid #FF5733;padding:10px 28px;border-radius:6px;cursor:pointer;font-weight:bold"&gt;✗ Dead&lt;/button&gt;</span></span>
+<span id="cb2-244"><a href="#cb2-244" aria-hidden="true" tabindex="-1"></a><span class="vs">          &lt;button id="hBtn" style="background:#2e2a10;color:#FFD700;border:2px solid #FFD700;padding:10px 28px;border-radius:6px;cursor:pointer;font-weight:bold"&gt;? Hiding&lt;/button&gt;</span></span>
+<span id="cb2-245"><a href="#cb2-245" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb2-246"><a href="#cb2-246" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb2-247"><a href="#cb2-247" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-248"><a href="#cb2-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-249"><a href="#cb2-249" aria-hidden="true" tabindex="-1"></a>    el<span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> <span class="vs">`</span></span>
+<span id="cb2-250"><a href="#cb2-250" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"&gt;</span></span>
+<span id="cb2-251"><a href="#cb2-251" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;h3 style="margin:0;color:#fff"&gt;</span><span class="sc">${</span>a<span class="op">.</span><span class="at">id</span><span class="sc">}</span><span class="vs"> — Dead or hiding?&lt;/h3&gt;</span></span>
+<span id="cb2-252"><a href="#cb2-252" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;span style="font-size:12px;color:#666"&gt;</span><span class="sc">${</span>ai<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="vs"> / </span><span class="sc">${</span>animals<span class="op">.</span><span class="at">length</span><span class="sc">}</span><span class="vs">&lt;/span&gt;</span></span>
+<span id="cb2-253"><a href="#cb2-253" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;/div&gt;</span></span>
+<span id="cb2-254"><a href="#cb2-254" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;p style="color:#999;font-size:13px;margin-bottom:14px"&gt;Tagged and released at occasion 1. Watch each survey unfold. When there is a non-detection, make your call.&lt;/p&gt;</span></span>
+<span id="cb2-255"><a href="#cb2-255" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span>tiles<span class="sc">}${</span>action<span class="sc">}</span><span class="vs">`</span><span class="op">;</span></span>
+<span id="cb2-256"><a href="#cb2-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-257"><a href="#cb2-257" aria-hidden="true" tabindex="-1"></a>    el<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">"#nxtO"</span>)<span class="op">?.</span><span class="fu">addEventListener</span>(<span class="st">"click"</span><span class="op">,</span>  () <span class="kw">=&gt;</span> { guesses[occ]<span class="op">=</span><span class="kw">null</span><span class="op">;</span> occ<span class="op">++;</span> <span class="fu">draw</span>()<span class="op">;</span> })<span class="op">;</span></span>
+<span id="cb2-258"><a href="#cb2-258" aria-hidden="true" tabindex="-1"></a>    el<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">"#dBtn"</span>)<span class="op">?.</span><span class="fu">addEventListener</span>(<span class="st">"click"</span><span class="op">,</span>  () <span class="kw">=&gt;</span> { guesses[occ]<span class="op">=</span><span class="st">"d"</span><span class="op">;</span>  occ<span class="op">++;</span> <span class="fu">draw</span>()<span class="op">;</span> })<span class="op">;</span></span>
+<span id="cb2-259"><a href="#cb2-259" aria-hidden="true" tabindex="-1"></a>    el<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">"#hBtn"</span>)<span class="op">?.</span><span class="fu">addEventListener</span>(<span class="st">"click"</span><span class="op">,</span>  () <span class="kw">=&gt;</span> { guesses[occ]<span class="op">=</span><span class="st">"h"</span><span class="op">;</span>  occ<span class="op">++;</span> <span class="fu">draw</span>()<span class="op">;</span> })<span class="op">;</span></span>
+<span id="cb2-260"><a href="#cb2-260" aria-hidden="true" tabindex="-1"></a>    el<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">"#revBtn"</span>)<span class="op">?.</span><span class="fu">addEventListener</span>(<span class="st">"click"</span><span class="op">,</span>() <span class="kw">=&gt;</span> { phase<span class="op">=</span><span class="st">"revealed"</span><span class="op">;</span> <span class="fu">draw</span>()<span class="op">;</span> })<span class="op">;</span></span>
+<span id="cb2-261"><a href="#cb2-261" aria-hidden="true" tabindex="-1"></a>    el<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">"#nxtA"</span>)<span class="op">?.</span><span class="fu">addEventListener</span>(<span class="st">"click"</span><span class="op">,</span>  () <span class="kw">=&gt;</span> { ai<span class="op">++;</span> occ<span class="op">=</span><span class="dv">0</span><span class="op">;</span> guesses<span class="op">=</span>[]<span class="op">;</span> phase<span class="op">=</span><span class="st">"playing"</span><span class="op">;</span> <span class="fu">draw</span>()<span class="op">;</span> })<span class="op">;</span></span>
+<span id="cb2-262"><a href="#cb2-262" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-263"><a href="#cb2-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-264"><a href="#cb2-264" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw</span>()<span class="op">;</span></span>
+<span id="cb2-265"><a href="#cb2-265" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> el<span class="op">;</span></span>
+<span id="cb2-266"><a href="#cb2-266" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="the-problem" class="level1">
+<h1>The problem</h1>
+<p>To describe these two competing explanations precisely, we need to name two quantities. The first is <span class="math inline">\(p\)</span>, the probability of detecting an individual that is alive and present during a survey. The second is <span class="math inline">\(\phi\)</span> (the Greek letter “phi”), the probability an individual survives from one survey to the next. These two quantities sit at the heart of everything that follows in this tutorial.</p>
 <p>When you do not recapture a tagged animal, you are facing two competing hypotheses:</p>
 <ul>
-<li><p><strong>Hypothesis A</strong>: The animal is alive but you missed it. This happens with probability <span class="math inline">\(\phi \times (1 - p)\)</span>: the animal survived the time between surveys but you failed to detect it.</p></li>
+<li><p><strong>Hypothesis A</strong>: The animal is alive but you missed it. This happens with probability <span class="math inline">\(\phi \times (1 - p)\)</span>: the animal survived (<span class="math inline">\(\phi\)</span>) the interval between surveys but you failed to detect it (<span class="math inline">\(1 - p\)</span>, the probability of <em>not</em> seeing it).</p></li>
 <li><p><strong>Hypothesis B</strong>: The animal is dead. This happens with probability <span class="math inline">\(1 - \phi\)</span>: the animal did not survive the time between surveys.</p></li>
 </ul>
-<p>Both predict the same observation. With a single resighting occasion you cannot tell them apart.</p>
+<p>Both predict the same observation; <code>0</code>. When all you have is a capture occasion you cannot tell them apart. Use the sliders below to explore how the balance between these two explanations shifts depending on the true values of <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span>.</p>
 <div class="cell">
-<details>
+<details class="code-fold hidden">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>phi_true <span class="ot">&lt;-</span> <span class="fl">0.75</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>p_true <span class="ot">&lt;-</span> <span class="fl">0.40</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>scenarios <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">scenario =</span> <span class="fu">c</span>(<span class="st">"Alive, not detected"</span>, <span class="st">"Dead"</span>),</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">probability =</span> <span class="fu">c</span>(phi_true <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> p_true), <span class="dv">1</span> <span class="sc">-</span> phi_true)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(scenarios, <span class="fu">aes</span>(<span class="at">x =</span> scenario, <span class="at">y =</span> probability)) <span class="sc">+</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="fu">c</span>(<span class="st">"#00A68A"</span>, <span class="st">"#FF5733"</span>), <span class="at">width =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Probability"</span>,</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Two explanations for a non-recapture"</span>,</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste0</span>(<span class="st">"True \u03d5 = "</span>, phi_true, <span class="st">"  |  True p = "</span>, p_true)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dark_site</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb3" data-startfrom="283" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 282;"><span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a>viewof phi_bar <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.05</span><span class="op">,</span> <span class="fl">0.99</span>]<span class="op">,</span> {</span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a>  <span class="dt">value</span><span class="op">:</span> <span class="fl">0.75</span><span class="op">,</span></span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a>  <span class="dt">step</span><span class="op">:</span> <span class="fl">0.01</span><span class="op">,</span></span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a>  <span class="dt">label</span><span class="op">:</span> <span class="st">"Survival probability (</span><span class="sc">\u03c6</span><span class="st">)"</span></span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output-display">
-<p><img src="Detection_Problem_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="declaration">
+
 </div>
 </div>
-<p>With the values used in our simulation (<span class="math inline">\(\phi = 0.75\)</span>, <span class="math inline">\(p = 0.40\)</span>), the probability that a non-detection means the animal is alive and missed is actually <em>higher</em> than the probability it means the animal is dead. In other words, the naive interpretation of a non-detection as death would be wrong the majority of the time in this scenario.</p>
+</div>
+<div class="cell">
+<details class="code-fold hidden">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb4" data-startfrom="292" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 291;"><span id="cb4-292"><a href="#cb4-292" aria-hidden="true" tabindex="-1"></a>viewof p_bar <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.05</span><span class="op">,</span> <span class="fl">0.99</span>]<span class="op">,</span> {</span>
+<span id="cb4-293"><a href="#cb4-293" aria-hidden="true" tabindex="-1"></a>  <span class="dt">value</span><span class="op">:</span> <span class="fl">0.40</span><span class="op">,</span></span>
+<span id="cb4-294"><a href="#cb4-294" aria-hidden="true" tabindex="-1"></a>  <span class="dt">step</span><span class="op">:</span> <span class="fl">0.01</span><span class="op">,</span></span>
+<span id="cb4-295"><a href="#cb4-295" aria-hidden="true" tabindex="-1"></a>  <span class="dt">label</span><span class="op">:</span> <span class="st">"Detection probability (p)"</span></span>
+<span id="cb4-296"><a href="#cb4-296" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold hidden">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb5" data-startfrom="301" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 300;"><span id="cb5-301"><a href="#cb5-301" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb5-302"><a href="#cb5-302" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> data <span class="op">=</span> [</span>
+<span id="cb5-303"><a href="#cb5-303" aria-hidden="true" tabindex="-1"></a>    { <span class="dt">scenario</span><span class="op">:</span> <span class="st">"Alive, not detected"</span><span class="op">,</span> <span class="dt">prob</span><span class="op">:</span> phi_bar <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> p_bar) }<span class="op">,</span></span>
+<span id="cb5-304"><a href="#cb5-304" aria-hidden="true" tabindex="-1"></a>    { <span class="dt">scenario</span><span class="op">:</span> <span class="st">"Dead"</span><span class="op">,</span>                <span class="dt">prob</span><span class="op">:</span> <span class="dv">1</span> <span class="op">-</span> phi_bar }</span>
+<span id="cb5-305"><a href="#cb5-305" aria-hidden="true" tabindex="-1"></a>  ]<span class="op">;</span></span>
+<span id="cb5-306"><a href="#cb5-306" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-307"><a href="#cb5-307" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> winner   <span class="op">=</span> data[<span class="dv">0</span>]<span class="op">.</span><span class="at">prob</span> <span class="op">&gt;</span> data[<span class="dv">1</span>]<span class="op">.</span><span class="at">prob</span> <span class="op">?</span> <span class="st">"alive but missed"</span> <span class="op">:</span> <span class="st">"dead"</span><span class="op">;</span></span>
+<span id="cb5-308"><a href="#cb5-308" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> winColor <span class="op">=</span> winner <span class="op">===</span> <span class="st">"alive but missed"</span> <span class="op">?</span> <span class="st">"#00A68A"</span> <span class="op">:</span> <span class="st">"#FF5733"</span><span class="op">;</span></span>
+<span id="cb5-309"><a href="#cb5-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-310"><a href="#cb5-310" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> chart <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb5-311"><a href="#cb5-311" aria-hidden="true" tabindex="-1"></a>    <span class="dt">style</span><span class="op">:</span> { <span class="dt">background</span><span class="op">:</span> <span class="st">"#202123"</span><span class="op">,</span> <span class="dt">color</span><span class="op">:</span> <span class="st">"#cccccc"</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="st">"13px"</span> }<span class="op">,</span></span>
+<span id="cb5-312"><a href="#cb5-312" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">160</span><span class="op">,</span></span>
+<span id="cb5-313"><a href="#cb5-313" aria-hidden="true" tabindex="-1"></a>    <span class="dt">width</span><span class="op">:</span> <span class="dv">520</span><span class="op">,</span></span>
+<span id="cb5-314"><a href="#cb5-314" aria-hidden="true" tabindex="-1"></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">160</span><span class="op">,</span></span>
+<span id="cb5-315"><a href="#cb5-315" aria-hidden="true" tabindex="-1"></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Probability"</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> <span class="st">"%"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">1</span>]<span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span> }<span class="op">,</span></span>
+<span id="cb5-316"><a href="#cb5-316" aria-hidden="true" tabindex="-1"></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="kw">null</span> }<span class="op">,</span></span>
+<span id="cb5-317"><a href="#cb5-317" aria-hidden="true" tabindex="-1"></a>    <span class="dt">color</span><span class="op">:</span> {</span>
+<span id="cb5-318"><a href="#cb5-318" aria-hidden="true" tabindex="-1"></a>      <span class="dt">domain</span><span class="op">:</span> [<span class="st">"Alive, not detected"</span><span class="op">,</span> <span class="st">"Dead"</span>]<span class="op">,</span></span>
+<span id="cb5-319"><a href="#cb5-319" aria-hidden="true" tabindex="-1"></a>      <span class="dt">range</span><span class="op">:</span>  [<span class="st">"#00A68A"</span><span class="op">,</span> <span class="st">"#FF5733"</span>]</span>
+<span id="cb5-320"><a href="#cb5-320" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb5-321"><a href="#cb5-321" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb5-322"><a href="#cb5-322" aria-hidden="true" tabindex="-1"></a>      Plot<span class="op">.</span><span class="fu">barX</span>(data<span class="op">,</span> { <span class="dt">y</span><span class="op">:</span> <span class="st">"scenario"</span><span class="op">,</span> <span class="dt">x</span><span class="op">:</span> <span class="st">"prob"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"scenario"</span> })<span class="op">,</span></span>
+<span id="cb5-323"><a href="#cb5-323" aria-hidden="true" tabindex="-1"></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>]<span class="op">,</span> { <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#444"</span> })</span>
+<span id="cb5-324"><a href="#cb5-324" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb5-325"><a href="#cb5-325" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb5-326"><a href="#cb5-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-327"><a href="#cb5-327" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="background:#202123;padding:12px;border-radius:6px"&gt;</span></span>
+<span id="cb5-328"><a href="#cb5-328" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span>chart<span class="sc">}</span></span>
+<span id="cb5-329"><a href="#cb5-329" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;p style="font-size:13px;color:#999;margin:10px 0 0"&gt;</span></span>
+<span id="cb5-330"><a href="#cb5-330" aria-hidden="true" tabindex="-1"></a><span class="vs">      With these values, a non-detection is more likely explained by</span></span>
+<span id="cb5-331"><a href="#cb5-331" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;strong style="color:</span><span class="sc">${</span>winColor<span class="sc">}</span><span class="vs">"&gt;</span><span class="sc">${</span>winner<span class="sc">}</span><span class="vs">&lt;/strong&gt;.</span></span>
+<span id="cb5-332"><a href="#cb5-332" aria-hidden="true" tabindex="-1"></a><span class="vs">      Try adjusting both sliders </span><span class="sc">\u2014</span><span class="vs"> notice how easily this conclusion flips, and how</span></span>
+<span id="cb5-333"><a href="#cb5-333" aria-hidden="true" tabindex="-1"></a><span class="vs">      different combinations of </span><span class="sc">\u03c6</span><span class="vs"> and p can make a healthy population look like a</span></span>
+<span id="cb5-334"><a href="#cb5-334" aria-hidden="true" tabindex="-1"></a><span class="vs">      collapsing one, or vice versa.</span></span>
+<span id="cb5-335"><a href="#cb5-335" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/p&gt;</span></span>
+<span id="cb5-336"><a href="#cb5-336" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb5-337"><a href="#cb5-337" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
 <p>This is why a single survey with recaptures is not enough. You need a framework that estimates <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span> simultaneously, using the full pattern of detections and non-detections across multiple occasions to untangle them.</p>
-</section>
-<section id="there-is-actually-a-third-problem" class="level1">
-<h1>There is actually a third problem</h1>
-<p>I have been quietly ignoring something. Animals can also <strong>leave your study area permanently</strong> without dying.</p>
-<p>If an otter decides to move 10 kilometres upstream and you never sample up there, it vanishes from your data in exactly the same way a dead otter would. Permanent emigration looks identical to death in a capture history. This means that what survival models actually estimate is not true survival but <strong>apparent survival</strong>, <span class="math inline">\(\phi\)</span>, which bundles together the probability of surviving and the probability of not permanently emigrating.</p>
-<p>This is not a fatal flaw. It is a limitation that exists in virtually every mark-recapture study, and the honest thing to do is acknowledge it when you report your results. We will return to it in more detail when we get to the robust design, because the robust design introduces yet another flavour of this problem: animals that leave your study area <em>temporarily</em> and then come back. A non-detection that is neither death nor permanent emigration, but a brief absence.</p>
-<p>For now, the point is simply that what looks like a straightforward counting problem is actually an estimation problem with at least three sources of ambiguity packed into every zero in your data.</p>
 </section>
 <section id="what-we-need-to-make-progress" class="level1">
 <h1>What we need to make progress</h1>
 <p>To estimate survival and detection simultaneously, rather than having them hopelessly tangled together, we need three things.</p>
 <p>First, individually marked animals. Not just a count of how many we saw, but a record of <em>which specific individuals</em> we saw on each occasion. This is what allows us to track fates through time rather than just tallying up numbers.</p>
 <p>Second, multiple sampling occasions. A single occasion gives us a count. Multiple occasions give us a <em>pattern</em> of detections and non-detections across time, and that pattern contains the information we need to estimate both <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span> separately.</p>
-<p>Third, a model that represents both processes explicitly. One that says, formally, that a detection requires both survival and detection, and uses that structure to estimate each parameter on its own terms.</p>
+<p>Third, a model that represents both processes explicitly. One that says, formally, that observing an animal requires both that it survived to the next occasion and that we actually detected it, and uses that structure to estimate each parameter on its own terms. If you have worked through the GLM refresher, you already have the statistical foundation for this. The models we will build are extensions of that same framework — they simply need to account for these two processes, survival and detection, at the same time.</p>
 <p>The next page introduces the simplest version of this thinking: the Lincoln-Petersen estimator. It does not quite tick all three boxes but it builds the intuition clearly and cleanly before we move on to models that do.</p>
 
 
 </section>
 
 </main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3QgYW5pbWFscyA9IFtcbiAgICB7IGlkOiBcIkFuaW1hbCAjN1wiLCAgYWxpdmU6IFsxLDEsMSwxXSwgZGV0ZWN0ZWQ6IFsxLDAsMCwxXSB9LFxuICAgIHsgaWQ6IFwiQW5pbWFsICMxMlwiLCBhbGl2ZTogWzEsMSwwLDBdLCBkZXRlY3RlZDogWzEsMSwwLDBdIH0sXG4gICAgeyBpZDogXCJBbmltYWwgIzNcIiwgIGFsaXZlOiBbMSwxLDEsMV0sIGRldGVjdGVkOiBbMSwwLDEsMF0gfSxcbiAgICB7IGlkOiBcIkFuaW1hbCAjMTlcIiwgYWxpdmU6IFsxLDAsMCwwXSwgZGV0ZWN0ZWQ6IFsxLDAsMCwwXSB9XG4gIF07XG5cbiAgbGV0IGFpID0gMCwgb2NjID0gMCwgZ3Vlc3NlcyA9IFtdLCBwaGFzZSA9IFwicGxheWluZ1wiO1xuXG4gIGNvbnN0IGVsID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudChcImRpdlwiKTtcbiAgZWwuc3R5bGUuY3NzVGV4dCA9IFwiYmFja2dyb3VuZDojMjAyMTIzO2JvcmRlci1yYWRpdXM6OHB4O3BhZGRpbmc6MjBweDtjb2xvcjojY2NjY2NjO2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWZcIjtcblxuICBmdW5jdGlvbiBkcmF3KCkge1xuICAgIGNvbnN0IGEgPSBhbmltYWxzW2FpXTtcbiAgICBjb25zdCBuID0gYS5hbGl2ZS5sZW5ndGg7XG5cbiAgICBsZXQgdGlsZXMgPSBgPGRpdiBzdHlsZT1cImRpc3BsYXk6ZmxleDtnYXA6OHB4O2ZsZXgtd3JhcDp3cmFwO21hcmdpbi1ib3R0b206MTZweFwiPmA7XG4gICAgZm9yIChsZXQgaSA9IDA7IGkgPCBuOyBpKyspIHtcbiAgICAgIGxldCBiZz1cIiMyYTJhMmFcIiwgYmQ9XCIjNDQ0XCIsIGljb249XCLCt1wiLCBzdWI9XCJcIjtcbiAgICAgIGlmIChwaGFzZSA9PT0gXCJyZXZlYWxlZFwiKSB7XG4gICAgICAgIGlmIChhLmRldGVjdGVkW2ldKSAgICB7IGJnPVwiIzFhM2EyYVwiOyBiZD1cIiMwMEE2OEFcIjsgaWNvbj1cIuKck1wiOyBzdWI9XCJEZXRlY3RlZFwiOyB9XG4gICAgICAgIGVsc2UgaWYgKGEuYWxpdmVbaV0pICB7IGJnPVwiIzJlMmExMFwiOyBiZD1cIiNGRkQ3MDBcIjsgaWNvbj1cIuKXi1wiOyBzdWI9XCJBbGl2ZSwgbWlzc2VkXCI7IH1cbiAgICAgICAgZWxzZSAgICAgICAgICAgICAgICAgIHsgYmc9XCIjM2ExYTFhXCI7IGJkPVwiI0ZGNTczM1wiOyBpY29uPVwi4pyXXCI7IHN1Yj1cIkRlYWRcIjsgfVxuICAgICAgfSBlbHNlIHtcbiAgICAgICAgaWYgKGkgPCBvY2MpIHtcbiAgICAgICAgICBpZiAoYS5kZXRlY3RlZFtpXSkgICAgICAgICB7IGJnPVwiIzFhM2EyYVwiOyBiZD1cIiMwMEE2OEFcIjsgaWNvbj1cIuKck1wiOyBzdWI9XCJEZXRlY3RlZFwiOyB9XG4gICAgICAgICAgZWxzZSBpZiAoZ3Vlc3Nlc1tpXT09PVwiZFwiKSB7IGJnPVwiIzNhMWExYVwiOyBiZD1cIiNGRjU3MzNcIjsgaWNvbj1cIuKcl1wiOyBzdWI9XCJZb3Ugc2FpZDogRGVhZFwiOyB9XG4gICAgICAgICAgZWxzZSBpZiAoZ3Vlc3Nlc1tpXT09PVwiaFwiKSB7IGJnPVwiIzJlMmExMFwiOyBiZD1cIiNGRkQ3MDBcIjsgaWNvbj1cIj9cIjsgc3ViPVwiWW91IHNhaWQ6IEhpZGluZ1wiOyB9XG4gICAgICAgIH0gZWxzZSBpZiAoaSA9PT0gb2NjKSB7XG4gICAgICAgICAgYmc9XCIjMWEyNTM1XCI7IGJkPVwiIzRhOWVmZlwiOyBpY29uPVwi4oaSXCI7IHN1Yj1cIkN1cnJlbnRcIjtcbiAgICAgICAgfVxuICAgICAgfVxuICAgICAgdGlsZXMgKz0gYDxkaXYgc3R5bGU9XCJmbGV4OjE7bWluLXdpZHRoOjcycHg7YmFja2dyb3VuZDoke2JnfTtib3JkZXI6MnB4IHNvbGlkICR7YmR9O2JvcmRlci1yYWRpdXM6NnB4O3BhZGRpbmc6OHB4O3RleHQtYWxpZ246Y2VudGVyXCI+XG4gICAgICAgIDxkaXYgc3R5bGU9XCJmb250LXNpemU6MTFweDtjb2xvcjojODg4XCI+T2NjYXNpb24gJHtpKzF9PC9kaXY+XG4gICAgICAgIDxkaXYgc3R5bGU9XCJmb250LXNpemU6MjJweDttYXJnaW46NHB4IDBcIj4ke2ljb259PC9kaXY+XG4gICAgICAgIDxkaXYgc3R5bGU9XCJmb250LXNpemU6MTFweDtjb2xvcjojYWFhO21pbi1oZWlnaHQ6MTRweFwiPiR7c3VifTwvZGl2PlxuICAgICAgPC9kaXY+YDtcbiAgICB9XG4gICAgdGlsZXMgKz0gYDwvZGl2PmA7XG5cbiAgICBsZXQgYWN0aW9uID0gXCJcIjtcbiAgICBpZiAocGhhc2UgPT09IFwicmV2ZWFsZWRcIikge1xuICAgICAgY29uc3QgYWxsQWxpdmUgPSBhLmFsaXZlLmV2ZXJ5KHggPT4geCA9PT0gMSk7XG4gICAgICBjb25zdCBkaWVkQXQgICA9IGEuYWxpdmUuaW5kZXhPZigwKTtcbiAgICAgIGNvbnN0IHN1bW1hcnkgID0gYWxsQWxpdmVcbiAgICAgICAgPyBgPHN0cm9uZyBzdHlsZT1cImNvbG9yOiMwMEE2OEFcIj5UaGlzIGFuaW1hbCB3YXMgYWxpdmUgZm9yIGFsbCBmb3VyIG9jY2FzaW9ucy48L3N0cm9uZz4gRXZlcnkgbm9uLWRldGVjdGlvbiB3YXMgYSBtaXNzZWQgb2JzZXJ2YXRpb24sIG5vdCBhIGRlYXRoLmBcbiAgICAgICAgOiBgVGhpcyBhbmltYWwgZGllZCBiZXR3ZWVuIG9jY2FzaW9uICR7ZGllZEF0fSBhbmQgb2NjYXNpb24gJHtkaWVkQXQrMX0uIE5vbi1kZXRlY3Rpb25zIGJlZm9yZSB0aGF0IHdlcmUgbWlzc2VzOyBhZnRlciB0aGF0LCB0aGUgYW5pbWFsIHdhcyBnb25lLmA7XG4gICAgICBsZXQgd3JvbmcgPSAwLCB0b3RhbCA9IDA7XG4gICAgICBmb3IgKGxldCBpID0gMDsgaSA8IG47IGkrKykge1xuICAgICAgICBpZiAoIWEuZGV0ZWN0ZWRbaV0gJiYgZ3Vlc3Nlc1tpXSAhPSBudWxsKSB7XG4gICAgICAgICAgdG90YWwrKztcbiAgICAgICAgICBpZiAoZ3Vlc3Nlc1tpXSAhPT0gKGEuYWxpdmVbaV0gPyBcImhcIiA6IFwiZFwiKSkgd3JvbmcrKztcbiAgICAgICAgfVxuICAgICAgfVxuICAgICAgY29uc3QgdmVyZGljdCA9IHRvdGFsID09PSAwID8gXCJcIlxuICAgICAgICA6IHdyb25nID4gMFxuICAgICAgICAgID8gYDxwIHN0eWxlPVwiY29sb3I6I0ZGRDcwMDtmb250LXNpemU6MTNweDttYXJnaW46OHB4IDAgMFwiPllvdSBnb3QgJHt3cm9uZ30gb2YgJHt0b3RhbH0gZ3Vlc3Mke3RvdGFsPjE/XCJlc1wiOlwiXCJ9IHdyb25nIOKAlCBhbmQgdGhlcmUgd2FzIG5vIHdheSB0byBrbm93IGZyb20gdGhlIGRhdGEgYWxvbmUuIFRoYXQgaXMgdGhlIHBvaW50LjwvcD5gXG4gICAgICAgICAgOiBgPHAgc3R5bGU9XCJjb2xvcjojYWFhO2ZvbnQtc2l6ZToxM3B4O21hcmdpbjo4cHggMCAwXCI+WW91IGdvdCB0aGVtIGFsbCByaWdodCB0aGlzIHRpbWUg4oCUIGJ1dCBjb3VsZCB5b3UgYmUgY2VydGFpbj8gVGhlIGRhdGEgYWxvbmUgY2Fubm90IHByb3ZlIGl0LjwvcD5gO1xuICAgICAgY29uc3Qgbnh0ID0gYWkgPCBhbmltYWxzLmxlbmd0aCAtIDFcbiAgICAgICAgPyBgPGJ1dHRvbiBpZD1cIm54dEFcIiBzdHlsZT1cIm1hcmdpbi10b3A6MTJweDtiYWNrZ3JvdW5kOiMzMzM7Y29sb3I6I2NjYztib3JkZXI6MXB4IHNvbGlkICM1NTU7cGFkZGluZzo4cHggMjBweDtib3JkZXItcmFkaXVzOjZweDtjdXJzb3I6cG9pbnRlclwiPlRyeSBhbm90aGVyIGFuaW1hbCDihpI8L2J1dHRvbj5gXG4gICAgICAgIDogYDxwIHN0eWxlPVwiY29sb3I6IzY2Njtmb250LXNpemU6MTNweDttYXJnaW4tdG9wOjEycHhcIj5Zb3UgaGF2ZSBzZWVuIGFsbCBmb3VyIGFuaW1hbHMuIFRoZSBzYW1lIGFtYmlndWl0eSBsaXZlcyBpbiBldmVyeSB6ZXJvIGluIGV2ZXJ5IGRhdGFzZXQuPC9wPmA7XG4gICAgICBhY3Rpb24gPSBgPGRpdiBzdHlsZT1cImJhY2tncm91bmQ6IzFhMmExYTtib3JkZXI6MXB4IHNvbGlkICMwMEE2OEE7Ym9yZGVyLXJhZGl1czo2cHg7cGFkZGluZzoxNHB4XCI+XG4gICAgICAgIDxwIHN0eWxlPVwibWFyZ2luOjA7Y29sb3I6I2NjYztmb250LXNpemU6MTRweFwiPiR7c3VtbWFyeX08L3A+JHt2ZXJkaWN0fTwvZGl2PiR7bnh0fWA7XG4gICAgfSBlbHNlIGlmIChvY2MgPj0gbikge1xuICAgICAgYWN0aW9uID0gYDxkaXYgc3R5bGU9XCJ0ZXh0LWFsaWduOmNlbnRlclwiPlxuICAgICAgICA8cCBzdHlsZT1cImNvbG9yOiM5OTk7bWFyZ2luLWJvdHRvbToxMHB4XCI+QWxsIG9jY2FzaW9ucyBjb21wbGV0ZS4gUmVhZHkgdG8gc2VlIHdoYXQgYWN0dWFsbHkgaGFwcGVuZWQ/PC9wPlxuICAgICAgICA8YnV0dG9uIGlkPVwicmV2QnRuXCIgc3R5bGU9XCJiYWNrZ3JvdW5kOiM0YTllZmY7Y29sb3I6I2ZmZjtib3JkZXI6bm9uZTtwYWRkaW5nOjEwcHggMjRweDtib3JkZXItcmFkaXVzOjZweDtjdXJzb3I6cG9pbnRlcjtmb250LXNpemU6MTRweFwiPlJldmVhbCB0aGUgdHJ1dGg8L2J1dHRvbj5cbiAgICAgIDwvZGl2PmA7XG4gICAgfSBlbHNlIHtcbiAgICAgIGlmIChhLmRldGVjdGVkW29jY10pIHtcbiAgICAgICAgYWN0aW9uID0gYDxkaXYgc3R5bGU9XCJiYWNrZ3JvdW5kOiMxYTNhMmE7Ym9yZGVyOjFweCBzb2xpZCAjMDBBNjhBO2JvcmRlci1yYWRpdXM6NnB4O3BhZGRpbmc6MTRweDt0ZXh0LWFsaWduOmNlbnRlclwiPlxuICAgICAgICAgIDxwIHN0eWxlPVwibWFyZ2luOjA7Y29sb3I6IzAwQTY4QTtmb250LXdlaWdodDpib2xkXCI+4pyTIERldGVjdGVkIGF0IG9jY2FzaW9uICR7b2NjKzF9ITwvcD5cbiAgICAgICAgICA8cCBzdHlsZT1cIm1hcmdpbjo2cHggMCAwO2NvbG9yOiM5OTk7Zm9udC1zaXplOjEzcHhcIj5UaGUgYW5pbWFsIGFwcGVhcmVkIGluIHlvdXIgc3VydmV5LiBEZWZpbml0ZWx5IGFsaXZlIGF0IHRoaXMgcG9pbnQuPC9wPlxuICAgICAgICA8L2Rpdj5cbiAgICAgICAgPGRpdiBzdHlsZT1cInRleHQtYWxpZ246Y2VudGVyO21hcmdpbi10b3A6MTJweFwiPlxuICAgICAgICAgIDxidXR0b24gaWQ9XCJueHRPXCIgc3R5bGU9XCJiYWNrZ3JvdW5kOiMzMzM7Y29sb3I6I2NjYztib3JkZXI6MXB4IHNvbGlkICM1NTU7cGFkZGluZzo4cHggMjBweDtib3JkZXItcmFkaXVzOjZweDtjdXJzb3I6cG9pbnRlclwiPk5leHQgb2NjYXNpb24g4oaSPC9idXR0b24+XG4gICAgICAgIDwvZGl2PmA7XG4gICAgICB9IGVsc2Uge1xuICAgICAgICBhY3Rpb24gPSBgPGRpdiBzdHlsZT1cImJhY2tncm91bmQ6IzI1MjUyNTtib3JkZXI6MXB4IHNvbGlkICM1NTU7Ym9yZGVyLXJhZGl1czo2cHg7cGFkZGluZzoxNHB4O3RleHQtYWxpZ246Y2VudGVyXCI+XG4gICAgICAgICAgPHAgc3R5bGU9XCJtYXJnaW46MDtjb2xvcjojZmZmXCI+T2NjYXNpb24gJHtvY2MrMX06IDxzdHJvbmc+bm90IGRldGVjdGVkLjwvc3Ryb25nPjwvcD5cbiAgICAgICAgICA8cCBzdHlsZT1cIm1hcmdpbjo4cHggMCAwO2NvbG9yOiM5OTk7Zm9udC1zaXplOjEzcHhcIj5Zb3VyIHN1cnZleSBkcmV3IGEgYmxhbmsuIFdoYXQgZG8geW91IHRoaW5rIGhhcHBlbmVkIHRvIHRoaXMgYW5pbWFsPzwvcD5cbiAgICAgICAgPC9kaXY+XG4gICAgICAgIDxkaXYgc3R5bGU9XCJkaXNwbGF5OmZsZXg7Z2FwOjEycHg7anVzdGlmeS1jb250ZW50OmNlbnRlcjttYXJnaW4tdG9wOjEycHhcIj5cbiAgICAgICAgICA8YnV0dG9uIGlkPVwiZEJ0blwiIHN0eWxlPVwiYmFja2dyb3VuZDojM2ExYTFhO2NvbG9yOiNGRjU3MzM7Ym9yZGVyOjJweCBzb2xpZCAjRkY1NzMzO3BhZGRpbmc6MTBweCAyOHB4O2JvcmRlci1yYWRpdXM6NnB4O2N1cnNvcjpwb2ludGVyO2ZvbnQtd2VpZ2h0OmJvbGRcIj7inJcgRGVhZDwvYnV0dG9uPlxuICAgICAgICAgIDxidXR0b24gaWQ9XCJoQnRuXCIgc3R5bGU9XCJiYWNrZ3JvdW5kOiMyZTJhMTA7Y29sb3I6I0ZGRDcwMDtib3JkZXI6MnB4IHNvbGlkICNGRkQ3MDA7cGFkZGluZzoxMHB4IDI4cHg7Ym9yZGVyLXJhZGl1czo2cHg7Y3Vyc29yOnBvaW50ZXI7Zm9udC13ZWlnaHQ6Ym9sZFwiPj8gSGlkaW5nPC9idXR0b24+XG4gICAgICAgIDwvZGl2PmA7XG4gICAgICB9XG4gICAgfVxuXG4gICAgZWwuaW5uZXJIVE1MID0gYFxuICAgICAgPGRpdiBzdHlsZT1cImRpc3BsYXk6ZmxleDtqdXN0aWZ5LWNvbnRlbnQ6c3BhY2UtYmV0d2VlbjthbGlnbi1pdGVtczpjZW50ZXI7bWFyZ2luLWJvdHRvbToxMHB4XCI+XG4gICAgICAgIDxoMyBzdHlsZT1cIm1hcmdpbjowO2NvbG9yOiNmZmZcIj4ke2EuaWR9IOKAlCBEZWFkIG9yIGhpZGluZz88L2gzPlxuICAgICAgICA8c3BhbiBzdHlsZT1cImZvbnQtc2l6ZToxMnB4O2NvbG9yOiM2NjZcIj4ke2FpKzF9IC8gJHthbmltYWxzLmxlbmd0aH08L3NwYW4+XG4gICAgICA8L2Rpdj5cbiAgICAgIDxwIHN0eWxlPVwiY29sb3I6Izk5OTtmb250LXNpemU6MTNweDttYXJnaW4tYm90dG9tOjE0cHhcIj5UYWdnZWQgYW5kIHJlbGVhc2VkIGF0IG9jY2FzaW9uIDEuIFdhdGNoIGVhY2ggc3VydmV5IHVuZm9sZC4gV2hlbiB0aGVyZSBpcyBhIG5vbi1kZXRlY3Rpb24sIG1ha2UgeW91ciBjYWxsLjwvcD5cbiAgICAgICR7dGlsZXN9JHthY3Rpb259YDtcblxuICAgIGVsLnF1ZXJ5U2VsZWN0b3IoXCIjbnh0T1wiKT8uYWRkRXZlbnRMaXN0ZW5lcihcImNsaWNrXCIsICAoKSA9PiB7IGd1ZXNzZXNbb2NjXT1udWxsOyBvY2MrKzsgZHJhdygpOyB9KTtcbiAgICBlbC5xdWVyeVNlbGVjdG9yKFwiI2RCdG5cIik/LmFkZEV2ZW50TGlzdGVuZXIoXCJjbGlja1wiLCAgKCkgPT4geyBndWVzc2VzW29jY109XCJkXCI7ICBvY2MrKzsgZHJhdygpOyB9KTtcbiAgICBlbC5xdWVyeVNlbGVjdG9yKFwiI2hCdG5cIik/LmFkZEV2ZW50TGlzdGVuZXIoXCJjbGlja1wiLCAgKCkgPT4geyBndWVzc2VzW29jY109XCJoXCI7ICBvY2MrKzsgZHJhdygpOyB9KTtcbiAgICBlbC5xdWVyeVNlbGVjdG9yKFwiI3JldkJ0blwiKT8uYWRkRXZlbnRMaXN0ZW5lcihcImNsaWNrXCIsKCkgPT4geyBwaGFzZT1cInJldmVhbGVkXCI7IGRyYXcoKTsgfSk7XG4gICAgZWwucXVlcnlTZWxlY3RvcihcIiNueHRBXCIpPy5hZGRFdmVudExpc3RlbmVyKFwiY2xpY2tcIiwgICgpID0+IHsgYWkrKzsgb2NjPTA7IGd1ZXNzZXM9W107IHBoYXNlPVwicGxheWluZ1wiOyBkcmF3KCk7IH0pO1xuICB9XG5cbiAgZHJhdygpO1xuICByZXR1cm4gZWw7XG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ2aWV3b2YgcGhpX2JhciA9IElucHV0cy5yYW5nZShbMC4wNSwgMC45OV0sIHtcbiAgdmFsdWU6IDAuNzUsXG4gIHN0ZXA6IDAuMDEsXG4gIGxhYmVsOiBcIlN1cnZpdmFsIHByb2JhYmlsaXR5IChcXHUwM2M2KVwiXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0zIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoidmlld29mIHBfYmFyID0gSW5wdXRzLnJhbmdlKFswLjA1LCAwLjk5XSwge1xuICB2YWx1ZTogMC40MCxcbiAgc3RlcDogMC4wMSxcbiAgbGFiZWw6IFwiRGV0ZWN0aW9uIHByb2JhYmlsaXR5IChwKVwiXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC00IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCBkYXRhID0gW1xuICAgIHsgc2NlbmFyaW86IFwiQWxpdmUsIG5vdCBkZXRlY3RlZFwiLCBwcm9iOiBwaGlfYmFyICogKDEgLSBwX2JhcikgfSxcbiAgICB7IHNjZW5hcmlvOiBcIkRlYWRcIiwgICAgICAgICAgICAgICAgcHJvYjogMSAtIHBoaV9iYXIgfVxuICBdO1xuXG4gIGNvbnN0IHdpbm5lciAgID0gZGF0YVswXS5wcm9iID4gZGF0YVsxXS5wcm9iID8gXCJhbGl2ZSBidXQgbWlzc2VkXCIgOiBcImRlYWRcIjtcbiAgY29uc3Qgd2luQ29sb3IgPSB3aW5uZXIgPT09IFwiYWxpdmUgYnV0IG1pc3NlZFwiID8gXCIjMDBBNjhBXCIgOiBcIiNGRjU3MzNcIjtcblxuICBjb25zdCBjaGFydCA9IFBsb3QucGxvdCh7XG4gICAgc3R5bGU6IHsgYmFja2dyb3VuZDogXCIjMjAyMTIzXCIsIGNvbG9yOiBcIiNjY2NjY2NcIiwgZm9udFNpemU6IFwiMTNweFwiIH0sXG4gICAgbWFyZ2luTGVmdDogMTYwLFxuICAgIHdpZHRoOiA1MjAsXG4gICAgaGVpZ2h0OiAxNjAsXG4gICAgeDogeyBsYWJlbDogXCJQcm9iYWJpbGl0eVwiLCB0aWNrRm9ybWF0OiBcIiVcIiwgZG9tYWluOiBbMCwgMV0sIGdyaWQ6IHRydWUgfSxcbiAgICB5OiB7IGxhYmVsOiBudWxsIH0sXG4gICAgY29sb3I6IHtcbiAgICAgIGRvbWFpbjogW1wiQWxpdmUsIG5vdCBkZXRlY3RlZFwiLCBcIkRlYWRcIl0sXG4gICAgICByYW5nZTogIFtcIiMwMEE2OEFcIiwgXCIjRkY1NzMzXCJdXG4gICAgfSxcbiAgICBtYXJrczogW1xuICAgICAgUGxvdC5iYXJYKGRhdGEsIHsgeTogXCJzY2VuYXJpb1wiLCB4OiBcInByb2JcIiwgZmlsbDogXCJzY2VuYXJpb1wiIH0pLFxuICAgICAgUGxvdC5ydWxlWChbMF0sIHsgc3Ryb2tlOiBcIiM0NDRcIiB9KVxuICAgIF1cbiAgfSk7XG5cbiAgcmV0dXJuIGh0bWxgPGRpdiBzdHlsZT1cImJhY2tncm91bmQ6IzIwMjEyMztwYWRkaW5nOjEycHg7Ym9yZGVyLXJhZGl1czo2cHhcIj5cbiAgICAke2NoYXJ0fVxuICAgIDxwIHN0eWxlPVwiZm9udC1zaXplOjEzcHg7Y29sb3I6Izk5OTttYXJnaW46MTBweCAwIDBcIj5cbiAgICAgIFdpdGggdGhlc2UgdmFsdWVzLCBhIG5vbi1kZXRlY3Rpb24gaXMgbW9yZSBsaWtlbHkgZXhwbGFpbmVkIGJ5XG4gICAgICA8c3Ryb25nIHN0eWxlPVwiY29sb3I6JHt3aW5Db2xvcn1cIj4ke3dpbm5lcn08L3N0cm9uZz4uXG4gICAgICBUcnkgYWRqdXN0aW5nIGJvdGggc2xpZGVycyBcXHUyMDE0IG5vdGljZSBob3cgZWFzaWx5IHRoaXMgY29uY2x1c2lvbiBmbGlwcywgYW5kIGhvd1xuICAgICAgZGlmZmVyZW50IGNvbWJpbmF0aW9ucyBvZiBcXHUwM2M2IGFuZCBwIGNhbiBtYWtlIGEgaGVhbHRoeSBwb3B1bGF0aW9uIGxvb2sgbGlrZSBhXG4gICAgICBjb2xsYXBzaW5nIG9uZSwgb3IgdmljZSB2ZXJzYS5cbiAgICA8L3A+XG4gIDwvZGl2PmA7XG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6InNoaW55SW5wdXQoJ3BoaV9iYXInKSJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoic2hpbnlJbnB1dCgncF9iYXInKSJ9XX0=
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../..";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
-    }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
       }
+      return false;
     }
-    return false;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
@@ -398,195 +640,348 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
       return codeEl.innerText;
     }
-  });
-  clipboard.on('success', function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
-      }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  });
-  function tippyHover(el, contentFn) {
-    const config = {
-      allowHTML: true,
-      content: contentFn,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start'
-    };
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      return note.innerHTML;
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
     });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
     }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("index\.qmd");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
       });
     }
-  }
-});
-</script>
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 </div> <!-- /content -->
+
 
 
 
