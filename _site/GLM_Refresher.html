@@ -257,14 +257,14 @@ window.Quarto = {
 <section id="once-upon-a-time" class="level1">
 <h1>Once upon a time</h1>
 <p>So I’d guess about a year ago now, you were sitting in one of my GLM lectures. Maybe you were paying attention. Maybe you weren’t. If you weren’t you wouldn’t have been alone - fair enough. Even if you were, my guess is that you’ve probably forgotten. Again - fair enough. The bad news is that the methods you’re going to be using for your thesis build on those GLMs.</p>
-<p>The good news is that (technically) everything we are going to do in this tutorial series is built on top of what you already know, even if it’s buried somewhere in your brain. The robust design mark-recapture model, which is a crap name tbh, is in its bones just a collection of GLMs talking to each other. So before we get anywhere near that, it is worth making sure the foundations are solid.</p>
-<p>This page is not going to teach you anything new. It is going to remind you of what we previously went through, but with a bit more attention paid to what a GLM is <em>actually doing</em>, which I suspect got lost somewhere between the lecture and the exam - fair enough.</p>
+<p>The good news is that (technically) everything we’re going to do in this tutorial series is built on top of what you already know, even if it’s buried somewhere in your brain. The robust design mark-recapture model, which is a crap name tbh, is in its bones just a collection of GLMs talking to each other. So before we get anywhere near that, it’s worth making sure the foundations are solid.</p>
+<p>This page isn’t going to teach you anything new. It’s going to remind you of what we previously went through, but with a bit more attention paid to what a GLM is <em>actually doing</em>, which I suspect got lost somewhere between the lecture and the exam - fair enough.</p>
 </section>
 <section id="what-is-a-glm-doing" class="level1">
 <h1>What is a GLM doing?</h1>
 <p>At its core, a GLM is estimating a <strong>parameter</strong> from data.</p>
-<p>A parameter is a just a number. But it’s a number that describes something about the world. The average height of adult humans is a parameter. The probability that a flipped coin lands on heads is a parameter. These are fixed, real values that exist whether or not we ever collect data on them.</p>
-<p>The problem is that we can never actually <em>know</em> these values (unless you can speak to a god of your choosing). For the rest of us mortals, we can only estimate them from data. That is the entire job of statistics, and it’s what GLMs (and pretty much all other forms of stats) do.</p>
+<p>A parameter is just a number. But it’s a number that describes something about the world. The average height of adult humans is a parameter. The probability that a flipped coin lands on heads is a parameter. These are fixed, real values that exist whether or not we ever collect data on them.</p>
+<p>The problem is that we can never actually <em>know</em> these values (unless you can speak to a god of your choosing). For the rest of us mortals, we can only estimate them from data. That’s the entire job of statistics, and it’s what GLMs (and pretty much all other forms of stats) do.</p>
 </section>
 <section id="a-concrete-example" class="level1">
 <h1>A concrete example</h1>
@@ -330,7 +330,7 @@ window.Quarto = {
 <li><p><span class="math inline">\(\sim\)</span> means “is generated according to”</p></li>
 <li><p><span class="math inline">\(Bernoulli\)</span> is a distribution that produces only <code>1</code> or <code>0</code></p></li>
 <li><p><span class="math inline">\(p\)</span> is the probability of detecting fish.</p></li>
-<li><p><span class="math inline">\(logit\)</span> is a link function. It is a small piece of maths that keeps <span class="math inline">\(p\)</span> between 0 and 1, because probabilities cannot be negative or greater than 1. Specifically, <span class="math inline">\(logit(p) = log\left(\frac{p}{1-p}\right)\)</span></p></li>
+<li><p><span class="math inline">\(logit\)</span> is a link function. It’s a small piece of maths that keeps <span class="math inline">\(p\)</span> between 0 and 1, because probabilities can’t be negative or greater than 1. Specifically, <span class="math inline">\(logit(p) = log\left(\frac{p}{1-p}\right)\)</span></p></li>
 <li><p><span class="math inline">\(\beta_0\)</span> is the intercept and is the only <strong>parameter</strong> in the model. Because there are no other covariates in this model, <span class="math inline">\(\beta_0\)</span> estimates the average probability of detecting fish (on the logit scale).</p></li>
 </ul>
 <p>If you want an explainer of what the logit link function is, check out this old COVID era video:</p>
@@ -381,7 +381,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <h1>Why bother with a GLM at all?</h1>
 <p>If we get the same answer using either a GLM or <code>mean(lakes$fish)</code>, why bother with the GLM?</p>
 <p>Two reasons.</p>
-<p>First, <code>mean()</code> breaks the moment you want to include covariates. If you want to ask “how does lake depth affect the probability that fish are present?”, you cannot do that with a mean. You need a model.</p>
+<p>First, <code>mean()</code> breaks the moment you want to include covariates. If you want to ask “how does lake depth affect the probability that fish are present?”, you can’t do that with a mean. You need a model.</p>
 <p>Second, a GLM gives you <strong>uncertainty</strong>. Not just a point estimate, like 60%, but a sense of how confident you should be in that estimate. Look at the <code>Std. Error</code> in the summary output, and look at the 95% confidence intervals:</p>
 <div class="cell">
 <details class="code-fold">
@@ -393,7 +393,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
 0.3829268 0.7928941 </code></pre>
 </div>
 </div>
-<p>The model is not just saying “60%”. It is saying “somewhere between roughly 38% and 79%, and our best guess is 60%”. That range is information. Ignoring it is how you end up overconfident (cough machine learning cough).</p>
+<p>The model isn’t just saying “60%”. It’s saying “somewhere between roughly 38% and 79%, and our best guess is 60%”. That range is information. Ignoring it is how you end up overconfident (cough machine learning cough).</p>
 </section>
 <section id="adding-a-covariate" class="level1">
 <h1>Adding a covariate</h1>
@@ -478,7 +478,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
 </div>
 <p>The gold line is our model’s prediction. Deeper lakes are estimated to have a higher probability of containing fish, which is what we put into the simulation. The model has recovered the pattern from the data.</p>
 <p>We could add 95% confidence intervals to the figure (I should but am being lazy), but importantly we learn more than just 60% of lakes have our fish species in them (when we just calculate the average); we learn that deeper lakes are more likely to have the species present, with shallow lakes having a ca. 12% chance of fish being there, all the way up to 10 m deep lakes being virtually guaranteed to have them with almost 100% chance of the fish being present.</p>
-<p>Now try adjusting the two model parameters yourself. The intercept (<span class="math inline">\(\beta_0\)</span>) shifts the curve left or right along the depth axis, more negative means you need deeper lakes before there is a decent chance of fish. The slope (<span class="math inline">\(\beta_1\)</span>) controls how steeply probability rises with depth, a larger value means a sharper transition. Notice that no matter what values you choose, the predicted probability always stays between 0 and 1. That is the logit link doing its job. The defaults are set to the true values used to simulate the data above.</p>
+<p>Now try adjusting the two model parameters yourself. The intercept (<span class="math inline">\(\beta_0\)</span>) shifts the curve left or right along the depth axis, more negative means you need deeper lakes before there is a decent chance of fish. The slope (<span class="math inline">\(\beta_1\)</span>) controls how steeply probability rises with depth, a larger value means a sharper transition. Notice that no matter what values you choose, the predicted probability always stays between 0 and 1. That’s the logit link doing its job. The defaults are set to the true values used to simulate the data above.</p>
 <div class="cell">
 <details class="code-fold hidden">
 <summary>Code</summary>
@@ -574,8 +574,8 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <section id="the-thing-i-really-want-you-to-take-away-from-this-page" class="level1">
 <h1>The thing I really want you to take away from this page</h1>
 <p>A GLM estimates a <strong>parameter</strong> from data. A parameter is just a probability, a rate, a mean, or some other value that describes something about the world that we cannot observe directly ourselves. The GLM gives us a decent guess at that parameter, plus some honest accounting of how uncertain that guess is.</p>
-<p>Everything in mark-recapture, and specifically everything in the robust design, follows this exact logic. We’ll just have more parameters to estimate and more models that get fit (at the same time). In doing so, we’ll get some estimates for survival probability, detection probability, population size and a bunch of other ones. None of these are things you will ever be able to observe yourself (how to you “see” survival?). But all of them are things we estimate from data, using models that are, at their core, just GLMs.</p>
-<p>The complexity of what is coming is not in the mathematics; though granted the equations look crazy at first. It is in the <em>biology</em> that each parameter is trying to represent, and in making sure we have set the model up in a way that lets us estimate each one without getting them confused with each other.</p>
+<p>Everything in mark-recapture, and specifically everything in the robust design, follows this exact logic. We’ll just have more parameters to estimate and more models that get fit (at the same time). In doing so, we’ll get some estimates for survival probability, detection probability, population size and a bunch of other ones. None of these are things you’ll ever be able to observe yourself (how do you “see” survival?). But all of them are things we estimate from data, using models that are, at their core, just GLMs.</p>
+<p>The complexity of what’s coming isn’t in the mathematics, though granted the equations look crazy at first. It’s in the <em>biology</em> that each parameter is trying to represent, and in making sure we’ve set the model up in a way that lets us estimate each one without getting them confused with each other.</p>
 </section>
 <section id="quick-recap" class="level1">
 <h1>Quick recap</h1>
