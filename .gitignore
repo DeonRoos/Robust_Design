@@ -4,3 +4,12 @@
 .Ruserdata
 
 /.quarto/
+
+**/*.quarto_ipynb
+
+# Program MARK scratch/output files (regenerated on every RMark render)
+mark*.inp
+mark*.out
+mark*.res
+mark*.vcv
+mark*.tmp

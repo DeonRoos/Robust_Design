@@ -2,73 +2,101 @@
 title: "Implementing the Robust Design in RMark"
 author: "Deon Roos"
 date: "`r Sys.Date()`"
-format:
-  html:
-    theme: flatly
-    highlight-style: monochrome
-    code-fold: true
-    toc: true
-    toc-depth: 2
-    toc-location: right
+format: html
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       message = FALSE)
+
+theme_dark_site <- function(...) {
+  ggplot2::theme_minimal(...) +
+  ggplot2::theme(
+    plot.background   = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    panel.background  = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    panel.grid.major  = ggplot2::element_line(colour = "#38382a"),
+    panel.grid.minor  = ggplot2::element_line(colour = "#2c2c20"),
+    text              = ggplot2::element_text(colour = "#c9c0a6"),
+    axis.text         = ggplot2::element_text(colour = "#9a927b"),
+    plot.title        = ggplot2::element_text(colour = "#ece3cc", face = "bold"),
+    plot.subtitle     = ggplot2::element_text(colour = "#9a927b"),
+    plot.caption      = ggplot2::element_text(colour = "#7a745e"),
+    legend.background = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.key        = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.text       = ggplot2::element_text(colour = "#c9c0a6"),
+    legend.title      = ggplot2::element_text(colour = "#c9c0a6"),
+    strip.background  = ggplot2::element_rect(fill = "#2c2c20", colour = NA),
+    strip.text        = ggplot2::element_text(colour = "#c9c0a6")
+  )
+}
+
+theme_void_dark_site <- function(...) {
+  ggplot2::theme_void(...) +
+  ggplot2::theme(
+    plot.background   = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    text              = ggplot2::element_text(colour = "#c9c0a6"),
+    plot.title        = ggplot2::element_text(colour = "#ece3cc", face = "bold", hjust = 0.5),
+    plot.subtitle     = ggplot2::element_text(colour = "#9a927b", hjust = 0.5),
+    legend.background = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.key        = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.text       = ggplot2::element_text(colour = "#c9c0a6"),
+    legend.title      = ggplot2::element_text(colour = "#c9c0a6")
+  )
+}
 ```
 
 # Putting it all together
 
-Up to this point we have built up the robust design from first principles. You know what the model is doing, why it needs two time scales, what the parameters mean, and where the ambiguous zeros live. Now we need to actually use it on data.
+Up to now we've built the robust design up from first principles. You know what the model's doing, why it needs two time scales, what each parameter means, and where all the ambiguous zeros are hiding. Time to actually point it at some data.
 
-This page is deliberately practical. Less theory, more code. By the end you should be able to take a real robust design dataset, organise it correctly, specify and fit a model with covariates, and produce figures that communicate what you found.
+This page is the practical one. Less theory, more code. By the end you'll be able to take a real robust design dataset, bully it into the right shape, fit a model with covariates, and draw figures that actually say something about what you found. This is the page you'll be flicking back to when you're elbow-deep in your own data and can't remember which argument goes where.
 
-We will keep using RMark throughout. As a reminder, RMark is an R interface to program MARK, which needs to be installed separately. If you have not done that yet, you can find it [here](http://www.phidot.org/software/mark/downloads/).
+We're sticking with RMark the whole way. Quick reminder: RMark is just an R front end for program MARK, which you have to install separately. If you haven't done that yet, grab it [here](http://www.phidot.org/software/mark/downloads/).
 
 # What should influence your parameters?
 
-Before you fit any model, you need to think carefully about what covariates to include and in which part of the model. This is not a statistical question, it is a biological one, and getting it wrong at this stage means your model will not reflect reality no matter how well it runs.
+Before you fit anything, stop and think hard about which covariates go where. This is a biological question, not a statistical one, and if you get it wrong here then it doesn't matter how cleanly the model runs, it won't be describing the real world.
 
-There are four parameters in the full robust design model, and each has a different biological interpretation that should guide your covariate choices.
+The full robust design has four parameters, and each one means something different biologically. That biology is what should be steering your covariate choices, so let's take them one at a time.
 
 ## What influences survival ($\phi$)?
 
-Survival is estimated between primary periods, so the covariates that make sense here are things that vary between primary periods and plausibly affect whether an animal lives or dies.
+Survival is estimated between primary periods, so the covariates that belong here are things that vary between those periods and could plausibly tip an animal towards living or dying.
 
-Body condition is the classic example. An animal in poor condition going into winter is less likely to survive to spring. Age matters for most species, with survival often lower in juveniles and very old individuals. Sex can matter if males and females face different predation or energetic pressures. Environmental conditions between primary periods, such as winter severity, drought intensity, or food availability, are commonly included. If you have interventions, such as supplementary feeding, a predator removal programme, or a disease treatment, those belong here too.
+Body condition is the classic one. An animal going into winter in poor nick is less likely to see spring. Age matters for most species, with survival usually lowest in juveniles and the very old. Sex can matter if males and females are up against different predation or energetic demands. Conditions between periods get thrown in a lot too: how brutal the winter was, how bad the drought got, how much food was about. And if you ran any interventions, supplementary feeding, a predator cull, a disease treatment, those go here as well.
 
-The key question to ask yourself is: *between my sampling occasions, what determined whether an animal was alive or dead at the next one?*
+The question to keep asking yourself is: *between two of my sampling occasions, what decided whether an animal was still alive at the next one?*
 
 ## What influences detection ($p$)?
 
-Detection is estimated within primary periods, from the pattern of secondary occasions. Covariates here should vary at the secondary occasion level, meaning across the repeated sampling events within a primary period, and plausibly affect how likely you are to catch or observe an individual that is actually present.
+Detection is estimated within primary periods, out of the pattern across your secondary occasions. So covariates here need to vary at the secondary occasion level, across the repeated visits inside a single primary period, and plausibly change how likely you are to catch or spot an animal that's genuinely there.
 
-Weather conditions on the day of sampling are common: rain, temperature, and wind can all affect trap success or observer detectability. Time of day matters for many species. Sampling effort, such as the number of traps set or hours searched, belongs here if it varied across secondary occasions. Observer experience or identity can be included if multiple people did the sampling.
+Weather on the day is the obvious one: rain, temperature and wind all mess with trap success and how well an observer can see. Time of day matters for plenty of species. Effort belongs here too if it wobbled between occasions, like how many traps you set or how many hours you searched. And if different people did the sampling, who was out that day can go in as well.
 
-The key question is: *across my repeated sampling occasions within a season, what made me more or less likely to detect an animal that was actually there?*
+The question here is: *across my repeated visits within a season, what made me more or less likely to detect an animal that was actually sitting right there?*
 
 ## What influences availability ($\gamma'$ and $\gamma''$)?
 
-Availability governs whether an animal is present in your study area at all during a primary period. Covariates here should reflect things that drive animals in or out of the study area between primary periods.
+Availability is about whether an animal is even in your study area during a primary period at all. So covariates here should be the things that push animals in and out of the study area between periods.
 
-Season is the most obvious one, particularly for migratory species. A covariate that distinguishes breeding season from non-breeding season will capture predictable availability patterns. Habitat quality outside the study area might draw animals away. For some species, reproductive stage matters: pregnant or lactating females may show different site fidelity patterns than non-reproductive animals.
+Season is the big one, especially for anything migratory. A covariate that just flags breeding versus non-breeding season will soak up a lot of predictable coming and going. Good habitat outside your study area might tempt animals away. And for some species reproductive stage counts: pregnant or lactating females often sit tighter to a site than animals that aren't breeding.
 
 ## The structure of covariates in RMark
 
-In RMark, covariates can be of two types.
+RMark splits covariates into two kinds.
 
-**Individual covariates** are fixed properties of each animal: sex, age at first capture, body condition measured once. These go directly into the data frame as a column alongside `ch`, one value per row.
+Individual covariates are fixed traits of an animal: sex, age at first capture, a body condition measured just the once. Each one goes straight into the data frame as its own column next to `ch`, a single value per row.
 
-**Time-varying covariates** change across occasions: temperature on each sampling day, season at each primary period. For the survival and availability parameters, these vary at the primary period level and are added as numbered columns (`varname1`, `varname2`, ..., one per primary period). For detection, they vary at the secondary occasion level and are added similarly, one column per secondary occasion across all primary periods. RMark matches these to the correct design matrix rows automatically.
+Time-varying covariates change from occasion to occasion: the temperature on each sampling day, the season at each primary period. For survival and availability these vary at the primary period level, so you add them as numbered columns (`varname1`, `varname2`, and so on, one per primary period). For detection they vary at the secondary occasion level, so you add one column per secondary occasion across the whole study. RMark reads the number on the end and lines each value up with the right row of the design matrix for you.
 
 # How should your data be organised?
 
 ## The capture history string
 
-The fundamental unit of data in RMark is the **capture history string**: a single character string of `1`s and `0`s, one digit per sampling occasion, for each individual animal.
+The basic unit of data in RMark is the **capture history string**: one string of `1`s and `0`s per animal, a single digit for every sampling occasion.
 
-For a robust design with 3 primary periods and 3 secondary occasions each, the string has 9 characters. For 6 primary periods and 3 secondary occasions, 18 characters. The order is: all secondary occasions for primary period 1, then all secondary occasions for primary period 2, and so on.
+A robust design with 3 primary periods of 3 secondary occasions each gives you a 9-character string. Six primary periods of 3 secondary occasions gives you 18. The order is all the secondary occasions of primary period 1, then all of primary period 2, and so on down the line.
 
 ```         
 Animal tagged in period 1, missed in period 2, detected in period 3:
@@ -79,9 +107,9 @@ s1 s2 s3        s1 s2 s3        s1 s2 s3
 String: "110000011"
 ```
 
-The data frame passed to RMark must have at minimum a column called `ch` containing these strings. Individual covariates go alongside as additional columns. Time-varying covariates go as numbered column sets.
+The data frame you hand to RMark needs, at the bare minimum, a column called `ch` holding these strings. Individual covariates ride alongside as extra columns. Time-varying covariates go in as those numbered column sets.
 
-Let us simulate a dataset to work with. We will use body condition as an individual covariate affecting survival, and temperature as a time-varying covariate affecting detection.
+Let's simulate a dataset to play with. We'll use body condition as an individual covariate that drives survival, and temperature as a time-varying covariate that drives detection.
 
 ```{r}
 library(RMark)
@@ -172,11 +200,29 @@ colnames(temp_cols) <- paste0("temp", 1:n_occasions)
 rd_df <- bind_cols(rd_df, temp_cols)
 ```
 
-The data frame now has: `ch`, the individual covariate `body_cond` (body condition), and 18 temperature columns `temp1` through `temp18`. RMark will use the numbered suffix to align each temperature value with the correct sampling occasion when you include `temp` in the detection formula.
+The data frame now holds `ch`, the individual covariate `body_cond` (body condition), and 18 temperature columns, `temp1` through `temp18`. When you drop `temp` into the detection formula, RMark uses that number on the end to match each temperature to the sampling occasion it belongs to.
+
+Right, let's actually look at the thing, because this is the exact shape your own data needs to be in before RMark will touch it. It's too wide to sensibly print all 20 columns at once, so here are the first six animals with just the first three temperature columns (I've rounded the covariates to two decimals so the table stays readable):
+
+```{r}
+# First 6 animals: ch, the individual covariate, and the first 3 temp columns
+preview <- head(rd_df[, c("ch", "body_cond", "temp1", "temp2", "temp3")])
+preview$body_cond <- round(preview$body_cond, 2)
+preview[, c("temp1", "temp2", "temp3")] <- round(preview[, c("temp1", "temp2", "temp3")], 2)
+preview
+```
+
+And the full dimensions, so you can see how many animals made it through the "detected at least once" filter and the total number of columns:
+
+```{r}
+dim(rd_df)
+```
+
+Read one row at a time. The `ch` string is that animal's whole 18-occasion detection history: six primary periods of three secondary occasions each, stitched end to end into one string of `1`s and `0`s. `body_cond` is its single body-condition value, and it's the same number all the way across the row, because body condition is a property of the animal rather than of any one sampling day. Each `temp` column is the temperature on one specific secondary occasion, so those numbers do change across the row. Your own data wants to look exactly like this: one row per animal, one `ch` string, your individual covariates as single columns, and any time-varying covariate spread across one numbered column per occasion.
 
 # Setting up `time.intervals`
 
-The `time.intervals` argument tells RMark which gaps between consecutive occasions are within a primary period (closed, value = `0`) and which are between primary periods (open, value = `1`). The vector has one entry per gap, so for 18 occasions there are 17 gaps.
+The `time.intervals` argument is how you tell RMark which gaps between consecutive occasions sit inside a primary period (closed, so `0`) and which ones jump between primary periods (open, so `1`). There's one entry per gap, so 18 occasions means 17 gaps.
 
 ```         
 Occasion:   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18
@@ -184,7 +230,7 @@ Gap:          1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17
 Interval:     0  0  1  0  0  1  0  0  1  0  0  1  0  0  1  0  0
 ```
 
-Within primary period 1 (occasions 1, 2, 3): gaps 1 and 2 are `0`. Between primary periods 1 and 2: gap 3 is `1`. And so on.
+Inside primary period 1 (occasions 1, 2, 3) gaps 1 and 2 are `0`. The jump from primary period 1 to 2 is gap 3, so that's a `1`. Same pattern all the way along.
 
 ```{r}
 build_time_intervals <- function(n_primary, n_secondary) {
@@ -197,7 +243,7 @@ time_intervals <- build_time_intervals(n_primary, n_secondary)
 time_intervals
 ```
 
-Always verify the length: it must equal `(n_primary * n_secondary) - 1`.
+Always check the length: it has to come out to `(n_primary * n_secondary) - 1`.
 
 ```{r}
 cat("Length of time_intervals:", length(time_intervals),
@@ -206,9 +252,9 @@ cat("Length of time_intervals:", length(time_intervals),
 
 # Writing out the model
 
-Before fitting anything in R, it is good practice to write out the full model you intend to fit. This forces you to be explicit about every assumption, makes your methods section straightforward to write, and helps catch mismatches between your biological thinking and what you actually code.
+Before you type a single line of R, write the whole model out by hand. Three reasons. It drags every assumption you're making out into the open. It means your methods section is basically written already. And it catches the moments where your biological thinking and your actual code have quietly drifted apart from each other.
 
-For our simulated data, the model is:
+For our simulated data, here's the model:
 
 $$z_{i,t} \sim \text{Bernoulli}(\phi_{i,t-1} \times z_{i,t-1})$$
 
@@ -235,7 +281,7 @@ where:
 -   $p_{i,t,s}$ is detection probability on secondary occasion $s$ of primary period $t$, varying by temperature
 -   $\alpha_0$ is the detection intercept and $\alpha_1$ is the effect of temperature
 
-Once written like this, translating to `RMark` formula syntax is direct. $\beta_0 + \beta_1 \times \text{Condition}$ becomes `~ body_cond`. $\alpha_0 + \alpha_1 \times \text{Temperature}$ becomes `~ temp`. The gamma parameters are constant here, so both get `~ 1`.
+Once it's laid out like that, turning it into `RMark` formula syntax is almost mechanical. $\beta_0 + \beta_1 \times \text{Condition}$ becomes `~ body_cond`. $\alpha_0 + \alpha_1 \times \text{Temperature}$ becomes `~ temp`. The gammas are held constant here, so they each just get `~ 1`.
 
 # Fitting the model
 
@@ -266,25 +312,25 @@ rd_fit <- mark(
 rd_fit$results$beta
 ```
 
-The beta table gives you all parameter estimates on the logit scale with standard errors and confidence intervals. The row names map directly to the model equations: `S:(Intercept)` is $\beta_0$, `S:body_condition` is $\beta_1$, `p:(Intercept)` is $\alpha_0$, `p:temp` is $\alpha_1$.
+The beta table hands you every parameter estimate on the logit scale, along with standard errors and confidence intervals. The row names line up straight with the model equations: `S:(Intercept)` is $\beta_0$, `S:body_cond` is $\beta_1$, `p:(Intercept)` is $\alpha_0$, and `p:temp` is $\alpha_1$.
 
 # Visualising the results
 
-The logic for every predicted relationship figure in this tutorial follows the same four steps, and once you understand them you can apply them to any parameter in any model.
+Every predicted-relationship figure in this tutorial runs on the same four steps. Learn them once here and you can draw any parameter, from any model, for the rest of your career.
 
-**Step 1: Extract the relevant coefficients from the beta table.** - The beta table gives you the estimated intercept and slope for each parameter on the logit scale. For a survival model with one covariate, you need the intercept ($\beta_0$) and the slope ($\beta_1$). For detection, you need the same two things for $\alpha_0$ and $\alpha_1$. You also need the standard errors for both, which you will use in step 3.
+**Step one: pull the coefficients out of the beta table.** The table gives you an estimated intercept and slope for each parameter, on the logit scale. For a survival model with one covariate that's the intercept ($\beta_0$) and the slope ($\beta_1$). For detection it's the same pair, $\alpha_0$ and $\alpha_1$. Grab the standard errors for both while you're there, you'll want them in step three.
 
-**Step 2: Build a sequence of covariate values and generate predictions on the logit scale.** - Create a vector of evenly spaced values spanning the range of your covariate. For each value $x$, calculate $\beta_0 + \beta_1 \times x$. This gives you the predicted value on the logit scale across the range of the covariate.
+**Step two: build a covariate sequence and predict on the logit scale.** Make a vector of evenly spaced values covering the range of your covariate. For each value $x$, work out $\beta_0 + \beta_1 \times x$. That's your prediction on the logit scale, right across the range.
 
-**Step 3: Calculate uncertainty using the delta method.** - The confidence interval cannot be calculated by simply adding and subtracting 1.96 standard errors from the prediction, because the prediction combines two uncertain quantities: the intercept and the slope. The delta method accounts for both. The variance of $\beta_0 + \beta_1 \times x$ on the logit scale is:
+**Step three: get the uncertainty, using the delta method.** You can't just add and subtract 1.96 standard errors from the prediction, because the prediction is stitched together from two uncertain things at once, the intercept and the slope. The delta method deals with both. On the logit scale the variance of $\beta_0 + \beta_1 \times x$ is:
 
 $\text{Var} = \text{SE}_{\beta_0}^2 + x^2 \times \text{SE}_{\beta_1}^2 + 2x \times \text{Cov}(\beta_0, \beta_1)$
 
-The covariance term $\text{Cov}(\beta_0, \beta_1)$ comes from the variance-covariance matrix of the model ( `rd_fit$results$beta.vcv`), indexed by the row and column positions of the two parameters in the beta table.
+That covariance term $\text{Cov}(\beta_0, \beta_1)$ comes out of the model's variance-covariance matrix (`rd_fit$results$beta.vcv`), indexed by where the two parameters sit in the beta table.
 
-**Step 4: Back-transform everything with `plogis()`.** - The predictions and confidence interval bounds are all on the logit scale. Apply `plogis()` to convert them to probabilities before plotting. The lower bound is `plogis(prediction - 1.96 * sqrt(variance))` and the upper bound is `plogis(prediction + 1.96 * sqrt(variance))`.
+**Step four: squash everything back with `plogis()`.** The prediction and both interval bounds are still on the logit scale, so run them through `plogis()` to turn them into probabilities before you plot. The lower bound is `plogis(prediction - 1.96 * sqrt(variance))` and the upper is `plogis(prediction + 1.96 * sqrt(variance))`.
 
-When you apply this to your own data, the only things that change are the covariate name, the row positions of the relevant parameters in the beta table, and the range of covariate values you predict over. The structure of the code is identical every time.
+When you do this on your own data, the only things that change are the covariate name, where the parameters sit in the beta table, and the range of $x$ you predict over. The shape of the code stays exactly the same every single time.
 
 ## Survival as a function of body condition
 
@@ -318,17 +364,17 @@ phi_df <- data.frame(
 )
 
 ggplot(phi_df, aes(x = condition)) +
-  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "#00A68A", alpha = 0.2) +
-  geom_line(aes(y = phi), colour = "#00A68A", linewidth = 1) +
+  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "#d19527", alpha = 0.2) +
+  geom_line(aes(y = phi), colour = "#d19527", linewidth = 1) +
   scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
   labs(
     x        = "Body condition (standardised)",
     y        = expression(hat(phi))
   ) +
-  theme_minimal()
+  theme_dark_site()
 ```
 
-The confidence interval is calculated using the delta method, which propagates uncertainty from both the intercept and slope through the inverse logit transformation. The key thing to look at here is whether the interval overlaps a flat line at any particular probability: if the lower bound is clearly above or the upper bound clearly below a reference value, that is evidence of a real effect.
+That confidence band comes from the delta method, carrying the uncertainty in both the intercept and the slope through the inverse-logit squash. What you're looking for is whether the band would clear a flat horizontal line: if the lower edge sits clearly above, or the upper edge clearly below, some reference probability, that's a sign the effect is real and not just noise.
 
 ## Detection as a function of temperature
 
@@ -364,12 +410,12 @@ ggplot(p_df, aes(x = temp)) +
     x        = "Temperature (standardised)",
     y        = expression(hat(p))
   ) +
-  theme_minimal()
+  theme_dark_site()
 ```
 
 ## Population size estimates across primary periods
 
-The per-period population size $\hat{N}_t$ is one of the headline outputs of a robust design study. In RMark it is derived from the `f0` parameter, which represents the estimated number of individuals that were present but never detected in each primary period. Add the observed count to `f0` and you have $\hat{N}_t$.
+The per-period population size $\hat{N}_t$ is one of the headline numbers a robust design study exists to produce. RMark builds it from the `f0` parameter, which is its estimate of how many animals were there but never once detected in a given primary period. Add that to the number you actually counted and you've got $\hat{N}_t$.
 
 ```{r}
 f0_rows <- beta[grepl("^f0", rownames(beta)), ]
@@ -394,27 +440,27 @@ N_df <- data.frame(
 
 ggplot(N_df, aes(x = period, y = N_hat)) +
   geom_errorbar(aes(ymin = N_lcl, ymax = N_ucl),
-                width = 0.2, colour = "#00A68A", linewidth = 0.8) +
-  geom_point(size = 3, colour = "#00A68A") +
-  geom_line(colour = "#00A68A", linewidth = 0.6, linetype = "dashed") +
+                width = 0.2, colour = "#d19527", linewidth = 0.8) +
+  geom_point(size = 3, colour = "#d19527") +
+  geom_line(colour = "#d19527", linewidth = 0.6, linetype = "dashed") +
   scale_x_continuous(breaks = 1:n_primary) +
   labs(
     x        = "Primary period",
     y        = expression(hat(N))
   ) +
-  theme_minimal()
+  theme_dark_site()
 ```
 
-This plot shows population trend across the study corrected for imperfect detection. A declining trend here is not an artefact of getting worse at detecting animals over time: because $p$ is estimated separately, the $\hat{N}_t$ estimates reflect true changes in abundance. For most conservation applications this is the number you actually care about.
+This plot is your population trend across the study, already corrected for imperfect detection. If it slopes downward, that's not just you getting worse at spotting animals as the years go on. Because $p$ is estimated on its own, the $\hat{N}_t$ values track genuine changes in abundance. For most conservation work, this is the number everything else was building towards.
 
 # A note on your real data
 
-Everything above used simulated data where we knew the true values. With your own data there are a few practical things to be careful about.
+Everything above ran on simulated data where we already knew the true answers. Once you're working with your own data, a handful of practical things will bite you if you're not careful.
 
-**Standardise your continuous covariates.** Subtract the mean and divide by the standard deviation before fitting. MARK can be numerically unstable with covariates on very different scales, and standardised coefficients are directly comparable in magnitude. This is especially important when you write up: a coefficient of 0.3 on a standardised covariate is interpretable. A coefficient of 0.003 on rainfall measured in millimetres is not.
+Standardise your continuous covariates. Subtract the mean, divide by the standard deviation, before you fit. Two reasons. MARK gets numerically twitchy when covariates are on wildly different scales and can just fall over. And standardised coefficients are comparable in size, which really matters at write-up time: a coefficient of 0.3 on a standardised covariate is something you can talk about, whereas a coefficient of 0.003 on rainfall-in-millimetres is a number nobody, you included, will be able to make sense of.
 
-**Check for missing covariate values.** RMark does not handle `NA` in covariates gracefully. Either impute or drop individuals with missing covariate data before calling `process.data()`.
+Check for missing covariate values. RMark does not cope gracefully with `NA` in covariates. Either impute them or drop those individuals before you call `process.data()`.
 
-**Make sure your `time.intervals` matches your data structure exactly.** The most common source of cryptic errors in RMark is a mismatch between the length of the capture history strings and the length of `time.intervals`. Use the `build_time_intervals()` function above rather than constructing the vector by hand.
+Get your `time.intervals` matching your data exactly. The single most common source of baffling RMark errors is the length of the capture history strings not matching the length of `time.intervals`. Use the `build_time_intervals()` helper from above instead of hand-typing the vector and hoping.
 
-**Keep your raw data and your RMark data frame separate.** You will almost certainly need the original data again for plotting, checking, or sharing. Do not modify it in place.
+Keep your raw data and your RMark data frame apart. You'll almost certainly want the original back later for plotting, checking, or sharing, so don't overwrite it in place.

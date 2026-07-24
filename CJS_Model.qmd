@@ -2,20 +2,48 @@
 title: "From Lincoln-Petersen to the Cormack-Jolly-Seber Model"
 author: "Deon Roos"
 date: "`r Sys.Date()`"
-format:
-  html:
-    theme: flatly
-    highlight-style: monochrome
-    code-fold: true
-    toc: true
-    toc-depth: 2
-    toc-location: right
+format: html
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       message = FALSE)
+
+theme_dark_site <- function(...) {
+  ggplot2::theme_minimal(...) +
+  ggplot2::theme(
+    plot.background   = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    panel.background  = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    panel.grid.major  = ggplot2::element_line(colour = "#38382a"),
+    panel.grid.minor  = ggplot2::element_line(colour = "#2c2c20"),
+    text              = ggplot2::element_text(colour = "#c9c0a6"),
+    axis.text         = ggplot2::element_text(colour = "#9a927b"),
+    plot.title        = ggplot2::element_text(colour = "#ece3cc", face = "bold"),
+    plot.subtitle     = ggplot2::element_text(colour = "#9a927b"),
+    plot.caption      = ggplot2::element_text(colour = "#7a745e"),
+    legend.background = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.key        = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.text       = ggplot2::element_text(colour = "#c9c0a6"),
+    legend.title      = ggplot2::element_text(colour = "#c9c0a6"),
+    strip.background  = ggplot2::element_rect(fill = "#2c2c20", colour = NA),
+    strip.text        = ggplot2::element_text(colour = "#c9c0a6")
+  )
+}
+
+theme_void_dark_site <- function(...) {
+  ggplot2::theme_void(...) +
+  ggplot2::theme(
+    plot.background   = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    text              = ggplot2::element_text(colour = "#c9c0a6"),
+    plot.title        = ggplot2::element_text(colour = "#ece3cc", face = "bold", hjust = 0.5),
+    plot.subtitle     = ggplot2::element_text(colour = "#9a927b", hjust = 0.5),
+    legend.background = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.key        = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.text       = ggplot2::element_text(colour = "#c9c0a6"),
+    legend.title      = ggplot2::element_text(colour = "#c9c0a6")
+  )
+}
 ```
 
 # A local hero (two of them, actually)
@@ -38,23 +66,23 @@ So the next time someone asks you what Aberdeen is known for, you have a genuine
 
 # What LP could not do
 
-On the previous page we saw that the Lincoln-Petersen estimator gives you a snapshot estimate of population size $N$ using two sampling occasions and the assumption that the population is closed. No births, no deaths, no movement in or out.
+On the last page we saw that Lincoln-Petersen hands you a snapshot of population size $N$ from two sampling occasions, as long as you're willing to assume the population is closed. No births, no deaths, nobody moving in or out.
 
-That closure assumption is doing a lot of heavy lifting. It is defensible over short time windows but falls apart the moment your study extends over weeks or months. And if your actual biological question is about survival, closure is not just inconvenient, it is actively the wrong assumption. You *want* animals to be able to die between occasions, because that is the thing you are trying to estimate.
+That closure assumption is doing a lot of heavy lifting. It holds up fine over a short window, then falls apart the moment your study runs over weeks or months. And if the thing you actually care about is survival, then closure is the wrong assumption full stop. You *want* animals to be able to die between occasions, because dying is the exact thing you're trying to measure.
 
-The CJS (Cormack-Jolly-Seber) model drops the closure assumption entirely. Animals can die between sampling occasions. The population is open. And in exchange for giving up closure, we gain something valuable: an estimate of **apparent survival probability** $\phi$.
+CJS (Cormack-Jolly-Seber) throws the closure assumption straight out. Animals can die between occasions. The population is open. And what you get back for giving up closure is a genuine estimate of **apparent survival probability** $\phi$.
 
-The trade-off is that we can no longer estimate $N$ directly. CJS conditions on first capture, meaning it only uses the history of animals after they have been caught at least once. Animals that were never caught do not feature in the model at all. This sidesteps the problem of estimating how many animals were never seen, but it also means $N$ is off the table.
+The catch is that you can no longer get $N$ directly. CJS conditions on first capture, so it only ever looks at an animal's history *after* it's been caught at least once. Animals you never caught don't show up in the model at all. That neatly ducks the problem of counting the never-seen, but it also means $N$ is off the table.
 
-We will get $N$ back eventually. That is actually one of the main payoffs of the robust design. But for now, let us build up to CJS carefully.
+Don't worry, we get $N$ back eventually, and clawing it back is one of the big selling points of the robust design. For now though, let's build CJS up slowly.
 
 # The capture history
 
-The fundamental data structure in CJS is the **capture history**. This is something new compared to what you have worked with before, so it is worth spending a moment on it.
+The core data structure in CJS is the **capture history**, and it's genuinely new compared to anything you worked with in BI3010, so it's worth slowing down for a second.
 
-Each tagged animal gets its own row. Each column represents a sampling occasion. A `1` means the animal was detected on that occasion. A `0` means it was not. That is it.
+Each tagged animal gets its own row. Each column is a sampling occasion. A `1` means you detected the animal that occasion, a `0` means you didn't. That's the whole format.
 
-Here is a small example with five animals surveyed over four occasions:
+Here's a small example with eight animals surveyed over four occasions:
 
 ```{r}
 library(ggplot2)
@@ -74,7 +102,7 @@ ch
 
 Read each row as a story. Animal 1 was detected on occasions 1, 2, and 4, but not 3. Animal 2 was detected on 1, 3, and 4, but not 2. And so on.
 
-Now, for each `0` in this table, ask yourself the question from the previous page: is this animal alive and missed, or is it dead? The capture history does not tell you directly. But the *pattern* across multiple occasions does contain that information, and that is what the CJS model extracts.
+Now, for every `0` in that table, ask yourself the question from the last page: is this animal alive and just missed, or is it dead? A single zero can't tell you. But the *pattern* of detections across all the occasions does carry that information, and digging it out is exactly what CJS is for.
 
 ```{r}
 ch_long <- ch |>
@@ -86,46 +114,46 @@ ch_long <- ch |>
 
 ggplot(ch_long, aes(x = occasion, y = animal, fill = detected_label)) +
   geom_tile(colour = "white", linewidth = 1.5) +
-  scale_fill_manual(values = c("Detected" = "#00A68A",
+  scale_fill_manual(values = c("Detected" = "#d19527",
                                 "Not detected" = "#FF5733")) +
   scale_x_continuous(breaks = 1:4, labels = paste("Occasion", 1:4)) +
   labs(x = NULL, y = NULL, fill = NULL) +
-  theme_minimal() +
+  theme_dark_site() +
   theme(legend.position = "bottom",
         panel.grid = element_blank())
 ```
 
-The green tiles are detections. The red tiles are non-detections. For every red tile, there are two possible stories. The CJS model is a machine for working out which story is more likely, given the full pattern of the data.
+The gold tiles are detections. The red tiles are non-detections. For every red tile, there are two possible stories. The CJS model is a machine for working out which story is more likely, given the full pattern of the data.
 
 > Have a look at the figure above. Look at Animal 1 at the bottom. We never caught animal 1 on occasion 3 but we did capture it on occasion 4. We've said that non-detection can mean two things; 1) alive but not seen or 2) dead. Was animal 1 dead at occasion 3? Hopefully you conclude it was not, but how do you know? That's the logic that CJS uses.
 
 # The two processes
 
-Just like in the previous page, CJS explicitly models two separate processes:
+Same as the last page, CJS models two separate processes out in the open.
 
-**Process 1: Survival.** Between each pair of consecutive occasions, an animal either survives with probability $\phi$ (e.g. $0.9$ or 90%) or dies with probability $1 - \phi$ (e.g. $1-0.9=0.1$ or 100-90=10%). Once dead, it stays dead. It cannot come back. Zombies don't exist in this house.
+The first is survival. Between any two consecutive occasions, an animal either survives with probability $\phi$ (say $0.9$, or 90%) or dies with probability $1 - \phi$ (so $1-0.9=0.1$, or 10%). Once it's dead, it stays dead. It can't come back. Zombies don't exist in this house.
 
-**Process 2: Detection.** On each occasion, an animal that is alive is detected with probability $p$, or missed with probability $1 - p$.
+The second is detection. On each occasion, an animal that's alive gets detected with probability $p$, or slips past you with probability $1 - p$.
 
-A detection in your data requires *both* processes to go the right way: the animal must have survived to that occasion, and you must have detected it. A non-detection could be either process failing.
+To actually get a detection in your data, *both* processes have to go your way: the animal had to survive to that occasion, and you had to spot it. A non-detection is either one of them failing.
 
-This is the same logic as the previous page, just now written as a model with two explicit parameters.
+It's the same logic as the last page, just written down now as a model with two named parameters.
 
 # Building the likelihood from a capture history
 
-Here is where the GLM framing from the first page comes back in. CJS estimates $\phi$ and $p$ by writing down the probability of observing each animal's capture history, and then finding the values of $\phi$ and $p$ that make the observed histories as probable as possible. That is maximum likelihood estimation, which you already met in BI3010 (and probably forgot - fair enough).
+This is where the GLM framing from the first page comes back to bite, in a good way. CJS estimates $\phi$ and $p$ by writing down the probability of seeing each animal's capture history, then hunting for the values of $\phi$ and $p$ that make the histories you actually observed as likely as possible. That's maximum likelihood estimation, which you met in BI3010 (and probably forgot - fair enough).
 
-Let us work through a single animal's capture history to make this concrete.
+Let's walk through one animal's history to make it concrete.
 
-Take an animal with history `1 0 1 1`. It was caught on occasion 1 (that is how it got tagged), missed on occasion 2, then caught on occasions 3 and 4.
+Take an animal with the history `1 0 1 1`. Caught on occasion 1 (that's how it got its tag), missed on occasion 2, then caught again on 3 and 4.
 
-What is the probability of observing this history? Working occasion by occasion after first capture:
+So what's the probability of seeing that history? Go occasion by occasion, starting after first capture:
 
--   **Occasion 1 to 2**: The animal survived ($\phi$) but was not detected ($1 - p$). Probability: $\phi \times (1 - p)$
+-   Occasion 1 to 2: the animal survived ($\phi$) but was not detected ($1 - p$). Probability: $\phi \times (1 - p)$
 
--   **Occasion 2 to 3**: The animal survived ($\phi$) and was detected ($p$). Probability: $\phi \times p$
+-   Occasion 2 to 3: the animal survived ($\phi$) and was detected ($p$). Probability: $\phi \times p$
 
--   **Occasion 3 to 4**: The animal survived ($\phi$) and was detected ($p$). Probability: $\phi \times p$
+-   Occasion 3 to 4: the animal survived ($\phi$) and was detected ($p$). Probability: $\phi \times p$
 
 Putting it together, the probability of the full history `1 0 1 1` (after first capture) is:
 
@@ -133,43 +161,150 @@ $$P(\text{1 0 1 1}) = [\phi(1-p)] \times [\phi \cdot p] \times [\phi \cdot p]$$
 
 $$= \phi^3 \times p^2 \times (1-p)$$
 
-```{r}
-# Probability of history 1011 as a function of phi and p
-phi <- seq(0.01, 0.99, length.out = 100)
-p   <- seq(0.01, 0.99, length.out = 100)
+Now build your own capture history below and watch the likelihood surface react. For every combination of $\phi$ and $p$, the surface shows how probable your chosen history would be if those were the true values. The white dot is the maximum likelihood estimate, the single combination that makes your history most probable of all.
 
-grid <- expand.grid(phi = phi, p = p)
-grid$prob <- grid$phi^3 * grid$p^2 * (1 - grid$p)
+```{ojs}
+//| echo: false
+{
+  let history = [1, 0, 1, 1];
+  const n     = 4;
+  const gridN = 60;
 
-ggplot(grid, aes(x = phi, y = p, fill = prob)) +
-  geom_raster() +
-  scale_fill_viridis_c(option = "plasma", name = "Probability\nof history") +
-  labs(
-    x = expression(phi ~ "(survival)"),
-    y = "p (detection)",
-    title = "Probability of capture history 1 0 1 1",
-    subtitle = expression(phi^3 ~ "\u00d7" ~ p^2 ~ "\u00d7" ~ (1 - p))
-  ) +
-  theme_minimal()
+  const container = document.createElement("div");
+  container.style.cssText = "font-family:sans-serif;color:#c9c0a6";
+
+  function computeLikelihood(hist, phi, p) {
+    let lastSeen = 0;
+    for (let i = n - 1; i >= 0; i--) {
+      if (hist[i] === 1) { lastSeen = i; break; }
+    }
+    // chi[t] = probability of never being detected again from occasion t
+    const chi = new Array(n).fill(0);
+    chi[n - 1] = 1;
+    for (let t = n - 2; t >= 0; t--) {
+      chi[t] = (1 - phi) + phi * (1 - p) * chi[t + 1];
+    }
+    let lik = 1;
+    for (let t = 1; t <= lastSeen; t++) {
+      lik *= hist[t] === 1 ? phi * p : phi * (1 - p);
+    }
+    return lik * chi[lastSeen];
+  }
+
+  function getFormula(hist) {
+    let lastSeen = 0;
+    for (let i = n - 1; i >= 0; i--) {
+      if (hist[i] === 1) { lastSeen = i; break; }
+    }
+    const terms = [];
+    for (let t = 1; t <= lastSeen; t++) {
+      terms.push(hist[t] === 1 ? "\u03c6p" : "\u03c6(1\u2212p)");
+    }
+    if (lastSeen < n - 1) terms.push("\u03c7");
+    if (terms.length === 0) terms.push("\u03c7");
+    return terms.join(" \u00d7 ");
+  }
+
+  function draw() {
+    container.innerHTML = "";
+
+    // Instruction
+    const intro = document.createElement("p");
+    intro.style.cssText = "font-size:13px;color:#9a927b;margin:0 0 10px";
+    intro.textContent = "Click occasions 2\u20134 to toggle detection. Occasion 1 is always detected \u2014 that is when the animal was tagged.";
+    container.appendChild(intro);
+
+    // Capture history grid
+    const gridDiv = document.createElement("div");
+    gridDiv.style.cssText = "display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap";
+
+    for (let i = 0; i < n; i++) {
+      const det   = history[i] === 1;
+      const fixed = i === 0;
+      const cell  = document.createElement("div");
+      cell.style.cssText = `flex:1;min-width:72px;padding:10px 6px;border-radius:6px;text-align:center;border:2px solid ${det ? "#d19527" : "#FF5733"};background:${det ? "#231d10" : "#3a1a1a"};cursor:${fixed ? "default" : "pointer"};user-select:none`;
+      cell.innerHTML = `<div style="font-size:11px;color:#9a927b;margin-bottom:4px">Occasion ${i + 1}</div>
+        <div style="font-size:22px">${det ? "\u2713" : "\u2717"}</div>
+        <div style="font-size:11px;color:#c9c0a6;margin-top:2px">${det ? "Detected" : "Not detected"}</div>
+        ${fixed ? `<div style="font-size:10px;color:#4a4736;margin-top:3px">fixed</div>` : ""}`;
+      if (!fixed) cell.addEventListener("click", () => { history[i] = 1 - history[i]; draw(); });
+      gridDiv.appendChild(cell);
+    }
+    container.appendChild(gridDiv);
+
+    // Formula
+    const hasTrailing = history[n - 1] === 0;
+    const formulaDiv  = document.createElement("div");
+    formulaDiv.style.cssText = "background:#211f16;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#9a927b";
+    formulaDiv.innerHTML = `P(history) = <strong style="color:#c9c0a6;font-family:monospace">${getFormula(history)}</strong>${hasTrailing ? `<span style="color:#4a4736;font-size:11px;margin-left:10px">(\u03c7 = prob. of never being detected again)</span>` : ""}`;
+    container.appendChild(formulaDiv);
+
+    // Compute heatmap
+    const heatData = [];
+    let maxLik = -Infinity;
+    let mle    = { phi: 0.5, p: 0.5 };
+
+    for (let i = 0; i < gridN; i++) {
+      for (let j = 0; j < gridN; j++) {
+        const phi = (i + 0.5) / gridN;
+        const p   = (j + 0.5) / gridN;
+        const lik = computeLikelihood(history, phi, p);
+        heatData.push({ phi, p, lik });
+        if (lik > maxLik) { maxLik = lik; mle = { phi, p }; }
+      }
+    }
+
+    const chart = Plot.plot({
+      style:        { background: "#161610", color: "#c9c0a6", fontSize: "13px" },
+      width:        440,
+      height:       380,
+      marginLeft:   55,
+      marginBottom: 50,
+      x: { label: "Survival probability (\u03d5)", domain: [0, 1] },
+      y: { label: "Detection probability (p)",     domain: [0, 1] },
+      color: { type: "sequential", scheme: "plasma", label: "P(history)" },
+      marks: [
+        Plot.rect(heatData, {
+          x1: d => d.phi - 0.5 / gridN,
+          x2: d => d.phi + 0.5 / gridN,
+          y1: d => d.p   - 0.5 / gridN,
+          y2: d => d.p   + 0.5 / gridN,
+          fill: "lik"
+        }),
+        Plot.dot([mle], {
+          x: "phi", y: "p",
+          fill: "white", r: 6, stroke: "#161610", strokeWidth: 1.5
+        })
+      ]
+    });
+    container.appendChild(chart);
+
+    const mleNote = document.createElement("p");
+    mleNote.style.cssText = "font-size:12px;color:#7a745e;margin:4px 0 0;text-align:center";
+    mleNote.textContent = `White dot = MLE:  \u03d5 \u2248 ${mle.phi.toFixed(2)},  p \u2248 ${mle.p.toFixed(2)}`;
+    container.appendChild(mleNote);
+  }
+
+  draw();
+  return container;
+}
 ```
 
-The brighter areas of the plot show combinations of $\phi$ and $p$ that make this particular history more probable. Maximum likelihood estimation finds the peak of this surface across all animals simultaneously.
-
-Based on this maximum likelihood estimate, we'd estimate survival as roughly (eye balling the figure above) at something close to 100% and detection as roughly 60%.
+The brighter the patch, the better that combination of $\phi$ and $p$ explains the history you built. Maximum likelihood estimation goes looking for that peak across every animal in the dataset at once. Notice how some histories give you a tight, sharp peak; those are the informative ones. Others leave the surface almost flat, which means loads of different $\phi$ and $p$ combinations explain the data about equally well, and the model just can't pin the estimates down with any confidence.
 
 # But what about the final non-detection?
 
-There is a subtlety I have been glossing over. What if an animal's last recorded detection is not its last occasion? For example, what about an animal with history `1 1 0 0`?
+There's a subtlety I've been quietly skating over. What if an animal's last detection *isn't* on the last occasion? Take an animal with the history `1 1 0 0`.
 
-After its last detection on occasion 2, two things could have happened. It could have died at some point before or after occasion 3. Or it could have survived all the way to the end of the study and just never been detected again.
+After that last detection on occasion 2, two different things could be going on. It might have died somewhere around occasion 3. Or it might have sailed right through to the end of the study and simply never been caught again.
 
-The probability of never being seen again from occasion $t$ onwards, which is usually written $\chi_t$ (chi, pronounced "ky"), captures this. For our four-occasion example, $\chi_4 = 1$ because after the last occasion there are no more chances to be seen. Working backwards:
+The probability of never seeing an animal again from occasion $t$ onward, usually written $\chi_t$ (chi, said "ky"), is what handles this. In our four-occasion example $\chi_4 = 1$, because once you're past the final occasion there are no more chances to see anything. Then work backwards:
 
 $$\chi_3 = (1 - \phi) + \phi(1-p)\chi_4$$
 
-In words: the probability of not being seen again from occasion 3 is either the animal died between 3 and 4 ($(1 - \phi)$) or it survived but was not detected on occasion 4 and then was never seen again ($\phi(1-p)\chi_4$).
+In words: the chance of never seeing the animal again from occasion 3 is either that it died between 3 and 4 ($(1 - \phi)$), or that it survived but you missed it on occasion 4 and then never saw it again ($\phi(1-p)\chi_4$).
 
-This recursion continues back through all occasions. CJS handles this automatically, but it is worth knowing it is there, because it is what allows the model to deal honestly with animals that are never recaptured after their first detection.
+That recursion keeps rolling back through all the occasions. CJS does this for you automatically, but it's worth knowing it's under the hood, because it's what lets the model be honest about the animals that vanish from the data after their first capture.
 
 # The model equations
 
@@ -189,15 +324,15 @@ where:
 
 -   $p_t$ is the probability of detecting individual $i$ at occasion $t$, given it is alive
 
-The first equation says: the true state at time $t$ is a Bernoulli trial that depends on whether the animal was alive at $t-1$ and on the survival probability. If the animal is dead ($z_{i,t-1} = 0$), it stays dead ($\phi \times 0 = 0$). If it is alive, it survives to $t$ with probability $\phi$.
+The first equation says the true state at time $t$ is a coin flip (a Bernoulli trial) that hangs on whether the animal was alive at $t-1$ and on the survival probability. If it was already dead ($z_{i,t-1} = 0$) it stays dead, because $\phi \times 0 = 0$. If it was alive, it makes it to $t$ with probability $\phi$.
 
-The second equation says: what we actually observe is a Bernoulli trial that depends on whether the animal is alive at $t$ and on the detection probability. You cannot detect a dead animal ($p \times 0 = 0$). You detect a live one with probability $p$.
+The second equation says what you actually see is another coin flip, this one hanging on whether the animal is alive at $t$ and on the detection probability. You can't detect a dead animal, since $p \times 0 = 0$. You detect a live one with probability $p$.
 
-If these two equations look familiar from the previous page, that is not a coincidence. This is exactly the structure we described in words when we said a detection requires both survival and detectability. We have just written it down formally.
+If those two equations feel like déjà vu, good, they should. It's the exact thing we said in plain words a moment ago, that seeing an animal needs it to have both survived and been detected. All we've done is stop waving our hands and write it down properly.
 
 # Fitting a CJS model in R
 
-Let us simulate some capture history data and fit a CJS model to it to see this in practice.
+Let's simulate some capture history data and fit a CJS model to it, so you can see the whole thing actually work.
 
 ```{r}
 set.seed(42)
@@ -261,7 +396,7 @@ results <- data.frame(
 results
 ```
 
-The estimates should be reassuringly close to the true values we used to simulate the data. They will not be identical because we are working with a finite sample, but they should be in the right ballpark. All this to show that CJS models work.
+Those estimates should come out reassuringly close to the true values we baked into the simulation. They won't be identical, because we've only got a finite sample to work from, but they should sit in the right ballpark. All of which is just to show you that CJS actually does what it says on the tin.
 
 # What CJS gives us, and what it still cannot
 
@@ -272,12 +407,12 @@ CJS is a genuine step forward from Lincoln-Petersen. We now have:
 -   The ability to use more than two sampling occasions, which gives us more information and more precise estimates
 -   The ability to model $\phi$ and $p$ as functions of covariates, just like in a standard GLM
 
-But CJS still has a gap. Because it conditions on first capture and deals only with marked individuals, it cannot estimate $N$. We lost that when we abandoned the closure assumption.
+But CJS still leaves a hole. Because it conditions on first capture and only ever deals with marked animals, it can't estimate $N$. We gave that up the moment we walked away from closure.
 
-There is also a subtlety in what $\phi$ actually represents. CJS is estimated from animals that were captured within your study area and then either recaptured or not. An animal that permanently emigrates looks identical to a dead animal in the capture history. So $\phi$ is **apparent survival**: the probability of surviving *and* remaining within the study area. True survival is higher, by some unknown amount that depends on how much emigration there is.
+There's also a wrinkle in what $\phi$ really means. CJS is built from animals you caught inside your study area and then either recaptured or didn't. An animal that permanently clears off looks exactly like a dead one in the capture history. So $\phi$ is **apparent survival**: the probability of surviving *and* sticking around in your study area. True survival is higher than that, by some unknown amount that depends on how much permanent emigration is going on.
 
-So we have survival but no population size. We have population size under closure (LP) but no survival. What we really want is both, simultaneously, from the same dataset.
+So here's where we've landed. CJS gives us survival but can't count the population. Lincoln-Petersen could count the population, but only by freezing it shut, and it told us nothing about survival. What we actually want is both numbers at once, pulled from a single dataset, and so far neither model can manage that.
 
-That is exactly what the robust design delivers. And the way it does it is by being clever about the time structure of sampling, nesting closed sampling occasions inside an open population framework.
+That's exactly what the robust design pulls off. And the trick it uses is being clever about the *timing* of your sampling, nesting closed sampling occasions inside an open population framework.
 
-That is the next page.
+That's the next page.

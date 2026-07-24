@@ -1,9 +1,10 @@
 project:
   type: website
+  post-render: remove-polyfill.R
 
 website:
   title: "Robust Design Mark-Recapture"
-  site-url: index.qmd
+  site-url: https://deonroos.github.io/Robust_Design/
   navbar:
     left:
       - text: "A refresher on GLMs"
@@ -23,5 +24,10 @@ website:
 
 format:
   html:
-    theme: cosmo
+    theme: default
+    css: styles.css
+    highlight-style: atom-one-dark
+    code-fold: true
     toc: true
+    toc-depth: 2
+    toc-location: right

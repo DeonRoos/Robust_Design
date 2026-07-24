@@ -2,41 +2,69 @@
 title: "The Robust Design"
 author: "Deon Roos"
 date: "`r Sys.Date()`"
-format:
-  html:
-    theme: flatly
-    highlight-style: monochrome
-    code-fold: true
-    toc: true
-    toc-depth: 2
-    toc-location: right
+format: html
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       message = FALSE)
+
+theme_dark_site <- function(...) {
+  ggplot2::theme_minimal(...) +
+  ggplot2::theme(
+    plot.background   = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    panel.background  = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    panel.grid.major  = ggplot2::element_line(colour = "#38382a"),
+    panel.grid.minor  = ggplot2::element_line(colour = "#2c2c20"),
+    text              = ggplot2::element_text(colour = "#c9c0a6"),
+    axis.text         = ggplot2::element_text(colour = "#9a927b"),
+    plot.title        = ggplot2::element_text(colour = "#ece3cc", face = "bold"),
+    plot.subtitle     = ggplot2::element_text(colour = "#9a927b"),
+    plot.caption      = ggplot2::element_text(colour = "#7a745e"),
+    legend.background = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.key        = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.text       = ggplot2::element_text(colour = "#c9c0a6"),
+    legend.title      = ggplot2::element_text(colour = "#c9c0a6"),
+    strip.background  = ggplot2::element_rect(fill = "#2c2c20", colour = NA),
+    strip.text        = ggplot2::element_text(colour = "#c9c0a6")
+  )
+}
+
+theme_void_dark_site <- function(...) {
+  ggplot2::theme_void(...) +
+  ggplot2::theme(
+    plot.background   = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    text              = ggplot2::element_text(colour = "#c9c0a6"),
+    plot.title        = ggplot2::element_text(colour = "#ece3cc", face = "bold", hjust = 0.5),
+    plot.subtitle     = ggplot2::element_text(colour = "#9a927b", hjust = 0.5),
+    legend.background = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.key        = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.text       = ggplot2::element_text(colour = "#c9c0a6"),
+    legend.title      = ggplot2::element_text(colour = "#c9c0a6")
+  )
+}
 ```
 
 # The problem we are stuck with
 
-Let us take stock of where we are.
+Right, where are we? Two models, and each one solves half the problem.
 
-The Lincoln-Petersen estimator gives us population size $N$, but only under closure. The population cannot change between your two sampling occasions. That assumption is fine over a day or two. Over weeks or months it becomes fiction.
+Lincoln-Petersen gives us population size $N$, but only if we hold the population still with closure. Nothing changes between your two visits. That's fine over a day or two. Stretch it over weeks or months and it's pure fiction.
 
-The Cormack-Jolly-Seber model gives us apparent survival $\phi$, but it requires the population to be open. Animals can die between occasions, which is precisely what we are trying to estimate. In exchange for that realism, CJS conditions on marked individuals only and cannot estimate $N$ at all.
+Cormack-Jolly-Seber gives us apparent survival $\phi$, but it needs the population to be open. Animals are allowed to die between occasions, which is the whole point, because dying is the thing we're trying to measure. The price is that CJS only looks at marked individuals and throws away $N$ completely.
 
-So we have two models. One estimates $N$ but cannot handle survival. The other estimates survival but cannot estimate $N$. What we actually want is both, from the same study, at the same time.
+So we're stuck with two half-answers. One knows about $N$ but goes quiet on survival. The other knows about survival but can't count heads. And of course what we actually want is both, out of the same study, at the same time.
 
-This is not a minor inconvenience. For most real conservation questions you need both. How many individuals are there *and* are they surviving well enough to maintain that number? Neither question makes much sense without the other.
+This isn't some minor annoyance we can shrug off. Almost every real conservation question needs both numbers at once. How many animals are there, *and* are enough of them surviving to keep that number up? Ask one without the other and you've barely said anything.
 
-The robust design, introduced by Kenneth Pollock in 1982, resolves this tension with an idea that is almost frustratingly simple once you see it.
+The robust design, which Kenneth Pollock came up with in 1982, fixes all of this with an idea so simple it's almost annoying once it clicks.
 
 # The key insight: two time scales
 
-The reason LP and CJS are in conflict is that they need opposite things from the population. LP needs closure. CJS needs openness. The robust design gives each of them what they need by operating at **two different time scales simultaneously**.
+LP and CJS fight because they want opposite things from the population. LP wants it frozen. CJS wants it changing. The robust design ends the fight by running at **two different time scales at once**, and handing each model exactly the thing it was asking for.
 
-Here is the structure:
+Here's the shape of it:
 
 ```{r}
 library(ggplot2)
@@ -72,11 +100,11 @@ ggplot() +
   geom_rect(data = primary,
             aes(xmin = x_start, xmax = x_end,
                 ymin = 0.15, ymax = 0.85),
-            fill = "#00A68A", alpha = 0.15, colour = "#00A68A", linewidth = 1) +
+            fill = "#d19527", alpha = 0.15, colour = "#d19527", linewidth = 1) +
   # Primary period labels
   geom_text(data = primary,
             aes(x = (x_start + x_end) / 2, y = 0.92, label = label),
-            size = 3.2, colour = "#00A68A", fontface = "bold") +
+            size = 3.2, colour = "#d19527", fontface = "bold") +
   # Secondary occasion points
   geom_point(data = secondary,
              aes(x = x, y = y),
@@ -94,32 +122,32 @@ ggplot() +
            label = "Open\n(\u03d5)", size = 3, colour = "grey40") +
   # Closed label inside boxes
   annotate("text", x = c(2, 5, 8, 11), y = 0.22,
-           label = "Closed\n(N, p)", size = 3, colour = "#00A68A") +
+           label = "Closed\n(N, p)", size = 3, colour = "#d19527") +
   scale_x_continuous(limits = c(0.5, 13)) +
   scale_y_continuous(limits = c(0, 1.1)) +
   labs(x = NULL, y = NULL,
        title = "The robust design sampling structure",
-       subtitle = "Orange dots = secondary occasions (s). Green boxes = primary periods.") +
-  theme_minimal() +
+       subtitle = "Orange dots = secondary occasions (s). Gold boxes = primary periods.") +
+  theme_dark_site() +
   theme(axis.text = element_blank(),
         panel.grid = element_blank())
 ```
 
-The **primary periods** are separated by long enough gaps that the population can change between them. Animals can die. Animals can be recruited. This is the open part, handled by CJS-style logic, and it gives us $\phi$.
+The **primary periods** are spaced far enough apart that the population has time to change between them. Animals die. New ones get recruited. This is the open part, run on CJS-style logic, and it's what gives us $\phi$.
 
-The **secondary occasions** are the repeated sampling events *within* each primary period, conducted close enough together in time that we can reasonably assume the population is closed during that window. No births, no deaths, no permanent movement in or out. This is the closed part, handled by LP-style logic, and it gives us $N$.
+The **secondary occasions** are the repeated visits *inside* a single primary period, packed close enough together in time that we can happily pretend the population is closed for that little window. No births, no deaths, nobody moving in or out for good. This is the closed part, run on LP-style logic, and it's what gives us $N$.
 
-The robust design nests one inside the other. Closure within primary periods. Openness between them. LP and CJS stop being in conflict because they are now operating at different time scales.
+The robust design just nests one inside the other. Closed within a primary period. Open between them. LP and CJS stop treading on each other because they're now working at different time scales.
 
-That is the entire conceptual insight. Everything else is working out the details.
+That's it. That's the whole idea. Everything from here is details and bookkeeping.
 
 # The data structure
 
-The data structure follows directly from the sampling structure. Each individual now has a capture history that operates at two levels.
+The data falls out straight from the way you sampled. Each animal now carries a capture history that works on two levels at once.
 
-At the **between-period level**, there is a summary detection for each primary period: was the animal detected at least once during that primary period, yes or no? This is the coarse-grained history that feeds the open-population (survival) component of the model.
+At the **between-period level**, each primary period gets boiled down to a single yes/no: did we see this animal at all during that period? That coarse summary is what feeds the open-population half of the model, the bit that estimates survival.
 
-At the **within-period level**, there is a detailed detection history across the secondary occasions within each primary period. This fine-grained history feeds the closed-population (abundance and detection) component.
+At the **within-period level**, you keep the full blow-by-blow of which secondary occasions the animal turned up on inside each primary period. That fine-grained detail feeds the closed-population half, the bit that estimates abundance and detection.
 
 ```{r}
 set.seed(7)
@@ -154,73 +182,73 @@ ggplot(ch_df, aes(x = secondary, y = animal, fill = detected_label)) +
   geom_tile(colour = "white", linewidth = 1.2) +
   facet_grid(~ paste("Primary period", primary),
              switch = "x") +
-  scale_fill_manual(values = c("Detected" = "#00A68A",
+  scale_fill_manual(values = c("Detected" = "#d19527",
                                 "Not detected" = "#FF5733")) +
   scale_x_continuous(breaks = 1:3, labels = paste("s", 1:3)) +
   labs(x = "Secondary occasion", y = NULL, fill = NULL,
        title = "Robust design capture histories",
        subtitle = "Each primary period contains three secondary occasions") +
-  theme_minimal() +
+  theme_dark_site() +
   theme(legend.position = "bottom",
         panel.grid = element_blank(),
         strip.placement = "outside")
 ```
 
-Every red tile carries the same ambiguity as before. But now there are two levels at which that ambiguity operates, and the model deals with each one separately.
+Every red tile still hides the same old ambiguity. The difference now is that the ambiguity shows up at two levels, and the model pulls them apart and deals with each on its own.
 
-Within a primary period, a red tile means the animal was alive and present but not detected. The population is assumed closed so death and emigration are ruled out. The only explanation is imperfect detection.
+Inside a primary period, a red tile can only mean one thing: the animal was alive and present and you just missed it. We've assumed the population is closed for that window, so death and emigration are off the table. Imperfect detection is the only suspect left.
 
-Between primary periods, a zero summary (never detected across any secondary occasion in a primary period) could mean the animal died before that period, or that it was alive but never detected across any of the secondary occasions. The open-population component of the model handles that ambiguity, just as CJS did.
+Between primary periods it's murkier. An animal that never showed up across a whole primary period might have died before it started, or it might have been alive the entire time and dodged every single secondary occasion. That's the ambiguity the open-population part of the model soaks up, exactly like CJS did a page ago.
 
 # Building the likelihood
 
-The robust design likelihood separates cleanly into two parts that are estimated together but can be understood separately. We will build each one up in turn.
+The robust design likelihood splits into two neat halves. They get fitted together in one go, but you can understand them one at a time, so that's exactly what we'll do. One half, then the other.
 
 ## Part 1: Within primary periods (closed population)
 
-Within each primary period, the population is closed. We have repeated secondary occasions and we want to estimate two things: detection probability $p$ and population size $N_t$ for that period.
+Inside a single primary period the population is closed. We've got a handful of repeated secondary occasions, and we want two things out of them: the detection probability $p$, and the population size $N_t$ for that period.
 
-This is essentially a closed-population mark-recapture model. The simplest version, sometimes called $M_0$, assumes every individual has the same detection probability $p$ on every secondary occasion. The probability of an individual's within-period detection history $\mathbf{x}_{it} = (x_{it1}, x_{it2}, \ldots, x_{its})$ across $s$ secondary occasions, given the animal is present, is:
+This is really just a closed-population mark-recapture model. The simplest flavour, sometimes called $M_0$, assumes every animal has the same detection probability $p$ on every secondary occasion. Write an animal's within-period history as $\mathbf{x}_{it} = (x_{it1}, x_{it2}, \ldots, x_{its})$ across $s$ secondary occasions. Given the animal was actually there, the probability of seeing that exact history is:
 
 $$\Pr(\mathbf{x}_{it} \mid \text{present}) = \prod_{j=1}^{s} p^{x_{itj}} (1-p)^{1-x_{itj}}$$
 
-This is just a Bernoulli product. For each secondary occasion, the animal was either detected ($x = 1$, probability $p$) or not ($x = 0$, probability $1-p$).
+Don't let the symbols spook you, it's a Bernoulli product and nothing scarier. Each secondary occasion, you either caught the animal ($x = 1$, which costs you a $p$) or you didn't ($x = 0$, which costs you a $1-p$). Multiply those across all the occasions and you've got the probability of the whole history.
 
-The probability of *not being detected at all* during a primary period, across all $s$ secondary occasions, is:
+Now flip it around. The probability of missing the animal *completely* across all $s$ occasions in a period is every occasion going wrong in a row:
 
 $$1 - \tilde{p}_t = (1-p)^s$$
 
-So the probability of being detected *at least once* during primary period $t$ is:
+So the probability of catching it *at least once* somewhere in primary period $t$ is just one minus that:
 
 $$\tilde{p}_t = 1 - (1-p)^s$$
 
-This $\tilde{p}_t$ is the effective detection probability for the whole primary period. It is the probability that links the within-period model to the between-period model. Notice that even if $p$ is modest on any single occasion, $\tilde{p}_t$ can be quite high if you have enough secondary occasions. This is one of the practical benefits of repeated sampling within a period.
+That $\tilde{p}_t$ is your detection probability for the whole period, and it's the quiet little hinge that joins the within-period model to the between-period one. And here's the payoff worth noticing: even if $p$ on any single day is fairly rubbish, stack up enough secondary occasions and $\tilde{p}_t$ climbs fast. Three cracks at 40% each and you're already catching the large majority of animals that are actually there. That's the whole reason we bother going back multiple times within a season.
 
-To estimate $N_t$, we use a Huggins-style conditional likelihood (which you don't need to remember). The important thing is that rather than estimating $N_t$ directly in the likelihood, we condition on the animals that were detected at least once, estimate $p$ from their detection histories, and then derive (meaning "figure out") $\hat{N}_t$ afterwards as:
+To actually get $N_t$ we lean on a Huggins-style conditional likelihood (you really don't need to remember that name). The trick is that we never go at $N_t$ head-on. Instead we condition on the animals we did catch at least once, estimate $p$ from their histories, and then back out $\hat{N}_t$ afterwards as:
 
 $$\hat{N}_t = \frac{n_t}{\hat{\tilde{p}}_t}$$
 
-where $n_t$ is the number of distinct individuals caught in primary period $t$. This is Lincoln-Petersen logic in a more general form: we observed $n_t$ animals, and we estimated that each had a $\hat{\tilde{p}}_t$ chance of being detected, so the implied population size is $n_t$ divided by that probability.
+where $n_t$ is the number of distinct animals we caught in period $t$. If that looks familiar, it should: it's the same Lincoln-Petersen move in fancier clothes. We saw $n_t$ animals, we reckon each one had a $\hat{\tilde{p}}_t$ chance of being seen, so the population that must have been sitting out there is $n_t$ divided by that probability.
 
 ## Part 2: Between primary periods (open population)
 
-Between primary periods, the CJS machinery takes over. For each individual, we have a between-period capture history summarised as whether they were detected at all in each primary period ($\omega_{it} = 1$ if detected in any secondary occasion in period $t$, 0 otherwise).
+Zoom out to the gaps between primary periods and the CJS machinery takes over. For each animal we now collapse its history down to one summary per primary period: $\omega_{it} = 1$ if we caught it on any secondary occasion in period $t$, and 0 if we never saw it that whole period.
 
-The between-period likelihood is exactly the CJS likelihood from the previous page, but with one modification: the detection probability entering the CJS component is not the raw $p$ from a single occasion but the effective detection probability $\tilde{p}_t$ from the closed-population component.
+The between-period likelihood is the exact CJS likelihood from the last page, with one swap. The detection probability feeding into it isn't the raw single-day $p$ any more. It's the effective per-period detection $\tilde{p}_t$ we just built back in Part 1.
 
 $$\Pr(\omega_{it} = 1 \mid \text{alive at } t) = \tilde{p}_t$$
 
 $$\Pr(\omega_{it} = 0 \mid \text{alive at } t) = 1 - \tilde{p}_t$$
 
-The survival probability $\phi_t$ operates between primary periods, exactly as in CJS:
+Survival $\phi_t$ works between primary periods, just like it did in CJS:
 
 $$z_{i,t} \sim Bernoulli(\phi_{t-1} \times z_{i,t-1})$$
 
-And the probability of the between-period summary detection, given the true state, is:
+And what we actually observe, given whether the animal is alive, is:
 
 $$\omega_{i,t} \sim Bernoulli(\tilde{p}_t \times z_{i,t})$$
 
-The probability of never being seen again from primary period $t$ onwards, $\chi_t$, follows the same recursion as before but now uses $\tilde{p}_t$ in place of the single-occasion $p$:
+The probability of never clapping eyes on the animal again from period $t$ onward, $\chi_t$, follows the same backwards recursion as before, except now $\tilde{p}_t$ stands in for the old single-occasion $p$:
 
 $$\chi_T = 1$$
 
@@ -228,15 +256,15 @@ $$\chi_t = (1 - \phi_t) + \phi_t (1 - \tilde{p}_{t+1}) \chi_{t+1}$$
 
 ## The full likelihood
 
-The full robust design likelihood is the product of the two parts:
+Bolt the two halves together and the full robust design likelihood is just their product:
 
 $$\mathcal{L} = \mathcal{L}_{\text{open}}(\phi, \tilde{p}) \times \prod_{t=1}^{T} \mathcal{L}_{\text{closed},t}(p_t)$$
 
-The closed-population component is estimated separately within each primary period and delivers $\hat{p}_t$ and $\hat{N}_t$. The open-population component uses $\tilde{p}_t$ derived from $\hat{p}_t$ and delivers $\hat{\phi}_t$. The two parts talk to each other through $\tilde{p}_t$, which is the bridge between the two time scales.
+The closed half gets worked out within each primary period and hands you $\hat{p}_t$ and $\hat{N}_t$. The open half takes the $\tilde{p}_t$ built from those $\hat{p}_t$ and hands you $\hat{\phi}_t$. The whole thing hangs together because the two halves gossip to each other through $\tilde{p}_t$. That single quantity is the bridge between the two time scales.
 
 # What we can now estimate
 
-The robust design delivers parameters that neither LP nor CJS could provide alone:
+Here's the haul. The robust design hands you a set of parameters that neither LP nor CJS could give you on their own:
 
 | Parameter                                            | Symbol                    | Source                   |
 |------------------------|------------------------|------------------------|
@@ -246,13 +274,13 @@ The robust design delivers parameters that neither LP nor CJS could provide alon
 | Apparent survival between primary periods            | $\phi_t$                  | Open component           |
 | Population growth rate                               | $\lambda_t = N_{t+1}/N_t$ | Derived from $N_t$       |
 
-$\lambda_t$ is perhaps the most practically useful derived quantity of all. It tells you directly whether the population is growing, stable, or declining between primary periods, and it is estimated honestly, accounting for imperfect detection at both the secondary occasion level and the primary period level.
+$\lambda_t$ is probably the single most useful thing on that list for day-to-day work. It tells you straight out whether the population is growing, holding steady, or sliding downhill between primary periods. And crucially it's an honest number, because it has already accounted for the animals you missed, both at the single-occasion level and across a whole primary period. It won't flatter you the way a raw count would.
 
 # A small simulation
 
-Let us simulate a robust design dataset and get a feel for how the parameter estimates behave. We will use six primary periods with three secondary occasions each, and keep everything simple with constant $\phi$ and $p$. Six primary periods gives the model five survival intervals to work with, which is enough to estimate $\phi$ reliably.
+Let's build a robust design dataset from scratch and watch how the estimates behave when we already know the true answers. We'll use six primary periods with three secondary occasions each, and keep it deliberately simple with a constant $\phi$ and $p$. Six primary periods gives the model five survival intervals to chew on, which is plenty to pin down $\phi$.
 
-Be aware that I'm going to use a package called RMark for the modelling here. I'll come back to this later on, but just know that it requires another piece of software, called program MARK, to be installed in order to run. You can find it [here](http://www.phidot.org/software/mark/downloads/) if you want to download and install it now.
+Quick heads up: the modelling here uses a package called RMark. I'll properly get into it later, but for now just know it's a front end for a separate bit of software called program MARK, which has to be installed for any of this to run. If you want to grab it now, it's [here](http://www.phidot.org/software/mark/downloads/).
 
 ```{r}
 library(RMark)
@@ -360,12 +388,12 @@ cat("\nDetection estimate (true =", p_true, "):",
     "  95% CI:", round(p_lcl, 3), "to", round(p_ucl, 3))
 ```
 
-The estimates should land reasonably close to the true values. They will not be exact because we are working with a simulated sample, but the true values should sit comfortably within the confidence intervals.
+Those estimates should land pretty close to the true values we picked. They won't be bang on, because we're working from a single simulated sample and samples wobble, but the true values should sit comfortably inside the confidence intervals.
 
 # What is still missing
 
-The model above fixes temporary emigration to zero, which is a simplification we have made deliberately. In reality, animals may temporarily leave your study area between primary periods and return later. They are not dead and not permanently gone, but during their absence they cannot be detected, which creates yet another flavour of ambiguous non-detection.
+The model we just fitted quietly pinned temporary emigration to zero. That was a deliberate cheat to keep things clean. In the real world, animals wander off out of your study area between primary periods and come swanning back later. They aren't dead and they aren't gone for good, but while they're away you can't detect them no matter how hard you look. And yes, that's yet another flavour of ambiguous non-detection to throw on the pile.
 
-This is temporary emigration, captured by the parameters $\gamma'$ and $\gamma''$ (gamma prime and gamma double prime) that we have quietly set aside here. It is the subject of the next page.
+That's temporary emigration, and it's handled by two parameters, $\gamma'$ and $\gamma''$ (gamma prime and gamma double prime), that we've swept under the rug for now. The whole next page is about dragging them back out.
 
-For now, the important thing is that you have the core structure. Closure within primary periods gives you $N_t$ and $p$. Openness between primary periods gives you $\phi$. The two time scales work together through $\tilde{p}_t$. That structure is the robust design.
+For now, the thing to hang onto is the core structure. Closed within a primary period gives you $N_t$ and $p$. Open between primary periods gives you $\phi$. The two time scales pull together through $\tilde{p}_t$. That, right there, is the robust design.

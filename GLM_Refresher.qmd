@@ -2,46 +2,72 @@
 title: "Refresher: GLMs and What They Actually Estimate"
 author: "Deon Roos"
 date: "`r Sys.Date()`"
-format:
-  html:
-    theme: flatly
-    highlight-style: monochrome
-    code-fold: true
-    toc: true
-    toc-depth: 2
-    toc-location: right
+format: html
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       message = FALSE)
+
+theme_dark_site <- function(...) {
+  ggplot2::theme_minimal(...) +
+  ggplot2::theme(
+    plot.background   = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    panel.background  = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    panel.grid.major  = ggplot2::element_line(colour = "#38382a"),
+    panel.grid.minor  = ggplot2::element_line(colour = "#2c2c20"),
+    text              = ggplot2::element_text(colour = "#c9c0a6"),
+    axis.text         = ggplot2::element_text(colour = "#9a927b"),
+    plot.title        = ggplot2::element_text(colour = "#ece3cc", face = "bold"),
+    plot.subtitle     = ggplot2::element_text(colour = "#9a927b"),
+    plot.caption      = ggplot2::element_text(colour = "#7a745e"),
+    legend.background = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.key        = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.text       = ggplot2::element_text(colour = "#c9c0a6"),
+    legend.title      = ggplot2::element_text(colour = "#c9c0a6"),
+    strip.background  = ggplot2::element_rect(fill = "#2c2c20", colour = NA),
+    strip.text        = ggplot2::element_text(colour = "#c9c0a6")
+  )
+}
+
+theme_void_dark_site <- function(...) {
+  ggplot2::theme_void(...) +
+  ggplot2::theme(
+    plot.background   = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    text              = ggplot2::element_text(colour = "#c9c0a6"),
+    plot.title        = ggplot2::element_text(colour = "#ece3cc", face = "bold", hjust = 0.5),
+    plot.subtitle     = ggplot2::element_text(colour = "#9a927b", hjust = 0.5),
+    legend.background = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.key        = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.text       = ggplot2::element_text(colour = "#c9c0a6"),
+    legend.title      = ggplot2::element_text(colour = "#c9c0a6")
+  )
+}
 ```
 
-# A year is a long time
+# Once upon a time
 
-Cast your mind back to when I taught you GLMs. I know, I know. It feels like another lifetime. You were younger, more innocent, and blissfully unaware that statistics would follow you into your honours year. Well, here we are.
+So I'd guess about a year ago now, you were sitting in one of my GLM lectures. Maybe you were paying attention. Maybe you weren't. If you weren't you wouldn't have been alone - fair enough. Even if you were, my guess is that you've probably forgotten. Again - fair enough. The bad news is that the methods you're going to be using for your thesis build on those GLMs.
 
-The good news is that everything we are going to do in this tutorial series is built on top of what you already know. The robust design mark-recapture model, which sounds terrifying, is in its bones just a collection of GLMs talking to each other. So before we get anywhere near that, it is worth making sure the foundations are solid.
+The good news is that (technically) everything we are going to do in this tutorial series is built on top of what you already know, even if it's buried somewhere in your brain. The robust design mark-recapture model, which is a crap name tbh, is in its bones just a collection of GLMs talking to each other. So before we get anywhere near that, it is worth making sure the foundations are solid.
 
-This page is not going to teach you anything new. It is going to remind you of something old, but with a bit more attention paid to what a GLM is *actually doing*, which I suspect got lost somewhere between the lecture and the exam.
+This page is not going to teach you anything new. It is going to remind you of what we previously went through, but with a bit more attention paid to what a GLM is *actually doing*, which I suspect got lost somewhere between the lecture and the exam - fair enough.
 
 # What is a GLM doing?
 
 At its core, a GLM is estimating a **parameter** from data.
 
-That word, parameter, is doing a lot of work here and it is worth sitting with it for a moment. A parameter is a number that describes something true about the world. The average height of adult humans is a parameter. The probability that a flipped coin lands heads is a parameter. These are fixed, real values that exist whether or not we ever collect data on them.
+A parameter is a just a number. But it's a number that describes something about the world. The average height of adult humans is a parameter. The probability that a flipped coin lands on heads is a parameter. These are fixed, real values that exist whether or not we ever collect data on them.
 
-The problem is that we can never actually *know* these values. We can only estimate them from data. That is the entire job of statistics, and it is the entire job of a GLM.
-
-So when you run a GLM, you are not calculating a fact. You are making an educated guess about a parameter, with some measure of how confident you are in that guess. Keep that in mind, because it becomes crucial later.
+The problem is that we can never actually *know* these values (unless you can speak to a god of your choosing). For the rest of us mortals, we can only estimate them from data. That is the entire job of statistics, and it's what GLMs (and pretty much all other forms of stats) do.
 
 # A concrete example
 
-Let's say I want to know the probability that a particular species of fish is present in a lake. I survey 20 lakes and record whether the fish is there or not.
+Let's say I want to know the probability that a particular species of fish is present in a lake. I survey 20 lakes and record whether the fish species is there or not.
 
 ```{r}
-set.seed(42)
+set.seed(1988)
 
 n_lakes <- 20
 lakes <- data.frame(
@@ -62,35 +88,39 @@ I could just take the mean of the `fish` column:
 mean(lakes$fish)
 ```
 
-And honestly, for this simple case, that would give me a reasonable estimate. But the moment I want to ask *why* some lakes have fish and others don't, or the moment I want to include any uncertainty in a principled way, I need a model.
+60% of the lakes have fish in them. Riveting stuff, I know. Fish, eh? Whoa.
 
-Here is the model:
+And honestly, for this simple case, 60% is a totally reasonable estimate - no need for any statistical models. But the moment I want to ask *why* some lakes have fish and others don't, or the moment I want to figure out how uncertain that 60% is, I need a model.
 
-$$
-y_i \sim Bernoulli(p_i) \\
-$$
+So here is my model (hint: it's a GLM):
 
-$$
-logit(p_i) = \beta_0
-$$
+$$y_i \sim Bernoulli(p_i) \\$$
+
+$$logit(p_i) = \beta_0$$
 
 where:
 
--   $y$ is our observation (fish present or absent in lake $i$)
+- $y$ is our observation (fish present or absent in lake $i$)
 
--   $i$ is an index for which lake we are talking about
+- $i$ is an index for which lake we are talking about (e.g. is this the first lake, or the 20th?)
 
--   $\sim$ means "is generated according to"
+- $\sim$ means "is generated according to"
 
--   $Bernoulli$ is a distribution that produces only `0` or `1`
+- $Bernoulli$ is a distribution that produces only `1` or `0`
 
--   $p$ is the probability of detecting fish. This is our **parameter**. It is what we are trying to estimate.
+- $p$ is the probability of detecting fish.
 
--   $logit$ is a link function. It is a small piece of maths that keeps $p$ between 0 and 1, because probabilities cannot be negative or greater than 1. Specifically, $logit(p) = log\left(\frac{p}{1-p}\right)$
+- $logit$ is a link function. It is a small piece of maths that keeps $p$ between 0 and 1, because probabilities cannot be negative or greater than 1. Specifically, $logit(p) = log\left(\frac{p}{1-p}\right)$
 
--   $\beta_0$ is the intercept. Because there are no other covariates in this model, $\beta_0$ encodes the average probability of detecting fish (on the logit scale).
+- $\beta_0$ is the intercept and is the only **parameter** in the model. Because there are no other covariates in this model, $\beta_0$ estimates the average probability of detecting fish (on the logit scale).
 
-Let's fit it:
+If you want an explainer of what the logit link function is, check out this old COVID era video:
+
+<iframe src="https://abdn.cloud.panopto.eu/Panopto/Pages/Embed.aspx?id=dea0921b-d1ce-49f4-84b9-acb700ef650f&amp;autoplay=false&amp;offerviewer=true&amp;showtitle=true&amp;showbrand=false&amp;captions=false&amp;interactivity=all" width="100%" height="405" style="border: 1px solid #38382a; border-radius: 4px;" allowfullscreen allow="autoplay" aria-label="Panopto Embedded Video Player">
+
+</iframe>
+
+Let's fit the GLM (note that `fish ~ 1` is just how you specify a model without any covariates in `R`):
 
 ```{r}
 mod <- glm(fish ~ 1,
@@ -100,38 +130,36 @@ mod <- glm(fish ~ 1,
 summary(mod)
 ```
 
-The estimate for `(Intercept)` (i.e. $\beta_0$) is on the **logit scale**. To convert it back to a probability that a human can understand, we use `plogis()`:
+The estimate for `(Intercept)` (i.e. $\beta_0$) is on the **logit scale**. To convert it back to a probability that a human can understand, we use the `R` function `plogis()`:
 
 ```{r}
 plogis(coef(mod))
 ```
 
-So the model estimates roughly a 65% chance of fish being present in any given lake. Given we simulated the data with a true probability of 65%, that is reassuringly close.
+So the model estimates roughly a 60% chance of fish being present in any given lake. Given we simulated the data with a true probability of 60% (you can check in the code above), that's bang on.
 
 # Why bother with a GLM at all?
 
-Fair question. If we can just take `mean(lakes$fish)`, why bother?
+If we get the same answer using either a GLM or `mean(lakes$fish)`, why bother with the GLM?
 
 Two reasons.
 
-First, `mean()` breaks the moment you want to include covariates. If you want to ask "how does lake depth affect fish presence?", you cannot do that with a mean. You need a model.
+First, `mean()` breaks the moment you want to include covariates. If you want to ask "how does lake depth affect the probability that fish are present?", you cannot do that with a mean. You need a model.
 
-Second, and more importantly for our purposes: a GLM gives you **uncertainty**. Not just a point estimate, like 65%, but a sense of how confident you should be in that estimate. Look at the `Std. Error` in the summary output, and look at the 95% confidence intervals:
+Second, a GLM gives you **uncertainty**. Not just a point estimate, like 60%, but a sense of how confident you should be in that estimate. Look at the `Std. Error` in the summary output, and look at the 95% confidence intervals:
 
 ```{r}
 plogis(confint(mod))
 ```
 
-The model is not just saying "65%". It is saying "somewhere between roughly 29% and 71%, and our best guess is 65%". That range is information. Ignoring it is how you end up overconfident.
-
-This idea of carrying uncertainty forward is going to matter a great deal when we get to the robust design. For now, just note that a GLM gives you both an estimate *and* a measure of how much to trust it.
+The model is not just saying "60%". It is saying "somewhere between roughly 38% and 79%, and our best guess is 60%". That range is information. Ignoring it is how you end up overconfident (cough machine learning cough).
 
 # Adding a covariate
 
-Let's make things slightly more realistic. Maybe fish are more likely to be present in deeper lakes. I will simulate some depth data and refit the model.
+Let's make things a bit more realistic. Given my love and expertise in... fish... I know fish are more likely to be present in deeper lakes. In the code below I'll simulate some depth data, say fish presence is determined by lake depth and refit the model.
 
 ```{r}
-set.seed(42)
+set.seed(1988)
 
 lakes$depth <- rnorm(n_lakes, mean = 5, sd = 2)
 
@@ -150,15 +178,11 @@ summary(mod2)
 
 Now we have two parameters: $\beta_0$ (the intercept) and $\beta_1$ (the effect of depth). Our model is now:
 
-$$
-y_i \sim Bernoulli(p_i) \\
-$$
+$$y_i \sim Bernoulli(p_i) \\$$
 
-$$
-logit(p_i) = \beta_0 + \beta_1 \times Depth_i
-$$
+$$logit(p_i) = \beta_0 + \beta_1 \times Depth_i$$
 
-The interpretation of $\beta_1$ on the logit scale is not particularly intuitive, but we can visualise the predicted relationship to make it concrete:
+The interpretation of $\beta_1$ on the logit scale is a bit tricky to be honest. It makes everyone's lives easier if we just visualise the predicted relationship:
 
 ```{r}
 library(ggplot2)
@@ -179,42 +203,118 @@ ggplot() +
               alpha = 0.5) +
   geom_line(data = pred_df,
             aes(x = depth, y = pred),
-            colour = "#00A68A", linewidth = 1) +
+            colour = "#d19527", linewidth = 1) +
   scale_y_continuous(labels = scales::percent,
                      limits = c(0, 1)) +
   labs(x = "Lake depth (m)",
        y = "Predicted probability\nof fish presence") +
-  theme_minimal()
+  theme_dark_site()
 ```
 
-The green line is our model's prediction. Deeper lakes are estimated to have a higher probability of containing fish, which is what we put into the simulation. The model has recovered the pattern from the data.
+The gold line is our model's prediction. Deeper lakes are estimated to have a higher probability of containing fish, which is what we put into the simulation. The model has recovered the pattern from the data.
+
+We could add 95% confidence intervals to the figure (I should but am being lazy), but importantly we learn more than just 60% of lakes have our fish species in them (when we just calculate the average); we learn that deeper lakes are more likely to have the species present, with shallow lakes having a ca. 12% chance of fish being there, all the way up to 10 m deep lakes being virtually guaranteed to have them with almost 100% chance of the fish being present.
+
+Now try adjusting the two model parameters yourself. The intercept ($\beta_0$) shifts the curve left or right along the depth axis, more negative means you need deeper lakes before there is a decent chance of fish. The slope ($\beta_1$) controls how steeply probability rises with depth, a larger value means a sharper transition. Notice that no matter what values you choose, the predicted probability always stays between 0 and 1. That is the logit link doing its job. The defaults are set to the true values used to simulate the data above.
+
+```{r}
+#| echo: false
+set.seed(999)
+lakes$fish_jitter <- lakes$fish + runif(nrow(lakes), -0.02, 0.02)
+ojs_define(lakes_ojs = lakes)
+```
+
+```{ojs}
+//| echo: false
+viewof beta0_glm = Inputs.range([-4, 4], {
+  value: -1,
+  step: 0.1,
+  label: "Intercept (β₀)"
+})
+```
+
+```{ojs}
+//| echo: false
+viewof beta1_glm = Inputs.range([-2, 2], {
+  value: 0.5,
+  step: 0.05,
+  label: "Slope: effect of depth (β₁)"
+})
+```
+
+```{ojs}
+//| echo: false
+{
+  const pts = transpose(lakes_ojs).map(d => ({
+    depth:       d.depth,
+    fish_jitter: d.fish_jitter
+  }));
+
+  const depthSeq = Array.from({ length: 200 }, (_, i) => i * 0.06);
+  const curve    = depthSeq.map(d => ({
+    depth: d,
+    prob:  1 / (1 + Math.exp(-(beta0_glm + beta1_glm * d)))
+  }));
+
+  const inflection = -beta0_glm / beta1_glm;
+  const inflValid  = inflection > 0.3 && inflection < 11.7;
+  const pAt5       = 1 / (1 + Math.exp(-(beta0_glm + beta1_glm * 5)));
+
+  const marks = [
+    Plot.dot(pts, {
+      x: "depth", y: "fish_jitter",
+      fill: "#c9c0a6", opacity: 0.6, r: 4
+    }),
+    Plot.line(curve, {
+      x: "depth", y: "prob",
+      stroke: "#d19527", strokeWidth: 2.5
+    })
+  ];
+  if (inflValid) marks.push(
+    Plot.ruleX([inflection], {
+      stroke: "#FFD700", strokeDasharray: "4,4", strokeWidth: 1.5
+    })
+  );
+
+  const chart = Plot.plot({
+    style:  { background: "#161610", color: "#c9c0a6", fontSize: "13px" },
+    width:  520,
+    height: 300,
+    x: { label: "Lake depth (m)", domain: [0, 12] },
+    y: { label: "Probability of fish presence", domain: [0, 1], tickFormat: "%" },
+    marks
+  });
+
+  return html`<div style="background:#161610;padding:12px;border-radius:6px">
+    ${chart}
+    <div style="display:flex;gap:24px;font-size:13px;color:#9a927b;margin-top:8px;flex-wrap:wrap">
+      <span>At depth 5 m: <strong style="color:#d19527">${(pAt5 * 100).toFixed(1)}%</strong> chance of fish</span>
+      ${inflValid
+        ? html`<span>p = 50% at: <strong style="color:#FFD700">${inflection.toFixed(1)} m depth</strong></span>`
+        : html`<span style="color:#FF5733">50% threshold lies outside the plotted range</span>`}
+    </div>
+  </div>`;
+}
+```
 
 # The thing I really want you to take away from this page
 
-Here it is:
+A GLM estimates a **parameter** from data. A parameter is just a probability, a rate, a mean, or some other value that describes something about the world that we cannot observe directly ourselves. The GLM gives us a decent guess at that parameter, plus some honest accounting of how uncertain that guess is.
 
-> A GLM estimates a **parameter** from data. A parameter is a probability, a rate, a mean, or some other property of the world that we cannot observe directly. The GLM gives us our best guess at that parameter, plus some honest accounting of how uncertain that guess is.
+Everything in mark-recapture, and specifically everything in the robust design, follows this exact logic. We'll just have more parameters to estimate and more models that get fit (at the same time). In doing so, we'll get some estimates for survival probability, detection probability, population size and a bunch of other ones. None of these are things you will ever be able to observe yourself (how to you "see" survival?). But all of them are things we estimate from data, using models that are, at their core, just GLMs.
 
-That is it. That is the whole page, really.
-
-Everything in mark-recapture, and specifically everything in the robust design, follows this exact logic. We will have parameters for survival probability. Parameters for detection probability. Parameters for population size. None of these are things we observe directly in the field. All of them are things we estimate from data, using models that are, at their core, just GLMs.
-
-The complexity of what is coming is not in the mathematics. It is in the *biology* that each parameter is trying to represent, and in making sure we have set the model up in a way that lets us estimate each one without getting them confused with each other.
-
-That last part, not getting parameters confused with each other, is actually the central challenge of mark-recapture. We will get into why on the next page.
+The complexity of what is coming is not in the mathematics; though granted the equations look crazy at first. It is in the *biology* that each parameter is trying to represent, and in making sure we have set the model up in a way that lets us estimate each one without getting them confused with each other.
 
 # Quick recap
 
-Before moving on, the things worth having firmly in your head:
+- A GLM estimates parameters (probabilities, means, rates) from data
 
--   A GLM estimates parameters (probabilities, means, rates) from data
+- It uses a **link function** (like `logit`) to keep predictions on a sensible scale
 
--   It uses a **link function** (like `logit`) to keep predictions on a sensible scale
+- It gives you a point estimate *and* uncertainty
 
--   It gives you a point estimate *and* uncertainty
+- Adding covariates lets you ask why a parameter varies across observations
 
--   Adding covariates lets you ask why a parameter varies across observations
+- The `plogis()` function converts logit-scale estimates back to probabilities
 
--   The `plogis()` function converts logit-scale estimates back to probabilities
-
-If any of that felt shaky, now is a good time to re-read it. The rest of the tutorial series assumes this is solid.
+If any of that felt shaky, now is a good time to ask me (I'm genuinely happy to answer questions, even if you feel you should know the answer already). The rest of the tutorial series assumes this is solid.

@@ -2,47 +2,75 @@
 title: "Capture-Recapture Basics: The Lincoln-Petersen Estimator"
 author: "Deon Roos"
 date: "`r Sys.Date()`"
-format:
-  html:
-    theme: flatly
-    highlight-style: monochrome
-    code-fold: true
-    toc: true
-    toc-depth: 2
-    toc-location: right
+format: html
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       message = FALSE)
+
+theme_dark_site <- function(...) {
+  ggplot2::theme_minimal(...) +
+  ggplot2::theme(
+    plot.background   = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    panel.background  = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    panel.grid.major  = ggplot2::element_line(colour = "#38382a"),
+    panel.grid.minor  = ggplot2::element_line(colour = "#2c2c20"),
+    text              = ggplot2::element_text(colour = "#c9c0a6"),
+    axis.text         = ggplot2::element_text(colour = "#9a927b"),
+    plot.title        = ggplot2::element_text(colour = "#ece3cc", face = "bold"),
+    plot.subtitle     = ggplot2::element_text(colour = "#9a927b"),
+    plot.caption      = ggplot2::element_text(colour = "#7a745e"),
+    legend.background = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.key        = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.text       = ggplot2::element_text(colour = "#c9c0a6"),
+    legend.title      = ggplot2::element_text(colour = "#c9c0a6"),
+    strip.background  = ggplot2::element_rect(fill = "#2c2c20", colour = NA),
+    strip.text        = ggplot2::element_text(colour = "#c9c0a6")
+  )
+}
+
+theme_void_dark_site <- function(...) {
+  ggplot2::theme_void(...) +
+  ggplot2::theme(
+    plot.background   = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    text              = ggplot2::element_text(colour = "#c9c0a6"),
+    plot.title        = ggplot2::element_text(colour = "#ece3cc", face = "bold", hjust = 0.5),
+    plot.subtitle     = ggplot2::element_text(colour = "#9a927b", hjust = 0.5),
+    legend.background = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.key        = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.text       = ggplot2::element_text(colour = "#c9c0a6"),
+    legend.title      = ggplot2::element_text(colour = "#c9c0a6")
+  )
+}
 ```
 
 # Starting simple
 
-On the previous page we established that counting animals gives you a count, not a population size, and that non-detections are ambiguous in at least three different ways. That is a lot of problems to solve at once. So we're not going to solve them all at once.
+On the last page we sorted out two things. Counting animals gives you a count, not a population size. And a non-detection is ambiguous in a few annoying ways. That's a lot to fix in one go, so we won't. We'll start with the simplest tool that exists and build up from there.
 
-The Lincoln-Petersen estimator, developed independently by Frederick Lincoln in 1930 and C.G.J. Petersen in 1896 (Petersen got there first but Lincoln gets equal billing), is the simplest possible mark-recapture method. It uses just two sampling occasions, makes some strong assumptions, and gives you a single number: an estimate of population size $N$.
+That tool is the Lincoln-Petersen estimator. Frederick Lincoln landed on it in 1930 and C.G.J. Petersen got there first back in 1896 (Petersen beat him by three decades and somehow Lincoln still gets his name on the tin). It uses two sampling occasions, leans on some fairly heroic assumptions, and hands you a single number: an estimate of population size $N$.
 
-It does not estimate survival. It does not deal with temporary emigration. It does not do very much at all, really. But it does the one thing we need it to do right now, which is build the intuition for how recapture data carries information about what you missed.
+It won't give you survival. It won't touch temporary emigration. Frankly it barely does anything. But it does the one thing we need right now, which is show you how recaptures tell you about the animals you missed. Get that idea straight here, where the maths still fits on one line, and the rest of the tutorial gets a lot easier.
 
 # The logic in plain English
 
-Imagine you are trying to count those fish in a lake. You cannot drain the lake. You cannot see every fish. What you can do is this:
+Say you want to count the fish in a lake. You can't drain it. You can't see every fish. But you can still get at the number, and it goes like this.
 
-On day one, you go out and catch as many fish as you can. You tag every single one and throw them back. Let us say you caught and tagged $n_1 = 50$ fish.
+On day one you go out and catch as many fish as you can. Tag every single one, chuck them back in. Let's say you tagged 50, so $n_1 = 50$.
 
-You wait a few days. Long enough for the tagged fish to mix back in with the rest of the population, but not so long that fish are being born or dying in meaningful numbers. Then you go out again.
+Now you wait a few days. Long enough for your tagged fish to mix back in with everyone else, but not so long that fish are being born or dying in any real numbers. Then you go back out.
 
-On day two, you catch another sample of fish. This time you count two things: the total number caught ($n_2$), and how many of those already have tags ($m_2$, for "marked in second sample"). Let us say $n_2 = 40$ and $m_2 = 10$.
+On day two you catch another batch. You count two things: how many you caught in total ($n_2$), and how many of those are already wearing your tags ($m_2$, for "marked in the second sample"). Say you caught 40 and 10 of them were tagged, so $n_2 = 40$ and $m_2 = 10$.
 
-Now think about what that recapture rate is telling you. You tagged 50 fish and released them into the population. When you came back, 10 out of 40 fish you caught were tagged. So roughly $\frac{10}{40} = 25\%$ of the fish you encountered on day two were tagged.
+Have a think about what that recapture rate is quietly telling you. You put 50 tagged fish into the lake. When you came back, 10 of the 40 you caught had tags. So about $\frac{10}{40} = 25\%$ of the fish you bumped into on day two were ones you'd already marked.
 
-If 25% of the fish you saw on day two were tagged, and you tagged 50 fish total, then those 50 tagged fish represent about 25% of the whole population. Which means:
+If 25% of day two's catch was tagged, and you only tagged 50 fish in the whole lake, then those 50 must be roughly 25% of every fish in there. Which gives you:
 
 $$\hat{N} = \frac{50}{0.25} = 200 \text{ fish}$$
 
-That is the Lincoln-Petersen estimator. The tagged fish are like a dye injected into the population. How diluted the dye appears in your second sample tells you how large the container must be.
+That's the whole Lincoln-Petersen estimator. Think of your tags as a splash of dye poured into the lake. How watered down the dye looks when you scoop out your second sample tells you how big the lake must have been.
 
 # The equation
 
@@ -64,7 +92,7 @@ Plugging in our numbers:
 
 $$\hat{N} = \frac{50 \times 40}{10} = 200$$
 
-Let us verify this in `R`:
+Let's check that in `R`:
 
 ```{r}
 n1 <- 50  # Tagged and released on day 1
@@ -75,35 +103,35 @@ N_hat <- (n1 * n2) / m2
 N_hat
 ```
 
-200 fish. Done. Well, almost done. We should talk about uncertainty, because a single number without any sense of how much to trust it is only half the story.
+200 fish. Done. Well, nearly done. A single number with no sense of how much to trust it is only half an answer, so we need to talk about uncertainty as well.
 
 # Where does the equation come from?
 
-It is worth understanding *why* this equation works, rather than just accepting it as a formula to plug numbers into. The logic comes from setting up a simple proportion.
+I don't want you to just memorise a formula and plug numbers into it. You'll forget it by next week (fair enough) and, worse, you won't spot it when it starts lying to you. So let's see where it actually comes from, because underneath it's genuinely one idea.
 
-If the tagged fish have mixed evenly back into the population, then the proportion of tagged fish in the population should equal the proportion of tagged fish in our second sample:
+If your tagged fish have mixed back in evenly, then the fraction of the whole lake that's tagged has to match the fraction of your second sample that's tagged:
 
 $$\frac{n_1}{N} = \frac{m_2}{n_2}$$
 
-The left side is: out of the whole population $N$, the fraction that are tagged is $\frac{n_1}{N}$.
+Read the left side as: out of every fish in the lake ($N$), the tagged fraction is $\frac{n_1}{N}$.
 
-The right side is: out of the fish we caught on day two, the fraction that were tagged is $\frac{m_2}{n_2}$.
+Read the right side as: out of the fish you actually caught on day two, the tagged fraction is $\frac{m_2}{n_2}$.
 
-If mixing was thorough, these two proportions should be equal. Rearranging to solve for $N$:
+If the mixing was any good, those two fractions are the same thing. Now just rearrange to get $N$ on its own:
 
 $$N = \frac{n_1 \times n_2}{m_2}$$
 
-Which is the LP estimator. It is just cross-multiplication. The whole thing rests on one core assumption: that tagged animals are as likely to be caught as untagged ones, and that both groups are equally distributed throughout the population when you do your second sample.
+And there's your LP estimator. It's cross-multiplication and nothing cleverer. The whole thing leans on one big assumption: a tagged fish is exactly as catchable as an untagged one, and both are shuffled evenly through the lake by the time you go back for round two.
 
 # Uncertainty
 
-We should not just report $\hat{N} = 200$ and leave it there. That estimate comes from a sample, and samples have variability. If we went out and repeated this exercise tomorrow, we would likely get a slightly different number of recaptures, and therefore a slightly different estimate of $N$.
+Reporting $\hat{N} = 200$ and walking away would be a mistake. That number came out of a sample, and samples wobble. Go out and do the exact same thing tomorrow and you'd catch a slightly different number of tagged fish, which spits out a slightly different $N$. So how much should you actually trust 200?
 
 A commonly used approximation for the variance of the Lincoln-Petersen estimator is:
 
 $$\widehat{Var}(\hat{N}) = \frac{n_1^2 \times n_2 \times (n_2 - m_2)}{m_2^3}$$
 
-From which we can get a standard error and approximate 95% confidence interval:
+From that we can pull a standard error and a rough 95% confidence interval:
 
 ```{r}
 var_N <- (n1^2 * n2 * (n2 - m2)) / m2^3
@@ -117,13 +145,106 @@ cat("Estimate:", round(N_hat),
     "\n95% CI:", round(ci_lower), "to", round(ci_upper))
 ```
 
-So our estimate is 200 fish, but with a confidence interval that is fairly wide - somewhere between 90 to 300 fish. That width reflects the reality that our estimate is based on catching just 10 recaptures. Ten is not very many. The fewer recaptures you get, the less precise your estimate.
+So our best guess is 200 fish, but the confidence interval is uncomfortably wide: somewhere from about 90 up to 300. That width is the estimator being honest with you about itself. The whole answer hangs on 10 recaptures, and 10 is not many. The fewer tagged fish you get back, the shakier the estimate.
 
-This is an important practical point for study design. If you want a precise estimate of $N$, you need to tag a lot of animals and/or have high enough detection probability to generate a decent number of recaptures. We will come back to this idea when we think about designing robust design studies.
+That's a genuinely important point for designing a study, not just a maths footnote. If you want a tight estimate of $N$, you need to tag plenty of animals, or detect them well enough to get a decent pile of recaptures, and ideally both. We'll come back to this when we start thinking about how to design a robust design study properly.
 
-# Let us simulate it
+Have a play with the calculator below. The defaults match the worked example above. Drop $m_2$, the number of recaptures, and watch the confidence interval balloon. Then try cranking $n_1$ and $n_2$ up together while keeping the recapture *rate* ($m_2 / n_2$) fixed, and see whether that reins it back in.
 
-Rather than just working through one example, it is informative to see what happens when we repeat the Lincoln-Petersen procedure many times on the same population. This gives us a sense of how variable the estimator is across different samples from the same true population.
+```{ojs}
+//| echo: false
+viewof lp_n1 = Inputs.range([10, 300], {
+  value: 50, step: 1,
+  label: "Animals marked and released (n₁)"
+})
+```
+
+```{ojs}
+//| echo: false
+viewof lp_n2 = Inputs.range([10, 300], {
+  value: 40, step: 1,
+  label: "Animals caught in second sample (n₂)"
+})
+```
+
+```{ojs}
+//| echo: false
+viewof lp_m2 = Inputs.range([1, 150], {
+  value: 10, step: 1,
+  label: "Already-marked animals in second sample (m₂)"
+})
+```
+
+```{ojs}
+//| echo: false
+{
+  const m2_max = Math.min(lp_n1, lp_n2);
+
+  if (lp_m2 > m2_max) {
+    return html`<div style="background:#3a1a1a;border:1px solid #FF5733;border-radius:8px;padding:14px;color:#FF5733;font-size:13px">
+      m₂ cannot exceed min(n₁, n₂) = ${m2_max}. You cannot recapture more animals than were either tagged or caught in the second sample.
+    </div>`;
+  }
+
+  const N_hat     = (lp_n1 * lp_n2) / lp_m2;
+  const var_N     = (lp_n1 ** 2 * lp_n2 * (lp_n2 - lp_m2)) / lp_m2 ** 3;
+  const se_N      = Math.sqrt(Math.max(var_N, 0));
+  const ci_lo     = Math.max(0, N_hat - 1.96 * se_N);
+  const ci_hi     = N_hat + 1.96 * se_N;
+  const ci_width  = ci_hi - ci_lo;
+  const recap_pct = ((lp_m2 / lp_n2) * 100).toFixed(1);
+
+  const xMax  = ci_hi * 1.15;
+  const xDom  = [0, xMax];
+
+  const ciData  = [{x: ci_lo,  y: 0}, {x: ci_hi,  y: 0}];
+  const hatData = [{x: N_hat,  y: 0}];
+
+  const chart = Plot.plot({
+    style:        { background: "#161610", color: "#c9c0a6", fontSize: "13px" },
+    width:        520,
+    height:       72,
+    marginTop:    18,
+    marginBottom: 28,
+    marginLeft:   12,
+    marginRight:  12,
+    x: { label: "Population size", domain: xDom },
+    y: { axis: null, domain: [-0.6, 0.6] },
+    marks: [
+      Plot.line(ciData,  { x: "x", y: "y", stroke: "#d19527", strokeWidth: 5 }),
+      Plot.dot(ciData,   { x: "x", y: "y", fill: "#d19527",   r: 5 }),
+      Plot.dot(hatData,  { x: "x", y: "y", fill: "#ffffff",   r: 7,
+                           stroke: "#d19527", strokeWidth: 2.5 })
+    ]
+  });
+
+  return html`<div style="background:#161610;border-radius:8px;padding:16px;font-family:sans-serif">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+      <div style="background:#231d10;border:1px solid #d19527;border-radius:6px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:#9a927b;margin-bottom:4px">Population estimate (N̂)</div>
+        <div style="font-size:28px;font-weight:bold;color:#d19527">${Math.round(N_hat).toLocaleString()}</div>
+      </div>
+      <div style="background:#211f16;border:1px solid #38382a;border-radius:6px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:#9a927b;margin-bottom:4px">Standard error</div>
+        <div style="font-size:22px;color:#c9c0a6">± ${Math.round(se_N).toLocaleString()}</div>
+      </div>
+      <div style="background:#211f16;border:1px solid #38382a;border-radius:6px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:#9a927b;margin-bottom:4px">Recapture rate</div>
+        <div style="font-size:22px;color:#c9c0a6">${recap_pct}%</div>
+      </div>
+    </div>
+    ${chart}
+    <p style="font-size:12px;color:#7a745e;margin:4px 0 0;text-align:center">
+      95% CI: ${Math.round(ci_lo).toLocaleString()} to ${Math.round(ci_hi).toLocaleString()}
+      &nbsp;·&nbsp; width: ${Math.round(ci_width).toLocaleString()}
+    </p>
+  </div>`;
+}
+```
+
+# Let's simulate it
+
+One worked example is fine, but it can't show you how jumpy this estimator really is. So let's run the whole Lincoln-Petersen procedure again and again on the same lake, a thousand times over, and watch how much the answer bounces around even though the true population never changes.
 
 ```{r}
 library(ggplot2)
@@ -152,7 +273,7 @@ lp_estimates <- replicate(n_sims, {
 lp_df <- data.frame(N_hat = lp_estimates[!is.na(lp_estimates)])
 
 ggplot(lp_df, aes(x = N_hat)) +
-  geom_histogram(fill = "#00A68A", colour = "white", bins = 40, alpha = 0.8) +
+  geom_histogram(fill = "#d19527", colour = "white", bins = 40, alpha = 0.8) +
   geom_vline(xintercept = N_true, linetype = "dashed",
              colour = "#FF5733", linewidth = 1) +
   annotate("text", x = N_true + 15, y = Inf, vjust = 2,
@@ -163,41 +284,41 @@ ggplot(lp_df, aes(x = N_hat)) +
     title = paste0("Distribution of ", n_sims, " Lincoln-Petersen estimates"),
     subtitle = "True N = 200, n1 = 50, n2 = 40"
   ) +
-  theme_minimal()
+  theme_dark_site()
 ```
 
-A few things worth noticing here. First, the distribution of estimates is centred roughly around the true value of 200, which is reassuring. The estimator is not systematically wrong. Second, the distribution has a long right tail, meaning we occasionally get wildly large estimates. This happens when $m_2$ is small by chance; if you only recapture 2 or 3 tagged fish, the formula spits out a very large $\hat{N}$. This is one reason the estimator works poorly when recaptures are rare.
+Two things are worth clocking in that histogram. First, the pile of estimates sits roughly over the true value of 200. Good. That tells us the estimator isn't systematically wrong; it doesn't consistently guess high or consistently guess low. Second, look at that long tail dribbling off to the right. Every so often the procedure hands you a wildly huge $\hat{N}$. That happens when $m_2$ comes out small by pure bad luck: recapture only 2 or 3 tagged fish and the formula panics and returns some ridiculous number. It's exactly why Lincoln-Petersen falls apart when recaptures are thin on the ground.
 
 # The assumptions, and why they matter
 
-The Lincoln-Petersen estimator rests on four assumptions. Violating any of them will bias your estimate, sometimes badly.
+Lincoln-Petersen stands on four assumptions. Break any one of them and your estimate goes wonky, sometimes spectacularly.
 
-**1. The population is closed.** No births, deaths, immigration, or emigration between your two sampling occasions. If animals are entering or leaving the population between day one and day two, your estimate of $N$ refers to something that does not exist at any single point in time.
+**1. The population is closed.** Nothing is born, nothing dies, nothing moves in or out between your two visits. If animals are coming and going between day one and day two, then the $N$ you estimate is for a population that never actually existed at any single moment in time.
 
-**2. All animals have an equal probability of being captured.** If some animals are shyer than others, or if tagged animals learn to avoid traps, then the recapture rate in your second sample is not representative of the whole population and your estimate is biased.
+**2. Every animal is equally catchable.** If some fish are shy, or your tagged ones learn that traps are bad news and start dodging them, then the recapture rate in your second sample stops speaking for the lake as a whole, and your estimate tips over.
 
-**3. Marking does not affect survival or behaviour.** If a tag stresses the animal and increases mortality, or changes how it moves, the whole logic falls apart.
+**3. Tagging doesn't change the animal.** If the tag stresses a fish into an early grave, or makes it swim about differently, the logic falls apart underneath you.
 
-**4. Marks are not lost and are always correctly identified.** If tags fall off, or if you misread a tag number, then animals that should count as recaptures will be counted as new captures instead, inflating your estimate of $N$.
+**4. Tags stay on and get read correctly.** If a tag drops off, or you squint and misread the number, an animal that should have counted as a recapture gets logged as a brand new capture instead. That quietly pushes $\hat{N}$ upward.
 
-In practice, none of these assumptions will be perfectly met. The question is always whether they are met *well enough* that your estimate is useful.
+You will never meet all four perfectly. Nobody does. The real question is always whether you've met them *well enough* that the number you end up with is still worth something.
 
-The closure assumption is the one we are going to think about most carefully throughout this stats explainer website thing. It is both the most important and the most interesting, because as we will see, the robust design is essentially an elegant solution to the problem of what to do when you need closure for some purposes and openness for others.
+Closure is the one we'll keep circling back to across this whole website thing. It earns that attention because the entire robust design, the thing this whole site is building towards, is basically one clever way of dodging it: grabbing closure where you need it and openness where you don't. But that's a good few pages off yet.
 
-# What the Lincoln-Petersen cannot do
+# What Lincoln-Petersen can't do
 
-For all its simplicity, the Lincoln-Petersen estimator has a short list of things it simply cannot provide.
+For all its charm, there's a short list of things this estimator simply can't hand you.
 
-It gives you a snapshot of $N$ at one point in time. It says nothing about whether $N$ is increasing or decreasing. It says nothing about survival. It cannot distinguish between a population that is stable and one that is rapidly declining but happens to be large right now.
+It gives you a snapshot of $N$ at one moment. It says nothing about whether $N$ is climbing or crashing. It says nothing about survival. It can't tell the difference between a population that's stable and one that's plummeting but happens to still be big today. Those two look identical to it.
 
-It also requires closure, which is only defensible over very short time windows. If your study spans weeks or months, animals will be born and die, and the assumption of a fixed, closed population becomes increasingly heroic.
+It also demands closure, which you can only really defend over very short windows. Stretch your study across weeks or months and fish are being born and dying the whole time, and pretending the population is fixed and closed starts to look a bit silly.
 
-And critically, with only two sampling occasions, you have very limited ability to estimate detection probability reliably. If $m_2$ happens to be low because you had a bad day of sampling rather than because detection probability is genuinely low, you will overestimate $N$.
+And with only two occasions, you're on thin ice trying to estimate detection reliably. If $m_2$ comes out low because you simply had a rotten day in the field, rather than because detection is genuinely poor, you'll walk away convinced there are far more fish than there really are.
 
-These limitations are not reasons to dismiss the Lincoln-Petersen estimator. They are reasons to understand it as a starting point. The models that follow in susbequent pages are, in various ways, responses to exactly these limitations.
+So no, none of this is me trying to put you off Lincoln-Petersen. Every single one of these gripes is a door into the next method. The models on the pages that follow are, one way or another, someone getting fed up with exactly these limitations and doing something about them.
 
 # Where we are headed
 
-The Lincoln-Petersen estimator gives us $\hat{N}$ under closure. But to get survival probability $\phi$ as well, we need to allow the population to be open between occasions, meaning animals can die between sampling events. And to get both $\hat{N}$ *and* $\phi$ at the same time, we need to be more clever about how we structure our sampling.
+Lincoln-Petersen gives us $\hat{N}$, but only if we hold the population still with the closure assumption. If we also want survival, $\phi$, we have to let go of closure and allow the population to be open, so that animals are allowed to die between our visits. And if we get greedy and want $\hat{N}$ *and* $\phi$ out of the same study, we'll have to get sneakier about how we lay out our sampling in the first place.
 
-That cleverness is the Cormack-Jolly-Seber model, which is next.
+That sneakiness has a name: the Cormack-Jolly-Seber model. It's next.

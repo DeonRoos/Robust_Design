@@ -2,63 +2,95 @@
 title: "Temporary Emigration"
 author: "Deon Roos"
 date: "`r Sys.Date()`"
-format:
-  html:
-    theme: flatly
-    highlight-style: monochrome
-    code-fold: true
-    toc: true
-    toc-depth: 2
-    toc-location: right
+format: html
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       message = FALSE)
+
+theme_dark_site <- function(...) {
+  ggplot2::theme_minimal(...) +
+  ggplot2::theme(
+    plot.background   = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    panel.background  = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    panel.grid.major  = ggplot2::element_line(colour = "#38382a"),
+    panel.grid.minor  = ggplot2::element_line(colour = "#2c2c20"),
+    text              = ggplot2::element_text(colour = "#c9c0a6"),
+    axis.text         = ggplot2::element_text(colour = "#9a927b"),
+    plot.title        = ggplot2::element_text(colour = "#ece3cc", face = "bold"),
+    plot.subtitle     = ggplot2::element_text(colour = "#9a927b"),
+    plot.caption      = ggplot2::element_text(colour = "#7a745e"),
+    legend.background = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.key        = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.text       = ggplot2::element_text(colour = "#c9c0a6"),
+    legend.title      = ggplot2::element_text(colour = "#c9c0a6"),
+    strip.background  = ggplot2::element_rect(fill = "#2c2c20", colour = NA),
+    strip.text        = ggplot2::element_text(colour = "#c9c0a6")
+  )
+}
+
+theme_void_dark_site <- function(...) {
+  ggplot2::theme_void(...) +
+  ggplot2::theme(
+    plot.background   = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    text              = ggplot2::element_text(colour = "#c9c0a6"),
+    plot.title        = ggplot2::element_text(colour = "#ece3cc", face = "bold", hjust = 0.5),
+    plot.subtitle     = ggplot2::element_text(colour = "#9a927b", hjust = 0.5),
+    legend.background = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.key        = ggplot2::element_rect(fill = "#1b1b14", colour = NA),
+    legend.text       = ggplot2::element_text(colour = "#c9c0a6"),
+    legend.title      = ggplot2::element_text(colour = "#c9c0a6")
+  )
+}
 ```
 
 # Another ambiguous zero
 
-We have spent considerable time on the problem of ambiguous zeros in capture histories. A non-detection could mean the animal is dead, or it could mean the animal is alive but you missed it. The CJS model and the robust design both deal with this by explicitly modelling survival and detection as separate processes.
+By now you're hopefully sick to death of ambiguous zeros. A non-detection might mean the animal's dead, or it might mean it's alive and you just missed it. CJS and the robust design both wrestle with that by modelling survival and detection as two separate things.
 
-But there is one more flavour of ambiguous zero that we have been quietly setting aside, and it is time to deal with it properly.
+But there's one last flavour of ambiguous zero I've been quietly dodging, and it's time to stop dodging it.
 
-What if an animal is alive, has not permanently emigrated, but is simply not in your study area during a particular primary period? It left temporarily. Maybe a migratory bird has gone south for the winter and will be back in spring. Maybe a marine mammal has moved offshore to feed and will return to your study site next season. Maybe a male deer has temporarily shifted its range during the rut.
+What if an animal is alive, hasn't permanently upped and left, but just isn't in your study area during one particular primary period? It's popped out for a bit. Maybe a migratory bird has flown south for the winter and will be back in spring. Maybe a marine mammal has drifted offshore to feed and will show up again next season. Maybe a male deer has shoved its range sideways during the rut.
 
-These animals are not dead. They have not permanently left. But during the primary period when they are absent, they cannot be detected no matter how good your sampling is. Their $\tilde{p}_t$ is effectively zero not because detection is poor, but because the animal simply is not there to be detected.
+None of these animals are dead. None of them have gone for good. But for the primary period when they're absent, you can't detect them, and it doesn't matter how good your sampling is. Their $\tilde{p}_t$ is effectively zero, not because your detection is rubbish, but because the animal simply isn't there to be caught.
 
-If you ignore this and assume all animals are always available for capture during every primary period, then your estimate of detection probability will be biased downward. You will attribute the absence to poor detection when the real reason is temporary absence. And if detection probability is biased, then your estimates of $N_t$ and $\phi$ are also affected.
+Ignore this, assume every animal is always around to be captured in every primary period, and your detection probability estimate gets dragged downward. You end up blaming poor detection for an absence that was really just the animal being somewhere else. And once detection is biased, it drags $N_t$ and $\phi$ off with it.
 
-This is **temporary emigration**, and the parameters $\gamma'$ and $\gamma''$ (gamma prime and gamma double prime) are how the robust design handles it.
+This is **temporary emigration**, and the robust design handles it with two parameters, $\gamma'$ and $\gamma''$ (gamma prime and gamma double prime).
+
+> **Lily**, this is not a hypothetical for you: it is the central feature of your study system. Willow warblers are long-distance migrants. Every autumn they leave the UK for sub-Saharan Africa and every spring they return. During winter, your study area contains zero willow warblers not because you have failed to detect them, but because they are genuinely absent. The model needs to distinguish between "the bird is here but I didn't detect it" and "the bird is simply not here right now." That is exactly what $\gamma'$ and $\gamma''$ do.
+>
+> In practice, this means you should expect very high $\gamma'$ during winter (birds that have left are overwhelmingly likely to stay away) and near-zero $\gamma''$ during the breeding season (birds on territory are very unlikely to vanish mid-season). Those biological expectations can, and should, inform how you structure your model.
 
 # The availability problem
 
-Before getting into the parameters themselves, it helps to think about what "availability" means in this context.
+Before we get stuck into the parameters, it's worth being clear about what "availability" even means here.
 
-In the basic robust design we have been building, we implicitly assumed that every animal in the population is **available** for capture during every primary period. Available here means physically present in the study area and therefore detectable. Under this assumption, the only reason an animal goes undetected in a primary period is imperfect detection, $1 - \tilde{p}_t$.
+In the basic robust design we've built so far, we quietly assumed every animal in the population is **available** for capture in every primary period. Available just means physically in the study area, and so catchable in principle. Under that assumption, the one and only reason an animal goes unseen across a primary period is imperfect detection, $1 - \tilde{p}_t$.
 
-Temporary emigration breaks this assumption. Now there are two reasons an animal might go undetected across an entire primary period:
+Temporary emigration smashes that assumption. Suddenly there are two reasons an animal might go unseen across a whole primary period:
 
--   It was available but not detected: probability $(1 - \tilde{p}_t)$
+-   It was there but you didn't catch it: probability $(1 - \tilde{p}_t)$
 
--   It was not available at all: it had temporarily left the study area
+-   It wasn't there at all: it had temporarily cleared off out of the study area
 
-These two explanations predict the same observation. A zero summary across all secondary occasions within a primary period. Sound familiar?
+Both of those give you the exact same thing in your data. A row of zeros across every secondary occasion in that period. Sound familiar?
 
-Yeah, it is yet another ambiguous zero, operating at the between-period level rather than the within-period level. And just as before, we need a model that separates the two explanations rather than conflating them.
+Yep. It's another bloody ambiguous zero, this time living at the between-period level instead of within a period. And same as always, we need a model that keeps the two explanations apart instead of quietly lumping them into one.
 
 # Introducing $\gamma'$ and $\gamma''$
 
-The robust design handles temporary emigration by adding a state variable for availability. At any primary period, an animal is either **available** (present in the study area) or **unavailable** (temporarily absent). The two gamma parameters describe the transitions between these states.
+The robust design deals with temporary emigration by handing each animal an extra state to be in. At any primary period an animal is either **available** (in the study area) or **unavailable** (temporarily off somewhere else). The two gamma parameters are the probabilities of moving between those two states.
 
 Following RMark's convention:
 
-$\gamma''_t$ is the probability that an animal is **unavailable** at primary period $t$, given that it was **available** at primary period $t-1$. In other words, the probability of *leaving* the study area.
+$\gamma''_t$ is the probability an animal is **unavailable** at primary period $t$, given it was **available** at period $t-1$. In plain terms, the probability of *leaving* the study area.
 
-$\gamma'_t$ is the probability that an animal is **unavailable** at primary period $t$, given that it was also **unavailable** at primary period $t-1$. In other words, the probability of *staying away* once already absent.
+$\gamma'_t$ is the probability an animal is **unavailable** at primary period $t$, given it was *also* **unavailable** at period $t-1$. In plain terms, the probability of *staying away* once it's already gone.
 
-So $\gamma''$ governs transitions from available to unavailable, and $\gamma'$ governs staying unavailable once you are already there.
+So $\gamma''$ is about leaving, and $\gamma'$ is about not coming back yet.
 
 ```{r}
 library(ggplot2)
@@ -72,7 +104,7 @@ states <- data.frame(
 
 ggplot() +
   geom_point(data = states, aes(x = x, y = y),
-             size = 30, colour = c("#00A68A", "#FF5733"), alpha = 0.3) +
+             size = 30, colour = c("#d19527", "#FF5733"), alpha = 0.3) +
   geom_text(data = states, aes(x = x, y = y, label = label),
             fontface = "bold", size = 4.5) +
   geom_curve(aes(x = 1.35, xend = 2.65, y = 1.08, yend = 1.08),
@@ -86,142 +118,191 @@ ggplot() +
              curvature = -0.8, colour = "#FF5733", linewidth = 0.8) +
   geom_curve(aes(x = 0.6, xend = 1.4, y = 1.15, yend = 1.15),
              arrow = arrow(length = unit(0.3, "cm")),
-             curvature = -0.8, colour = "#00A68A", linewidth = 0.8) +
+             curvature = -0.8, colour = "#d19527", linewidth = 0.8) +
   annotate("text", x = 2, y = 1.28, label = "γ''", size = 5, colour = "grey30") +
   annotate("text", x = 2, y = 0.72, label = "1 - γ'", size = 5, colour = "grey30") +
   annotate("text", x = 3.5, y = 1.25, label = "γ'", size = 5, colour = "#FF5733") +
-  annotate("text", x = 0.5, y = 1.25, label = "1 - γ''", size = 5, colour = "#00A68A") +
+  annotate("text", x = 0.5, y = 1.25, label = "1 - γ''", size = 5, colour = "#d19527") +
   scale_x_continuous(limits = c(0, 4)) +
   scale_y_continuous(limits = c(0.5, 1.5)) +
   labs(title = "Temporary emigration state transitions",
        subtitle = "Between consecutive primary periods") +
-  theme_void() +
+  theme_void_dark_site() +
   theme(plot.title = element_text(face = "bold", hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5, colour = "grey40"))
+        plot.subtitle = element_text(hjust = 0.5, colour = "#9a927b"))
 ```
 
-The key thing to notice is that the two gamma parameters allow the model to represent **memory** in the availability process. Whether an animal is available at time $t$ can depend on whether it was available at time $t-1$. This is a Markov process, which is just a fancy way of saying the next state depends only on the current state.
+The thing worth clocking here is that two gamma parameters buy the model a bit of **memory**. Whether an animal is around at time $t$ is allowed to lean on whether it was around at time $t-1$. That's what makes it a Markov process, which is just a posh way of saying the next state depends only on where you are right now, not on the whole history of how you got there.
 
 # Random vs Markovian temporary emigration
 
-There are two versions of temporary emigration in the robust design, and they differ in how much memory the availability process has.
+There are two versions of temporary emigration in the robust design, Markovian and random. It all hinges on memory: does an animal being absent last period make it any more likely to be absent this period, or not?
 
 ## Markovian temporary emigration
 
-This is the general case, where $\gamma' \neq \gamma''$. Whether an animal is absent this period depends on whether it was absent last period. An animal that was unavailable last time is more likely to still be unavailable now (high $\gamma'$), while an animal that was available last time has a lower probability of having left (low $\gamma''$).
+This is the general case, where $\gamma' \neq \gamma''$. Whether an animal is absent this period leans on whether it was absent last period. One that was away last time is more likely to still be away now (high $\gamma'$), while one that was around last time has only a small chance of having wandered off (low $\gamma''$).
 
-This makes biological sense for many species. A migratory bird that is currently on its wintering grounds is more likely to still be there next month than a bird that is currently on its breeding grounds. The animal's availability state has genuine persistence.
+For a lot of species that's exactly what you'd expect. A bird that's currently sat on its wintering grounds is far more likely to still be there next month than a bird that's currently on its breeding territory. Where the animal is has genuine stickiness to it.
 
 ## Random temporary emigration
 
-This is the special case where $\gamma' = \gamma''$. The probability of being unavailable at time $t$ is the same regardless of whether the animal was available or unavailable at time $t-1$. Availability has no memory. Each primary period, each animal independently draws its availability state with the same probability.
+This is the special case where $\gamma' = \gamma''$. The chance of being absent at time $t$ is the same whether or not the animal was absent at $t-1$. Availability has no memory whatsoever. Every primary period, each animal effectively flips the same weighted coin from scratch to decide whether it's around.
 
-Under random temporary emigration, the proportion of animals available at any given time is simply $1 - \gamma'$, and this proportion is constant across primary periods.
+Under random temporary emigration the fraction of animals available at any moment is just $1 - \gamma'$, and it stays put across every primary period.
 
-Random temporary emigration is a simpler model with one fewer parameter, and it is often a reasonable starting assumption. If you have no strong biological reason to expect that availability is persistent, it is a sensible default.
+Random emigration is the simpler model, one parameter lighter, and it's often a perfectly sensible place to start. If you've got no strong biological reason to think absences are sticky, it's a fine default to reach for.
 
-```{r}
-set.seed(666)
+Have a play with the sliders below to see how the two gammas shape who's around and when. Start with $\gamma' \approx \gamma''$ for random emigration, then drag them apart and watch the Markovian behaviour show up.
 
-n_periods <- 8
-n_animals <- 5
-
-# Markovian: gamma_prime != gamma_double_prime
-# Here gamma_prime = prob of staying away, gamma_double_prime = prob of leaving
-gamma_prime_m      <- 0.8  # High: once away, tends to stay away
-gamma_dbl_prime_m  <- 0.3  # Lower: available animals less likely to leave
-
-# Random: gamma_prime == gamma_double_prime
-gamma_random <- 0.2
-
-sim_availability <- function(n_animals, n_periods, gp, gdp, seed = 1988) {
-  set.seed(seed)
-  avail <- matrix(NA, nrow = n_animals, ncol = n_periods)
-  avail[, 1] <- 1  # All available at start
-  for (t in 2:n_periods) {
-    for (i in 1:n_animals) {
-      if (avail[i, t - 1] == 1) {
-        # Was available: leaves with prob gdp (GammaDoublePrime)
-        avail[i, t] <- rbinom(1, 1, 1 - gdp)
-      } else {
-        # Was unavailable: stays away with prob gp (GammaPrime)
-        avail[i, t] <- rbinom(1, 1, 1 - gp)
-      }
-    }
-  }
-  avail
-}
-
-avail_markov <- sim_availability(n_animals, n_periods,
-                                  gamma_prime_m, gamma_dbl_prime_m)
-avail_random <- sim_availability(n_animals, n_periods,
-                                  gamma_random, gamma_random)
-
-format_avail <- function(mat, type) {
-  as.data.frame(mat) |>
-    setNames(paste0("P", 1:ncol(mat))) |>
-    tibble::rownames_to_column("animal") |>
-    tidyr::pivot_longer(-animal, names_to = "period", values_to = "available") |>
-    mutate(
-      type = type,
-      period = as.integer(gsub("P", "", period)),
-      state = if_else(available == 1, "Available", "Unavailable")
-    )
-}
-
-avail_df <- bind_rows(
-  format_avail(avail_markov, "Markovian"),
-  format_avail(avail_random, "Random")
-)
-
-ggplot(avail_df, aes(x = period, y = animal, fill = state)) +
-  geom_tile(colour = "white", linewidth = 1.2) +
-  facet_wrap(~ type) +
-  scale_fill_manual(values = c("Available" = "#00A68A",
-                                "Unavailable" = "#FF5733")) +
-  scale_x_continuous(breaks = 1:n_periods, labels = paste0("P", 1:n_periods)) +
-  labs(x = "Primary period", y = NULL, fill = NULL,
-       title = "Availability patterns under Markovian vs random temporary emigration") +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        panel.grid = element_blank())
+```{ojs}
+//| echo: false
+viewof gp_te = Inputs.range([0, 0.99], {
+  value: 0.8,
+  step: 0.01,
+  label: "γ′: probability of staying unavailable (once already absent)"
+})
 ```
 
-In the Markovian panel, notice how unavailability tends to persist? Once an animal goes red it tends to stay red for several consecutive periods before returning. In the random panel, unavailability is independent each period, so the pattern looks more scattered with no obvious runs of consecutive absence.
+```{ojs}
+//| echo: false
+viewof gdp_te = Inputs.range([0, 0.99], {
+  value: 0.3,
+  step: 0.01,
+  label: "γ″: probability of becoming unavailable (if currently present)"
+})
+```
+
+```{ojs}
+//| echo: false
+{
+  // Deterministic PRNG so the grid is stable as sliders move
+  function mulberry32(a) {
+    return function() {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  const N_ANIMALS = 6;
+  const N_PERIODS = 8;
+
+  // Pre-generate a fixed pool of uniform draws (same seed every render)
+  const rng  = mulberry32(1988);
+  const pool = Array.from({ length: N_ANIMALS * N_PERIODS }, () => rng());
+
+  // Simulate availability
+  const avail = [];
+  for (let i = 0; i < N_ANIMALS; i++) {
+    const row = [1]; // all present at period 1
+    for (let t = 1; t < N_PERIODS; t++) {
+      const r = pool[i * N_PERIODS + t];
+      row.push(row[t - 1] === 1
+        ? (r < gdp_te ? 0 : 1)   // present  → leaves    with prob γ″
+        : (r < gp_te  ? 0 : 1)); // absent   → stays away with prob γ′
+    }
+    avail.push(row);
+  }
+
+  // Summary statistics
+  const flat        = avail.flat();
+  const propUn      = flat.filter(x => x === 0).length / flat.length;
+  const expectedUn  = gdp_te / (1 - gp_te + gdp_te);   // steady-state unavailability
+
+  let runs = 0, runTotal = 0;
+  for (let i = 0; i < N_ANIMALS; i++) {
+    let len = 0;
+    for (let t = 0; t < N_PERIODS; t++) {
+      if (avail[i][t] === 0) { len++; }
+      else if (len > 0)      { runs++; runTotal += len; len = 0; }
+    }
+    if (len > 0) { runs++; runTotal += len; }
+  }
+  const meanRun = runs > 0 ? (runTotal / runs).toFixed(1) : "0.0";
+
+  const diff     = Math.abs(gp_te - gdp_te);
+  const isRandom = diff < 0.05;
+  const typeText = isRandom
+    ? `<strong style="color:#FFD700">Random</strong>: γ′ ≈ γ″, availability at each period is independent of the previous one`
+    : gp_te > gdp_te
+      ? `<strong style="color:#FFD700">Markovian</strong>: γ′ > γ″, once absent animals tend to stay away for multiple periods`
+      : `<strong style="color:#FFD700">Markovian</strong>: γ′ < γ″, animals return quickly relative to how often they leave`;
+
+  // Build grid rows
+  let rows = `<div></div>`;
+  for (let t = 0; t < N_PERIODS; t++) {
+    rows += `<div style="font-size:11px;color:#9a927b;text-align:center;padding-bottom:4px">P${t + 1}</div>`;
+  }
+  for (let i = 0; i < N_ANIMALS; i++) {
+    rows += `<div style="font-size:12px;color:#9a927b;display:flex;align-items:center">Animal ${i + 1}</div>`;
+    for (let t = 0; t < N_PERIODS; t++) {
+      const ok = avail[i][t] === 1;
+      rows += `<div style="background:${ok ? "#231d10" : "#3a1a1a"};border:1px solid ${ok ? "#d19527" : "#FF5733"};border-radius:3px;height:34px;display:flex;align-items:center;justify-content:center;font-size:14px;color:${ok ? "#d19527" : "#FF5733"}">${ok ? "&#10003;" : "&#10007;"}</div>`;
+    }
+  }
+
+  const el = document.createElement("div");
+  el.style.cssText = "background:#161610;border-radius:8px;padding:16px;font-family:sans-serif;color:#c9c0a6";
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:80px repeat(${N_PERIODS},1fr);gap:3px;margin-bottom:8px">${rows}</div>
+    <div style="display:flex;gap:20px;font-size:12px;color:#7a745e;margin-bottom:14px">
+      <span style="color:#d19527">&#10003; Available</span>
+      <span style="color:#FF5733">&#10007; Unavailable (absent from study area)</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+      <div style="background:#211f16;border-radius:6px;padding:10px;text-align:center">
+        <div style="font-size:11px;color:#9a927b;margin-bottom:4px">Expected unavailable</div>
+        <div style="font-size:20px;color:#FF5733">${(expectedUn * 100).toFixed(1)}%</div>
+      </div>
+      <div style="background:#211f16;border-radius:6px;padding:10px;text-align:center">
+        <div style="font-size:11px;color:#9a927b;margin-bottom:4px">Observed in simulation</div>
+        <div style="font-size:20px;color:#c9c0a6">${(propUn * 100).toFixed(1)}%</div>
+      </div>
+      <div style="background:#211f16;border-radius:6px;padding:10px;text-align:center">
+        <div style="font-size:11px;color:#9a927b;margin-bottom:4px">Mean absence run</div>
+        <div style="font-size:20px;color:#c9c0a6">${meanRun} periods</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:#9a927b;margin:0">Type: ${typeText}</p>
+  `;
+  return el;
+}
+```
+
+Try setting $\gamma' = \gamma''$. The mean absence run drops close to 1 and the grid looks scattered about with no real clusters. Now crank $\gamma'$ well above $\gamma''$ and watch long runs of back-to-back absence appear. That mean absence run length in the stats above is basically a direct read-out of how much memory the availability process has. For Lily's willow warblers, that number is going to be enormous across the months the birds are away on migration.
 
 # What temporary emigration does to your estimates
 
-To make the consequences concrete, let us think about what happens if you have genuine temporary emigration but ignore it and fit a model that assumes all animals are always available.
+Let's make this concrete and walk through what actually goes wrong if you've got real temporary emigration but you ignore it and fit a model that assumes everyone's always available.
 
-If some animals are temporarily absent, your observed detection rate across all secondary occasions in a primary period will be lower than the true detection probability for animals that are actually present. The model, not knowing about temporary absence, will attribute this entirely to poor detection. So $\hat{p}$ will be biased downward.
+If some animals are temporarily absent, then the detection rate you observe across all the secondary occasions in a period comes out lower than the true detection probability for the animals that are genuinely there. The model has no idea some animals were off elsewhere, so it pins the whole shortfall on bad detection. Result: $\hat{p}$ gets biased downward.
 
-A biased $\hat{p}$ feeds directly into $\hat{\tilde{p}}_t$, which in turn affects $\hat{N}_t$. If $\hat{\tilde{p}}_t$ is too low, then $\hat{N}_t = n_t / \hat{\tilde{p}}_t$ will be too high. You will overestimate population size.
+And a wonky $\hat{p}$ feeds straight into $\hat{\tilde{p}}_t$, which feeds straight into $\hat{N}_t$. Push $\hat{\tilde{p}}_t$ too low and $\hat{N}_t = n_t / \hat{\tilde{p}}_t$ comes out too high. You'll think there are more animals out there than there really are.
 
-The effect on $\hat{\phi}$ is more subtle. Survival is estimated from the between-period detection history, which now reflects both true mortality and temporary absence. An animal that is temporarily absent looks identical to a dead animal in the between-period summary. So $\hat{\phi}$ will be biased downward: you will underestimate survival because some of the apparent disappearances are not deaths.
+The damage to $\hat{\phi}$ is sneakier. Survival gets estimated from the between-period history, which now smushes together real mortality and temporary absence. To the model, an animal that's temporarily gone looks exactly like a dead one. So $\hat{\phi}$ gets biased downward too: you'll underestimate survival, because some of those apparent disappearances were never deaths in the first place.
 
-This is the same apparent survival problem we introduced back in the detection problem page, just with a new mechanism. Temporary emigration is one of the things that wedges apart true survival from apparent survival.
+This is the same apparent-survival problem we met all the way back on the detection problem page, just arriving through a different door. Temporary emigration is one more thing that prises true survival apart from apparent survival.
 
 # The full model with temporary emigration
 
-Adding temporary emigration to the robust design equations gives us one more latent state to track. Each animal at each primary period now has both a survival state $z_{i,t}$ (alive or dead, where $z_{i,t} = 1$ means alive) and an availability state $a_{i,t}$ (available or unavailable), conditional on being alive.
+Adding temporary emigration to the robust design just means tracking one more hidden state per animal. At each primary period, every animal now carries a survival state $z_{i,t}$ (alive or dead, with $z_{i,t} = 1$ meaning alive) and, if it's alive, an availability state $a_{i,t}$ (around, or off elsewhere).
 
 The availability process, following RMark's convention, is:
 
 $$a_{i,t} \mid z_{i,t} = 1 \sim \begin{cases} Bernoulli(1 - \gamma''_t) & \text{if } a_{i,t-1} = 1 \text{ (was available: leaves with prob } \gamma'') \\ Bernoulli(1 - \gamma'_t) & \text{if } a_{i,t-1} = 0 \text{ (was unavailable: stays away with prob } \gamma') \end{cases}$$
 
-And detection now requires survival, availability, *and* detection:
+And a detection now needs three things to line up, survival, availability, *and* actually catching it:
 
 $$\omega_{i,t} \sim Bernoulli(\tilde{p}_t \times a_{i,t} \times z_{i,t})$$
 
-where $\omega_{i,t} = 1$ if animal $i$ was detected at least once across the secondary occasions of primary period $t$, and 0 otherwise.
+where $\omega_{i,t} = 1$ if animal $i$ turned up on at least one secondary occasion in primary period $t$, and 0 if it didn't.
 
-A dead animal cannot be detected ($z_{i,t} = 0 \Rightarrow \omega_{i,t} = 0$). An alive but unavailable animal cannot be detected ($a_{i,t} = 0 \Rightarrow \omega_{i,t} = 0$). Only an alive and available animal can be detected, and even then only with probability $\tilde{p}_t$.
-
-Three things must go right for a detection. Three things can go wrong for a non-detection.
+Look at what that product does. A dead animal can't be caught ($z_{i,t} = 0 \Rightarrow \omega_{i,t} = 0$). An animal that's alive but off elsewhere can't be caught either ($a_{i,t} = 0 \Rightarrow \omega_{i,t} = 0$). Only an animal that's both alive *and* present is in with a chance, and even then you still only get it with probability $\tilde{p}_t$. So a zero can be three completely different things hiding behind the same digit, and every layer we've bolted onto this model has really just been us refusing to let those three get muddled together.
 
 # Fitting the model with temporary emigration
 
-Now let us fit the full model, allowing the gamma parameters to be estimated from the data rather than fixed at zero.
+Now let's fit the full thing, and this time we set the gamma parameters free to be estimated from the data instead of nailing them to zero.
 
 ```{r}
 library(RMark)
@@ -324,36 +405,36 @@ extract_est(beta, "GammaPrime:(Intercept)",       gamma_prime_true)
 extract_est(beta, "GammaDoublePrime:(Intercept)", gamma_dbl_prime_true)
 ```
 
-The true values should sit within or close to the confidence intervals for each parameter. The gamma parameters tend to have wider intervals than $\phi$ and $p$ because they are harder to estimate, requiring the model to distinguish between different patterns of consecutive absence across primary periods. More primary periods and a larger population will tighten those intervals.
+The true values should land inside, or at least near, the confidence interval for each parameter. The gammas usually come out with wider intervals than $\phi$ and $p$, simply because they're harder to estimate: the model has to tease apart different patterns of consecutive absence stretched across the primary periods. Throw more primary periods and a bigger population at it and those intervals will tighten up.
 
 # What the gamma parameters tell you biologically
 
-It is worth pausing on what $\gamma'$ and $\gamma''$ actually mean for your species, rather than just treating them as nuisance parameters to be estimated and forgotten.
+It's worth stopping to ask what $\gamma'$ and $\gamma''$ are actually telling you about your species, rather than treating them as nuisance numbers to estimate and then forget about.
 
-$\gamma''$ tells you the probability that an animal leaves your study area between consecutive primary periods, given it was present in the last one. A high $\gamma''$ means animals are frequently moving out of the study area. A low $\gamma''$ means animals tend to stay put once they are there.
+$\gamma''$ is the probability an animal clears off out of your study area between one primary period and the next, given it was there last time. A high $\gamma''$ means animals are forever slipping out of the study area. A low one means they tend to stay put once they've arrived.
 
-$\gamma'$ tells you how sticky the absence state is. A high $\gamma'$ means that once an animal has left, it tends to stay away for multiple primary periods. A low $\gamma'$ means animals return quickly after leaving.
+$\gamma'$ tells you how sticky being absent is. A high $\gamma'$ means that once an animal has gone, it tends to stay gone for several primary periods. A low one means animals nip back not long after they leave.
 
-If $\gamma' \approx \gamma''$, movement is essentially random: availability does not depend on previous availability state. If $\gamma' >> \gamma''$, absences are long and persistent relative to the probability of leaving in the first place.
+If $\gamma' \approx \gamma''$, the movement is basically random: where the animal is now says nothing about where it was before. If $\gamma' \gg \gamma''$, absences are long and stubborn compared to how often animals leave in the first place.
 
-For a migratory species sampled across seasons, you might expect $\gamma'$ to be high during the migration period: once a bird has left for its wintering grounds it will stay away for the whole winter. For a species with more fluid movement, both gammas might be moderate and similar to each other.
+For a migratory species sampled across seasons, you'd expect $\gamma'$ to be sky-high during migration: once a bird has cleared out for its wintering grounds, it's staying gone the whole winter. For a species that mooches in and out more freely, both gammas might come out moderate and pretty similar to each other.
 
 # A note on identifiability at the first and last primary periods
 
-There is one practical issue worth flagging. The gamma parameters are not identifiable at every primary period. Specifically, $\gamma''$ is not identifiable at the first primary period (there is no prior availability state to condition on), and $\gamma'$ is not identifiable at the last primary period. RMark handles this internally, but you may notice that the design data for these parameters has fewer rows than you might expect.
+One practical thing worth flagging. The gammas can't be identified at every primary period. Specifically, $\gamma''$ can't be pinned down at the very first period (there's no earlier availability state to condition on), and $\gamma'$ can't be pinned down at the very last one. RMark sorts this out for you behind the scenes, but you might spot that the design data for these parameters has fewer rows than you were expecting.
 
-This is not a problem you need to solve. It is just worth knowing that the gamma estimates in your output reflect the interior primary periods only.
+You don't need to do anything about this. Just know that the gamma estimates in your output are speaking about the middle primary periods, not the two ends.
 
 # What next?
 
-With temporary emigration accounted for, you now have the complete robust design model. Three latent processes operating simultaneously:
+With temporary emigration bolted on, you've now got the complete robust design model. Three hidden processes all running at once:
 
-Survival between primary periods, governed by $\phi$.
+Survival between primary periods, run by $\phi$.
 
-Availability within the alive population, governed by $\gamma'$ and $\gamma''$.
+Availability among the animals that are alive, run by $\gamma'$ and $\gamma''$.
 
-Detection of available animals across secondary occasions, governed by $p$.
+Detection of the available animals across secondary occasions, run by $p$.
 
-Each of these can be modelled as a function of covariates, just as in a standard GLM. Time-varying survival. Habitat-dependent detection. Seasonal availability. The robust design is not a single model but a framework that you can customise to the biology of your species and the structure of your data.
+And every one of these can be modelled as a function of covariates, exactly like in a bog-standard GLM. Survival that shifts over time. Detection that depends on habitat. Availability that swings with the season. The robust design isn't really one model, it's a framework you bend to fit the biology of your species and the shape of your data.
 
-The next page covers how to implement this in `RMark` properly, including how to format your real data, and how to set up model structures with covariates.
+The next page is where we roll our sleeves up and actually do this in `RMark`: how to wrangle your real data into shape, and how to set up model structures with covariates.
