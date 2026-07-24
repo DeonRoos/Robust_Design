@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Deon Roos">
-<meta name="dcterms.date" content="2026-06-06">
+<meta name="dcterms.date" content="2026-07-24">
 
 <title>The Robust Design – Robust Design Mark-Recapture</title>
 <style>
@@ -239,7 +239,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 6, 2026</p>
+      <p class="date">July 24, 2026</p>
     </div>
   </div>
   
@@ -253,17 +253,17 @@ window.Quarto = {
 
 <section id="the-problem-we-are-stuck-with" class="level1">
 <h1>The problem we are stuck with</h1>
-<p>Let us take stock of where we are.</p>
-<p>The Lincoln-Petersen estimator gives us population size <span class="math inline">\(N\)</span>, but only under closure. The population cannot change between your two sampling occasions. That assumption is fine over a day or two. Over weeks or months it becomes fiction.</p>
-<p>The Cormack-Jolly-Seber model gives us apparent survival <span class="math inline">\(\phi\)</span>, but it requires the population to be open. Animals can die between occasions, which is precisely what we are trying to estimate. In exchange for that realism, CJS conditions on marked individuals only and cannot estimate <span class="math inline">\(N\)</span> at all.</p>
-<p>So we have two models. One estimates <span class="math inline">\(N\)</span> but cannot handle survival. The other estimates survival but cannot estimate <span class="math inline">\(N\)</span>. What we actually want is both, from the same study, at the same time.</p>
-<p>This is not a minor inconvenience. For most real conservation questions you need both. How many individuals are there <em>and</em> are they surviving well enough to maintain that number? Neither question makes much sense without the other.</p>
-<p>The robust design, introduced by Kenneth Pollock in 1982, resolves this tension with an idea that is almost frustratingly simple once you see it.</p>
+<p>Right, where are we? Two models, and each one solves half the problem.</p>
+<p>Lincoln-Petersen gives us population size <span class="math inline">\(N\)</span>, but only if we hold the population still with closure. Nothing changes between your two visits. That’s fine over a day or two. Stretch it over weeks or months and it’s pure fiction.</p>
+<p>Cormack-Jolly-Seber gives us apparent survival <span class="math inline">\(\phi\)</span>, but it needs the population to be open. Animals are allowed to die between occasions, which is the whole point, because dying is the thing we’re trying to measure. The price is that CJS only looks at marked individuals and throws away <span class="math inline">\(N\)</span> completely.</p>
+<p>So we’re stuck with two half-answers. One knows about <span class="math inline">\(N\)</span> but goes quiet on survival. The other knows about survival but can’t count heads. And of course what we actually want is both, out of the same study, at the same time.</p>
+<p>This isn’t some minor annoyance we can shrug off. Almost every real conservation question needs both numbers at once. How many animals are there, <em>and</em> are enough of them surviving to keep that number up? Ask one without the other and you’ve barely said anything.</p>
+<p>The robust design, which Kenneth Pollock came up with in 1982, fixes all of this with an idea so simple it’s almost annoying once it clicks.</p>
 </section>
 <section id="the-key-insight-two-time-scales" class="level1">
 <h1>The key insight: two time scales</h1>
-<p>The reason LP and CJS are in conflict is that they need opposite things from the population. LP needs closure. CJS needs openness. The robust design gives each of them what they need by operating at <strong>two different time scales simultaneously</strong>.</p>
-<p>Here is the structure:</p>
+<p>LP and CJS fight because they want opposite things from the population. LP wants it frozen. CJS wants it changing. The robust design ends the fight by running at <strong>two different time scales at once</strong>, and handing each model exactly the thing it was asking for.</p>
+<p>Here’s the shape of it:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -300,11 +300,11 @@ window.Quarto = {
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rect</span>(<span class="at">data =</span> primary,</span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">xmin =</span> x_start, <span class="at">xmax =</span> x_end,</span>
 <span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>                <span class="at">ymin =</span> <span class="fl">0.15</span>, <span class="at">ymax =</span> <span class="fl">0.85</span>),</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#00A68A"</span>, <span class="at">alpha =</span> <span class="fl">0.15</span>, <span class="at">colour =</span> <span class="st">"#00A68A"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#d19527"</span>, <span class="at">alpha =</span> <span class="fl">0.15</span>, <span class="at">colour =</span> <span class="st">"#d19527"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Primary period labels</span></span>
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> primary,</span>
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> (x_start <span class="sc">+</span> x_end) <span class="sc">/</span> <span class="dv">2</span>, <span class="at">y =</span> <span class="fl">0.92</span>, <span class="at">label =</span> label),</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="fl">3.2</span>, <span class="at">colour =</span> <span class="st">"#00A68A"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>) <span class="sc">+</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="fl">3.2</span>, <span class="at">colour =</span> <span class="st">"#d19527"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>) <span class="sc">+</span></span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Secondary occasion points</span></span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> secondary,</span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y),</span>
@@ -322,12 +322,12 @@ window.Quarto = {
 <span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="st">"Open</span><span class="sc">\n</span><span class="st">(\u03d5)"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">colour =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
 <span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Closed label inside boxes</span></span>
 <span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">11</span>), <span class="at">y =</span> <span class="fl">0.22</span>,</span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="st">"Closed</span><span class="sc">\n</span><span class="st">(N, p)"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">colour =</span> <span class="st">"#00A68A"</span>) <span class="sc">+</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="st">"Closed</span><span class="sc">\n</span><span class="st">(N, p)"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">colour =</span> <span class="st">"#d19527"</span>) <span class="sc">+</span></span>
 <span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">13</span>)) <span class="sc">+</span></span>
 <span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">1.1</span>)) <span class="sc">+</span></span>
 <span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>,</span>
 <span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"The robust design sampling structure"</span>,</span>
-<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Orange dots = secondary occasions (s). Green boxes = primary periods."</span>) <span class="sc">+</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Orange dots = secondary occasions (s). Gold boxes = primary periods."</span>) <span class="sc">+</span></span>
 <span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dark_site</span>() <span class="sc">+</span></span>
 <span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
 <span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -340,16 +340,16 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>The <strong>primary periods</strong> are separated by long enough gaps that the population can change between them. Animals can die. Animals can be recruited. This is the open part, handled by CJS-style logic, and it gives us <span class="math inline">\(\phi\)</span>.</p>
-<p>The <strong>secondary occasions</strong> are the repeated sampling events <em>within</em> each primary period, conducted close enough together in time that we can reasonably assume the population is closed during that window. No births, no deaths, no permanent movement in or out. This is the closed part, handled by LP-style logic, and it gives us <span class="math inline">\(N\)</span>.</p>
-<p>The robust design nests one inside the other. Closure within primary periods. Openness between them. LP and CJS stop being in conflict because they are now operating at different time scales.</p>
-<p>That is the entire conceptual insight. Everything else is working out the details.</p>
+<p>The <strong>primary periods</strong> are spaced far enough apart that the population has time to change between them. Animals die. New ones get recruited. This is the open part, run on CJS-style logic, and it’s what gives us <span class="math inline">\(\phi\)</span>.</p>
+<p>The <strong>secondary occasions</strong> are the repeated visits <em>inside</em> a single primary period, packed close enough together in time that we can happily pretend the population is closed for that little window. No births, no deaths, nobody moving in or out for good. This is the closed part, run on LP-style logic, and it’s what gives us <span class="math inline">\(N\)</span>.</p>
+<p>The robust design just nests one inside the other. Closed within a primary period. Open between them. LP and CJS stop treading on each other because they’re now working at different time scales.</p>
+<p>That’s it. That’s the whole idea. Everything from here is details and bookkeeping.</p>
 </section>
 <section id="the-data-structure" class="level1">
 <h1>The data structure</h1>
-<p>The data structure follows directly from the sampling structure. Each individual now has a capture history that operates at two levels.</p>
-<p>At the <strong>between-period level</strong>, there is a summary detection for each primary period: was the animal detected at least once during that primary period, yes or no? This is the coarse-grained history that feeds the open-population (survival) component of the model.</p>
-<p>At the <strong>within-period level</strong>, there is a detailed detection history across the secondary occasions within each primary period. This fine-grained history feeds the closed-population (abundance and detection) component.</p>
+<p>The data falls out straight from the way you sampled. Each animal now carries a capture history that works on two levels at once.</p>
+<p>At the <strong>between-period level</strong>, each primary period gets boiled down to a single yes/no: did we see this animal at all during that period? That coarse summary is what feeds the open-population half of the model, the bit that estimates survival.</p>
+<p>At the <strong>within-period level</strong>, you keep the full blow-by-blow of which secondary occasions the animal turned up on inside each primary period. That fine-grained detail feeds the closed-population half, the bit that estimates abundance and detection.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -385,7 +385,7 @@ window.Quarto = {
 <span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">colour =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(<span class="sc">~</span> <span class="fu">paste</span>(<span class="st">"Primary period"</span>, primary),</span>
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>             <span class="at">switch =</span> <span class="st">"x"</span>) <span class="sc">+</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Detected"</span> <span class="ot">=</span> <span class="st">"#00A68A"</span>,</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Detected"</span> <span class="ot">=</span> <span class="st">"#d19527"</span>,</span>
 <span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Not detected"</span> <span class="ot">=</span> <span class="st">"#FF5733"</span>)) <span class="sc">+</span></span>
 <span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">labels =</span> <span class="fu">paste</span>(<span class="st">"s"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)) <span class="sc">+</span></span>
 <span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Secondary occasion"</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="cn">NULL</span>,</span>
@@ -404,52 +404,52 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>Every red tile carries the same ambiguity as before. But now there are two levels at which that ambiguity operates, and the model deals with each one separately.</p>
-<p>Within a primary period, a red tile means the animal was alive and present but not detected. The population is assumed closed so death and emigration are ruled out. The only explanation is imperfect detection.</p>
-<p>Between primary periods, a zero summary (never detected across any secondary occasion in a primary period) could mean the animal died before that period, or that it was alive but never detected across any of the secondary occasions. The open-population component of the model handles that ambiguity, just as CJS did.</p>
+<p>Every red tile still hides the same old ambiguity. The difference now is that the ambiguity shows up at two levels, and the model pulls them apart and deals with each on its own.</p>
+<p>Inside a primary period, a red tile can only mean one thing: the animal was alive and present and you just missed it. We’ve assumed the population is closed for that window, so death and emigration are off the table. Imperfect detection is the only suspect left.</p>
+<p>Between primary periods it’s murkier. An animal that never showed up across a whole primary period might have died before it started, or it might have been alive the entire time and dodged every single secondary occasion. That’s the ambiguity the open-population part of the model soaks up, exactly like CJS did a page ago.</p>
 </section>
 <section id="building-the-likelihood" class="level1">
 <h1>Building the likelihood</h1>
-<p>The robust design likelihood separates cleanly into two parts that are estimated together but can be understood separately. We will build each one up in turn.</p>
+<p>The robust design likelihood splits into two neat halves. They get fitted together in one go, but you can understand them one at a time, so that’s exactly what we’ll do. One half, then the other.</p>
 <section id="part-1-within-primary-periods-closed-population" class="level2">
 <h2 class="anchored" data-anchor-id="part-1-within-primary-periods-closed-population">Part 1: Within primary periods (closed population)</h2>
-<p>Within each primary period, the population is closed. We have repeated secondary occasions and we want to estimate two things: detection probability <span class="math inline">\(p\)</span> and population size <span class="math inline">\(N_t\)</span> for that period.</p>
-<p>This is essentially a closed-population mark-recapture model. The simplest version, sometimes called <span class="math inline">\(M_0\)</span>, assumes every individual has the same detection probability <span class="math inline">\(p\)</span> on every secondary occasion. The probability of an individual’s within-period detection history <span class="math inline">\(\mathbf{x}_{it} = (x_{it1}, x_{it2}, \ldots, x_{its})\)</span> across <span class="math inline">\(s\)</span> secondary occasions, given the animal is present, is:</p>
+<p>Inside a single primary period the population is closed. We’ve got a handful of repeated secondary occasions, and we want two things out of them: the detection probability <span class="math inline">\(p\)</span>, and the population size <span class="math inline">\(N_t\)</span> for that period.</p>
+<p>This is really just a closed-population mark-recapture model. The simplest flavour, sometimes called <span class="math inline">\(M_0\)</span>, assumes every animal has the same detection probability <span class="math inline">\(p\)</span> on every secondary occasion. Write an animal’s within-period history as <span class="math inline">\(\mathbf{x}_{it} = (x_{it1}, x_{it2}, \ldots, x_{its})\)</span> across <span class="math inline">\(s\)</span> secondary occasions. Given the animal was actually there, the probability of seeing that exact history is:</p>
 <p><span class="math display">\[\Pr(\mathbf{x}_{it} \mid \text{present}) = \prod_{j=1}^{s} p^{x_{itj}} (1-p)^{1-x_{itj}}\]</span></p>
-<p>This is just a Bernoulli product. For each secondary occasion, the animal was either detected (<span class="math inline">\(x = 1\)</span>, probability <span class="math inline">\(p\)</span>) or not (<span class="math inline">\(x = 0\)</span>, probability <span class="math inline">\(1-p\)</span>).</p>
-<p>The probability of <em>not being detected at all</em> during a primary period, across all <span class="math inline">\(s\)</span> secondary occasions, is:</p>
+<p>Don’t let the symbols spook you, it’s a Bernoulli product and nothing scarier. Each secondary occasion, you either caught the animal (<span class="math inline">\(x = 1\)</span>, which costs you a <span class="math inline">\(p\)</span>) or you didn’t (<span class="math inline">\(x = 0\)</span>, which costs you a <span class="math inline">\(1-p\)</span>). Multiply those across all the occasions and you’ve got the probability of the whole history.</p>
+<p>Now flip it around. The probability of missing the animal <em>completely</em> across all <span class="math inline">\(s\)</span> occasions in a period is every occasion going wrong in a row:</p>
 <p><span class="math display">\[1 - \tilde{p}_t = (1-p)^s\]</span></p>
-<p>So the probability of being detected <em>at least once</em> during primary period <span class="math inline">\(t\)</span> is:</p>
+<p>So the probability of catching it <em>at least once</em> somewhere in primary period <span class="math inline">\(t\)</span> is just one minus that:</p>
 <p><span class="math display">\[\tilde{p}_t = 1 - (1-p)^s\]</span></p>
-<p>This <span class="math inline">\(\tilde{p}_t\)</span> is the effective detection probability for the whole primary period. It is the probability that links the within-period model to the between-period model. Notice that even if <span class="math inline">\(p\)</span> is modest on any single occasion, <span class="math inline">\(\tilde{p}_t\)</span> can be quite high if you have enough secondary occasions. This is one of the practical benefits of repeated sampling within a period.</p>
-<p>To estimate <span class="math inline">\(N_t\)</span>, we use a Huggins-style conditional likelihood (which you don’t need to remember). The important thing is that rather than estimating <span class="math inline">\(N_t\)</span> directly in the likelihood, we condition on the animals that were detected at least once, estimate <span class="math inline">\(p\)</span> from their detection histories, and then derive (meaning “figure out”) <span class="math inline">\(\hat{N}_t\)</span> afterwards as:</p>
+<p>That <span class="math inline">\(\tilde{p}_t\)</span> is your detection probability for the whole period, and it’s the quiet little hinge that joins the within-period model to the between-period one. And here’s the payoff worth noticing: even if <span class="math inline">\(p\)</span> on any single day is fairly rubbish, stack up enough secondary occasions and <span class="math inline">\(\tilde{p}_t\)</span> climbs fast. Three cracks at 40% each and you’re already catching the large majority of animals that are actually there. That’s the whole reason we bother going back multiple times within a season.</p>
+<p>To actually get <span class="math inline">\(N_t\)</span> we lean on a Huggins-style conditional likelihood (you really don’t need to remember that name). The trick is that we never go at <span class="math inline">\(N_t\)</span> head-on. Instead we condition on the animals we did catch at least once, estimate <span class="math inline">\(p\)</span> from their histories, and then back out <span class="math inline">\(\hat{N}_t\)</span> afterwards as:</p>
 <p><span class="math display">\[\hat{N}_t = \frac{n_t}{\hat{\tilde{p}}_t}\]</span></p>
-<p>where <span class="math inline">\(n_t\)</span> is the number of distinct individuals caught in primary period <span class="math inline">\(t\)</span>. This is Lincoln-Petersen logic in a more general form: we observed <span class="math inline">\(n_t\)</span> animals, and we estimated that each had a <span class="math inline">\(\hat{\tilde{p}}_t\)</span> chance of being detected, so the implied population size is <span class="math inline">\(n_t\)</span> divided by that probability.</p>
+<p>where <span class="math inline">\(n_t\)</span> is the number of distinct animals we caught in period <span class="math inline">\(t\)</span>. If that looks familiar, it should: it’s the same Lincoln-Petersen move in fancier clothes. We saw <span class="math inline">\(n_t\)</span> animals, we reckon each one had a <span class="math inline">\(\hat{\tilde{p}}_t\)</span> chance of being seen, so the population that must have been sitting out there is <span class="math inline">\(n_t\)</span> divided by that probability.</p>
 </section>
 <section id="part-2-between-primary-periods-open-population" class="level2">
 <h2 class="anchored" data-anchor-id="part-2-between-primary-periods-open-population">Part 2: Between primary periods (open population)</h2>
-<p>Between primary periods, the CJS machinery takes over. For each individual, we have a between-period capture history summarised as whether they were detected at all in each primary period (<span class="math inline">\(\omega_{it} = 1\)</span> if detected in any secondary occasion in period <span class="math inline">\(t\)</span>, 0 otherwise).</p>
-<p>The between-period likelihood is exactly the CJS likelihood from the previous page, but with one modification: the detection probability entering the CJS component is not the raw <span class="math inline">\(p\)</span> from a single occasion but the effective detection probability <span class="math inline">\(\tilde{p}_t\)</span> from the closed-population component.</p>
+<p>Zoom out to the gaps between primary periods and the CJS machinery takes over. For each animal we now collapse its history down to one summary per primary period: <span class="math inline">\(\omega_{it} = 1\)</span> if we caught it on any secondary occasion in period <span class="math inline">\(t\)</span>, and 0 if we never saw it that whole period.</p>
+<p>The between-period likelihood is the exact CJS likelihood from the last page, with one swap. The detection probability feeding into it isn’t the raw single-day <span class="math inline">\(p\)</span> any more. It’s the effective per-period detection <span class="math inline">\(\tilde{p}_t\)</span> we just built back in Part 1.</p>
 <p><span class="math display">\[\Pr(\omega_{it} = 1 \mid \text{alive at } t) = \tilde{p}_t\]</span></p>
 <p><span class="math display">\[\Pr(\omega_{it} = 0 \mid \text{alive at } t) = 1 - \tilde{p}_t\]</span></p>
-<p>The survival probability <span class="math inline">\(\phi_t\)</span> operates between primary periods, exactly as in CJS:</p>
+<p>Survival <span class="math inline">\(\phi_t\)</span> works between primary periods, just like it did in CJS:</p>
 <p><span class="math display">\[z_{i,t} \sim Bernoulli(\phi_{t-1} \times z_{i,t-1})\]</span></p>
-<p>And the probability of the between-period summary detection, given the true state, is:</p>
+<p>And what we actually observe, given whether the animal is alive, is:</p>
 <p><span class="math display">\[\omega_{i,t} \sim Bernoulli(\tilde{p}_t \times z_{i,t})\]</span></p>
-<p>The probability of never being seen again from primary period <span class="math inline">\(t\)</span> onwards, <span class="math inline">\(\chi_t\)</span>, follows the same recursion as before but now uses <span class="math inline">\(\tilde{p}_t\)</span> in place of the single-occasion <span class="math inline">\(p\)</span>:</p>
+<p>The probability of never clapping eyes on the animal again from period <span class="math inline">\(t\)</span> onward, <span class="math inline">\(\chi_t\)</span>, follows the same backwards recursion as before, except now <span class="math inline">\(\tilde{p}_t\)</span> stands in for the old single-occasion <span class="math inline">\(p\)</span>:</p>
 <p><span class="math display">\[\chi_T = 1\]</span></p>
 <p><span class="math display">\[\chi_t = (1 - \phi_t) + \phi_t (1 - \tilde{p}_{t+1}) \chi_{t+1}\]</span></p>
 </section>
 <section id="the-full-likelihood" class="level2">
 <h2 class="anchored" data-anchor-id="the-full-likelihood">The full likelihood</h2>
-<p>The full robust design likelihood is the product of the two parts:</p>
+<p>Bolt the two halves together and the full robust design likelihood is just their product:</p>
 <p><span class="math display">\[\mathcal{L} = \mathcal{L}_{\text{open}}(\phi, \tilde{p}) \times \prod_{t=1}^{T} \mathcal{L}_{\text{closed},t}(p_t)\]</span></p>
-<p>The closed-population component is estimated separately within each primary period and delivers <span class="math inline">\(\hat{p}_t\)</span> and <span class="math inline">\(\hat{N}_t\)</span>. The open-population component uses <span class="math inline">\(\tilde{p}_t\)</span> derived from <span class="math inline">\(\hat{p}_t\)</span> and delivers <span class="math inline">\(\hat{\phi}_t\)</span>. The two parts talk to each other through <span class="math inline">\(\tilde{p}_t\)</span>, which is the bridge between the two time scales.</p>
+<p>The closed half gets worked out within each primary period and hands you <span class="math inline">\(\hat{p}_t\)</span> and <span class="math inline">\(\hat{N}_t\)</span>. The open half takes the <span class="math inline">\(\tilde{p}_t\)</span> built from those <span class="math inline">\(\hat{p}_t\)</span> and hands you <span class="math inline">\(\hat{\phi}_t\)</span>. The whole thing hangs together because the two halves gossip to each other through <span class="math inline">\(\tilde{p}_t\)</span>. That single quantity is the bridge between the two time scales.</p>
 </section>
 </section>
 <section id="what-we-can-now-estimate" class="level1">
 <h1>What we can now estimate</h1>
-<p>The robust design delivers parameters that neither LP nor CJS could provide alone:</p>
+<p>Here’s the haul. The robust design hands you a set of parameters that neither LP nor CJS could give you on their own:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -491,12 +491,12 @@ window.Quarto = {
 </tr>
 </tbody>
 </table>
-<p><span class="math inline">\(\lambda_t\)</span> is perhaps the most practically useful derived quantity of all. It tells you directly whether the population is growing, stable, or declining between primary periods, and it is estimated honestly, accounting for imperfect detection at both the secondary occasion level and the primary period level.</p>
+<p><span class="math inline">\(\lambda_t\)</span> is probably the single most useful thing on that list for day-to-day work. It tells you straight out whether the population is growing, holding steady, or sliding downhill between primary periods. And crucially it’s an honest number, because it has already accounted for the animals you missed, both at the single-occasion level and across a whole primary period. It won’t flatter you the way a raw count would.</p>
 </section>
 <section id="a-small-simulation" class="level1">
 <h1>A small simulation</h1>
-<p>Let us simulate a robust design dataset and get a feel for how the parameter estimates behave. We will use six primary periods with three secondary occasions each, and keep everything simple with constant <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span>. Six primary periods gives the model five survival intervals to work with, which is enough to estimate <span class="math inline">\(\phi\)</span> reliably.</p>
-<p>Be aware that I’m going to use a package called RMark for the modelling here. I’ll come back to this later on, but just know that it requires another piece of software, called program MARK, to be installed in order to run. You can find it <a href="http://www.phidot.org/software/mark/downloads/">here</a> if you want to download and install it now.</p>
+<p>Let’s build a robust design dataset from scratch and watch how the estimates behave when we already know the true answers. We’ll use six primary periods with three secondary occasions each, and keep it deliberately simple with a constant <span class="math inline">\(\phi\)</span> and <span class="math inline">\(p\)</span>. Six primary periods gives the model five survival intervals to chew on, which is plenty to pin down <span class="math inline">\(\phi\)</span>.</p>
+<p>Quick heads up: the modelling here uses a package called RMark. I’ll properly get into it later, but for now just know it’s a front end for a separate bit of software called program MARK, which has to be installed for any of this to run. If you want to grab it now, it’s <a href="http://www.phidot.org/software/mark/downloads/">here</a>.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -644,13 +644,13 @@ Effective p per primary period: 0.784</code></pre>
 Detection estimate (true = 0.4 ): 0.025   95% CI: 0.024 to 0.026</code></pre>
 </div>
 </div>
-<p>The estimates should land reasonably close to the true values. They will not be exact because we are working with a simulated sample, but the true values should sit comfortably within the confidence intervals.</p>
+<p>Those estimates should land pretty close to the true values we picked. They won’t be bang on, because we’re working from a single simulated sample and samples wobble, but the true values should sit comfortably inside the confidence intervals.</p>
 </section>
 <section id="what-is-still-missing" class="level1">
 <h1>What is still missing</h1>
-<p>The model above fixes temporary emigration to zero, which is a simplification we have made deliberately. In reality, animals may temporarily leave your study area between primary periods and return later. They are not dead and not permanently gone, but during their absence they cannot be detected, which creates yet another flavour of ambiguous non-detection.</p>
-<p>This is temporary emigration, captured by the parameters <span class="math inline">\(\gamma'\)</span> and <span class="math inline">\(\gamma''\)</span> (gamma prime and gamma double prime) that we have quietly set aside here. It is the subject of the next page.</p>
-<p>For now, the important thing is that you have the core structure. Closure within primary periods gives you <span class="math inline">\(N_t\)</span> and <span class="math inline">\(p\)</span>. Openness between primary periods gives you <span class="math inline">\(\phi\)</span>. The two time scales work together through <span class="math inline">\(\tilde{p}_t\)</span>. That structure is the robust design.</p>
+<p>The model we just fitted quietly pinned temporary emigration to zero. That was a deliberate cheat to keep things clean. In the real world, animals wander off out of your study area between primary periods and come swanning back later. They aren’t dead and they aren’t gone for good, but while they’re away you can’t detect them no matter how hard you look. And yes, that’s yet another flavour of ambiguous non-detection to throw on the pile.</p>
+<p>That’s temporary emigration, and it’s handled by two parameters, <span class="math inline">\(\gamma'\)</span> and <span class="math inline">\(\gamma''\)</span> (gamma prime and gamma double prime), that we’ve swept under the rug for now. The whole next page is about dragging them back out.</p>
+<p>For now, the thing to hang onto is the core structure. Closed within a primary period gives you <span class="math inline">\(N_t\)</span> and <span class="math inline">\(p\)</span>. Open between primary periods gives you <span class="math inline">\(\phi\)</span>. The two time scales pull together through <span class="math inline">\(\tilde{p}_t\)</span>. That, right there, is the robust design.</p>
 
 
 </section>
