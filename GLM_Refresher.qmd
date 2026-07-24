@@ -50,17 +50,17 @@ theme_void_dark_site <- function(...) {
 
 So I'd guess about a year ago now, you were sitting in one of my GLM lectures. Maybe you were paying attention. Maybe you weren't. If you weren't you wouldn't have been alone - fair enough. Even if you were, my guess is that you've probably forgotten. Again - fair enough. The bad news is that the methods you're going to be using for your thesis build on those GLMs.
 
-The good news is that (technically) everything we are going to do in this tutorial series is built on top of what you already know, even if it's buried somewhere in your brain. The robust design mark-recapture model, which is a crap name tbh, is in its bones just a collection of GLMs talking to each other. So before we get anywhere near that, it is worth making sure the foundations are solid.
+The good news is that (technically) everything we're going to do in this tutorial series is built on top of what you already know, even if it's buried somewhere in your brain. The robust design mark-recapture model, which is a crap name tbh, is in its bones just a collection of GLMs talking to each other. So before we get anywhere near that, it's worth making sure the foundations are solid.
 
-This page is not going to teach you anything new. It is going to remind you of what we previously went through, but with a bit more attention paid to what a GLM is *actually doing*, which I suspect got lost somewhere between the lecture and the exam - fair enough.
+This page isn't going to teach you anything new. It's going to remind you of what we previously went through, but with a bit more attention paid to what a GLM is *actually doing*, which I suspect got lost somewhere between the lecture and the exam - fair enough.
 
 # What is a GLM doing?
 
 At its core, a GLM is estimating a **parameter** from data.
 
-A parameter is a just a number. But it's a number that describes something about the world. The average height of adult humans is a parameter. The probability that a flipped coin lands on heads is a parameter. These are fixed, real values that exist whether or not we ever collect data on them.
+A parameter is just a number. But it's a number that describes something about the world. The average height of adult humans is a parameter. The probability that a flipped coin lands on heads is a parameter. These are fixed, real values that exist whether or not we ever collect data on them.
 
-The problem is that we can never actually *know* these values (unless you can speak to a god of your choosing). For the rest of us mortals, we can only estimate them from data. That is the entire job of statistics, and it's what GLMs (and pretty much all other forms of stats) do.
+The problem is that we can never actually *know* these values (unless you can speak to a god of your choosing). For the rest of us mortals, we can only estimate them from data. That's the entire job of statistics, and it's what GLMs (and pretty much all other forms of stats) do.
 
 # A concrete example
 
@@ -110,7 +110,7 @@ where:
 
 - $p$ is the probability of detecting fish.
 
-- $logit$ is a link function. It is a small piece of maths that keeps $p$ between 0 and 1, because probabilities cannot be negative or greater than 1. Specifically, $logit(p) = log\left(\frac{p}{1-p}\right)$
+- $logit$ is a link function. It's a small piece of maths that keeps $p$ between 0 and 1, because probabilities can't be negative or greater than 1. Specifically, $logit(p) = log\left(\frac{p}{1-p}\right)$
 
 - $\beta_0$ is the intercept and is the only **parameter** in the model. Because there are no other covariates in this model, $\beta_0$ estimates the average probability of detecting fish (on the logit scale).
 
@@ -144,7 +144,7 @@ If we get the same answer using either a GLM or `mean(lakes$fish)`, why bother w
 
 Two reasons.
 
-First, `mean()` breaks the moment you want to include covariates. If you want to ask "how does lake depth affect the probability that fish are present?", you cannot do that with a mean. You need a model.
+First, `mean()` breaks the moment you want to include covariates. If you want to ask "how does lake depth affect the probability that fish are present?", you can't do that with a mean. You need a model.
 
 Second, a GLM gives you **uncertainty**. Not just a point estimate, like 60%, but a sense of how confident you should be in that estimate. Look at the `Std. Error` in the summary output, and look at the 95% confidence intervals:
 
@@ -152,7 +152,7 @@ Second, a GLM gives you **uncertainty**. Not just a point estimate, like 60%, bu
 plogis(confint(mod))
 ```
 
-The model is not just saying "60%". It is saying "somewhere between roughly 38% and 79%, and our best guess is 60%". That range is information. Ignoring it is how you end up overconfident (cough machine learning cough).
+The model isn't just saying "60%". It's saying "somewhere between roughly 38% and 79%, and our best guess is 60%". That range is information. Ignoring it is how you end up overconfident (cough machine learning cough).
 
 # Adding a covariate
 
@@ -215,7 +215,7 @@ The gold line is our model's prediction. Deeper lakes are estimated to have a hi
 
 We could add 95% confidence intervals to the figure (I should but am being lazy), but importantly we learn more than just 60% of lakes have our fish species in them (when we just calculate the average); we learn that deeper lakes are more likely to have the species present, with shallow lakes having a ca. 12% chance of fish being there, all the way up to 10 m deep lakes being virtually guaranteed to have them with almost 100% chance of the fish being present.
 
-Now try adjusting the two model parameters yourself. The intercept ($\beta_0$) shifts the curve left or right along the depth axis, more negative means you need deeper lakes before there is a decent chance of fish. The slope ($\beta_1$) controls how steeply probability rises with depth, a larger value means a sharper transition. Notice that no matter what values you choose, the predicted probability always stays between 0 and 1. That is the logit link doing its job. The defaults are set to the true values used to simulate the data above.
+Now try adjusting the two model parameters yourself. The intercept ($\beta_0$) shifts the curve left or right along the depth axis, more negative means you need deeper lakes before there is a decent chance of fish. The slope ($\beta_1$) controls how steeply probability rises with depth, a larger value means a sharper transition. Notice that no matter what values you choose, the predicted probability always stays between 0 and 1. That's the logit link doing its job. The defaults are set to the true values used to simulate the data above.
 
 ```{r}
 #| echo: false
@@ -301,9 +301,9 @@ viewof beta1_glm = Inputs.range([-2, 2], {
 
 A GLM estimates a **parameter** from data. A parameter is just a probability, a rate, a mean, or some other value that describes something about the world that we cannot observe directly ourselves. The GLM gives us a decent guess at that parameter, plus some honest accounting of how uncertain that guess is.
 
-Everything in mark-recapture, and specifically everything in the robust design, follows this exact logic. We'll just have more parameters to estimate and more models that get fit (at the same time). In doing so, we'll get some estimates for survival probability, detection probability, population size and a bunch of other ones. None of these are things you will ever be able to observe yourself (how to you "see" survival?). But all of them are things we estimate from data, using models that are, at their core, just GLMs.
+Everything in mark-recapture, and specifically everything in the robust design, follows this exact logic. We'll just have more parameters to estimate and more models that get fit (at the same time). In doing so, we'll get some estimates for survival probability, detection probability, population size and a bunch of other ones. None of these are things you'll ever be able to observe yourself (how do you "see" survival?). But all of them are things we estimate from data, using models that are, at their core, just GLMs.
 
-The complexity of what is coming is not in the mathematics; though granted the equations look crazy at first. It is in the *biology* that each parameter is trying to represent, and in making sure we have set the model up in a way that lets us estimate each one without getting them confused with each other.
+The complexity of what's coming isn't in the mathematics, though granted the equations look crazy at first. It's in the *biology* that each parameter is trying to represent, and in making sure we've set the model up in a way that lets us estimate each one without getting them confused with each other.
 
 # Quick recap
 
